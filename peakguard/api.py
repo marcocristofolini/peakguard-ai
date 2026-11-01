@@ -1,6 +1,12 @@
 """API HTTP para simulações locais com dados sintéticos."""
 
+import hmac
+import ipaddress
+import os
 from typing import Any, Literal
+
+from fastapi import Request
+from fastapi.responses import JSONResponse
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
@@ -60,6 +66,34 @@ class ComparisonResponse(BaseModel):
 
 
 app = FastAPI(title='PeakGuard AI', description='Simulações sintéticas offline de capacidade e custo.', version='0.2.0')
+
+
+@app.middleware('http')
+async def access_control(request: Request, call_next):
+    """Modo local restrito por IP; modo token exige Bearer em toda rota, inclusive /docs."""
+    mode = os.getenv('PEAKGUARD_AUTH_MODE', 'local')
+    if mode == 'local':
+        client_ip = request.client.host if request.client else ''
+        if client_ip != 'testclient':
+            try:
+                if not ipaddress.ip_address(client_ip).is_loopback:
+                    return JSONResponse({'detail': 'Acesso externo desabilitado.'}, status_code=403)
+            except ValueError:
+                return JSONResponse({'detail': 'Cliente não reconhecido.'}, status_code=403)
+    elif mode == 'token':
+        expected = os.getenv('PEAKGUARD_API_TOKEN', '')
+        if len(expected) < 32:
+            return JSONResponse({'detail': 'Token de autenticação não configurado.'}, status_code=503)
+        scheme, separator, provided = request.headers.get('authorization', '').partition(' ')
+        if not separator or scheme.lower() != 'bearer' or not hmac.compare_digest(provided, expected):
+            return JSONResponse(
+                {'detail': 'Autenticação necessária.'}, status_code=401,
+                headers={'WWW-Authenticate': 'Bearer'},
+            )
+    else:
+        return JSONResponse({'detail': 'Modo de autenticação inválido.'}, status_code=503)
+    return await call_next(request)
+
 
 
 @app.get('/scenarios', response_model=list[str])

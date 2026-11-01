@@ -1,10 +1,14 @@
 export async function POST(request: Request) {
   try {
+    const token = process.env.PEAKGUARD_BACKEND_TOKEN;
     const response = await fetch(
       `${process.env.PEAKGUARD_API_URL || "http://127.0.0.1:8000"}/explanations`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: await request.text(),
         cache: "no-store",
       },

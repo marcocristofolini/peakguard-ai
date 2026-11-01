@@ -1,0 +1,12 @@
+# OpenCost usa o Prometheus local da demo; preços são ESTIMADOS.
+opencost:
+  prometheus:
+    internal:
+      enabled: true
+      namespaceName: peakguard-p6
+      serviceName: prometheus
+      port: 9090
+  exporter:
+    defaultClusterId: peakguard-p6
+  ui:
+    enabled: true
