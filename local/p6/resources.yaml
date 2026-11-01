@@ -1,0 +1,136 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: peakguard-p6
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: documents
+  namespace: peakguard-p6
+spec:
+  selector:
+    matchLabels: {app: documents}
+  template:
+    metadata:
+      labels: {app: documents}
+    spec:
+      automountServiceAccountToken: false
+      containers:
+      - name: documents
+        image: peakguard-p6:local
+        imagePullPolicy: Never
+        ports: [{containerPort: 8080}]
+        resources:
+          requests: {cpu: 100m, memory: 32Mi}
+          limits: {cpu: 500m, memory: 128Mi}
+        readinessProbe:
+          httpGet: {path: /health, port: 8080}
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities: {drop: [ALL]}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: documents
+  namespace: peakguard-p6
+spec:
+  selector: {app: documents}
+  ports: [{port: 8080, targetPort: 8080}]
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: documents
+  namespace: peakguard-p6
+spec:
+  scaleTargetRef: {apiVersion: apps/v1, kind: Deployment, name: documents}
+  minReplicas: 1
+  maxReplicas: 4
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target: {type: Utilization, averageUtilization: 70}
+  behavior:
+    scaleDown: {stabilizationWindowSeconds: 180}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata: {name: prometheus, namespace: peakguard-p6}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata: {name: prometheus, namespace: peakguard-p6}
+rules:
+- apiGroups: ['']
+  resources: [pods]
+  verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: {name: prometheus, namespace: peakguard-p6}
+subjects: [{kind: ServiceAccount, name: prometheus, namespace: peakguard-p6}]
+roleRef: {apiGroup: rbac.authorization.k8s.io, kind: Role, name: prometheus}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata: {name: prometheus, namespace: peakguard-p6}
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 5s
+    scrape_configs:
+    - job_name: documents
+      kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names: [peakguard-p6]
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_label_app]
+        regex: documents
+        action: keep
+      - source_labels: [__meta_kubernetes_pod_ready]
+        regex: 'true'
+        action: keep
+      - source_labels: [__meta_kubernetes_pod_name]
+        target_label: pod
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: prometheus, namespace: peakguard-p6}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: prometheus}
+  template:
+    metadata:
+      labels: {app: prometheus}
+    spec:
+      serviceAccountName: prometheus
+      containers:
+      - name: prometheus
+        image: prom/prometheus:v3.2.1
+        args: [--config.file=/etc/prometheus/prometheus.yml, --storage.tsdb.path=/prometheus, --storage.tsdb.retention.time=1h]
+        ports: [{containerPort: 9090}]
+        resources:
+          requests: {cpu: 100m, memory: 128Mi}
+          limits: {cpu: 500m, memory: 512Mi}
+        volumeMounts:
+        - {name: config, mountPath: /etc/prometheus, readOnly: true}
+        - {name: data, mountPath: /prometheus}
+      volumes:
+      - name: config
+        configMap: {name: prometheus}
+      - name: data
+        emptyDir: {sizeLimit: 512Mi}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: prometheus, namespace: peakguard-p6}
+spec:
+  selector: {app: prometheus}
+  ports: [{port: 9090, targetPort: 9090}]
