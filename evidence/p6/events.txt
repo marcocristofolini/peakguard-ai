@@ -1,0 +1,49 @@
+LAST SEEN   TYPE      REASON                         OBJECT                              MESSAGE
+11m         Normal    Pulling                        pod/prometheus-5d794859b6-4vfh9     Pulling image "prom/prometheus:v3.2.1"
+11m         Warning   FailedComputeMetricsReplicas   horizontalpodautoscaler/documents   invalid metrics (1 invalid out of 1), first error is: failed to get cpu resource metric value: failed to get cpu utilization: unable to get metrics for resource cpu: no metrics returned from resource metrics API
+11m         Normal    Created                        pod/documents-6479679449-6vsv7      Container created
+11m         Normal    Started                        pod/documents-6479679449-6vsv7      Container started
+11m         Warning   Unhealthy                      pod/documents-6479679449-6vsv7      Readiness probe failed: Get "http://10.244.0.8:8080/health": dial tcp 10.244.0.8:8080: connect: connection refused
+11m         Normal    ScalingReplicaSet              deployment/prometheus               Scaled up replica set prometheus-5d794859b6 from 0 to 1
+11m         Normal    SuccessfulCreate               replicaset/prometheus-5d794859b6    Created pod: prometheus-5d794859b6-4vfh9
+11m         Normal    Scheduled                      pod/documents-6479679449-6vsv7      Successfully assigned peakguard-p6/documents-6479679449-6vsv7 to peakguard-p6-control-plane
+11m         Normal    Scheduled                      pod/prometheus-5d794859b6-4vfh9     Successfully assigned peakguard-p6/prometheus-5d794859b6-4vfh9 to peakguard-p6-control-plane
+11m         Warning   FailedGetResourceMetric        horizontalpodautoscaler/documents   failed to get cpu utilization: unable to get metrics for resource cpu: no metrics returned from resource metrics API
+11m         Normal    Pulled                         pod/documents-6479679449-6vsv7      Container image "peakguard-p6:local" already present on machine and can be accessed by the pod
+11m         Normal    ScalingReplicaSet              deployment/documents                Scaled up replica set documents-6479679449 from 0 to 1
+11m         Normal    SuccessfulCreate               replicaset/documents-6479679449     Created pod: documents-6479679449-6vsv7
+11m         Normal    Created                        pod/prometheus-5d794859b6-4vfh9     Container created
+11m         Normal    Started                        pod/prometheus-5d794859b6-4vfh9     Container started
+11m         Normal    Pulled                         pod/prometheus-5d794859b6-4vfh9     Successfully pulled image "prom/prometheus:v3.2.1" in 11.523s (11.523s including waiting). Image size: 116785353 bytes.
+11m         Warning   FailedComputeMetricsReplicas   horizontalpodautoscaler/documents   invalid metrics (1 invalid out of 1), first error is: failed to get cpu resource metric value: failed to get cpu utilization: did not receive metrics for targeted pods (pods might be unready)
+11m         Warning   FailedGetResourceMetric        horizontalpodautoscaler/documents   failed to get cpu utilization: did not receive metrics for targeted pods (pods might be unready)
+5m26s       Normal    Started                        pod/load-vlfkq                      Container started
+5m26s       Normal    Created                        pod/load-vlfkq                      Container created
+5m26s       Normal    Pulled                         pod/load-vlfkq                      Container image "peakguard-p6:local" already present on machine and can be accessed by the pod
+5m26s       Normal    Scheduled                      pod/load-vlfkq                      Successfully assigned peakguard-p6/load-vlfkq to peakguard-p6-control-plane
+5m26s       Normal    SuccessfulCreate               job/load                            Created pod: load-vlfkq
+4m41s       Normal    Pulled                         pod/documents-6479679449-dsc9x      Container image "peakguard-p6:local" already present on machine and can be accessed by the pod
+4m41s       Normal    Scheduled                      pod/documents-6479679449-fpz5r      Successfully assigned peakguard-p6/documents-6479679449-fpz5r to peakguard-p6-control-plane
+4m41s       Normal    Scheduled                      pod/documents-6479679449-cgldt      Successfully assigned peakguard-p6/documents-6479679449-cgldt to peakguard-p6-control-plane
+4m41s       Normal    SuccessfulCreate               replicaset/documents-6479679449     Created pod: documents-6479679449-dsc9x
+4m41s       Normal    SuccessfulCreate               replicaset/documents-6479679449     Created pod: documents-6479679449-cgldt
+4m41s       Normal    Pulled                         pod/documents-6479679449-cgldt      Container image "peakguard-p6:local" already present on machine and can be accessed by the pod
+4m41s       Normal    Scheduled                      pod/documents-6479679449-dsc9x      Successfully assigned peakguard-p6/documents-6479679449-dsc9x to peakguard-p6-control-plane
+4m41s       Normal    SuccessfulCreate               replicaset/documents-6479679449     Created pod: documents-6479679449-fpz5r
+4m41s       Normal    SuccessfulRescale              horizontalpodautoscaler/documents   New size: 4; reason: cpu resource utilization (percentage of request) above target
+4m41s       Normal    ScalingReplicaSet              deployment/documents                Scaled up replica set documents-6479679449 from 1 to 4
+4m40s       Normal    Created                        pod/documents-6479679449-fpz5r      Container created
+4m40s       Normal    Started                        pod/documents-6479679449-fpz5r      Container started
+4m40s       Normal    Pulled                         pod/documents-6479679449-fpz5r      Container image "peakguard-p6:local" already present on machine and can be accessed by the pod
+4m40s       Normal    Created                        pod/documents-6479679449-cgldt      Container created
+4m40s       Warning   Unhealthy                      pod/documents-6479679449-dsc9x      Readiness probe failed: Get "http://10.244.0.13:8080/health": dial tcp 10.244.0.13:8080: connect: connection refused
+4m40s       Normal    Started                        pod/documents-6479679449-dsc9x      Container started
+4m40s       Normal    Created                        pod/documents-6479679449-dsc9x      Container created
+4m40s       Normal    Started                        pod/documents-6479679449-cgldt      Container started
+4m39s       Warning   Unhealthy                      pod/documents-6479679449-cgldt      Readiness probe failed: Get "http://10.244.0.11:8080/health": dial tcp 10.244.0.11:8080: connect: connection refused
+4m39s       Warning   Unhealthy                      pod/documents-6479679449-fpz5r      Readiness probe failed: Get "http://10.244.0.12:8080/health": dial tcp 10.244.0.12:8080: connect: connection refused
+3m12s       Normal    Completed                      job/load                            Job completed
+10s         Normal    Killing                        pod/documents-6479679449-cgldt      Stopping container documents
+10s         Normal    ScalingReplicaSet              deployment/documents                Scaled down replica set documents-6479679449 from 4 to 3
+10s         Normal    SuccessfulRescale              horizontalpodautoscaler/documents   New size: 3; reason: All metrics below target
+10s         Normal    SuccessfulDelete               replicaset/documents-6479679449     Deleted pod: documents-6479679449-cgldt

@@ -1,0 +1,1812 @@
+{
+  "labels": {
+    "metrics": "observed",
+    "load": "synthetic",
+    "cost": "estimated"
+  },
+  "kubernetes_version": {
+    "clientVersion": {
+      "major": "1",
+      "minor": "37",
+      "gitVersion": "v1.37.0",
+      "gitCommit": "f54c212e3a2f75d674b717a9b29052b20b60aefc",
+      "gitTreeState": "clean",
+      "buildDate": "2026-08-26T10:48:06Z",
+      "goVersion": "go1.26.6",
+      "compiler": "gc",
+      "platform": "linux/amd64"
+    },
+    "kustomizeVersion": "v5.8.1",
+    "serverVersion": {
+      "major": "1",
+      "minor": "37",
+      "emulationMajor": "1",
+      "emulationMinor": "37",
+      "minCompatibilityMajor": "1",
+      "minCompatibilityMinor": "36",
+      "gitVersion": "v1.37.0",
+      "gitCommit": "f54c212e3a2f75d674b717a9b29052b20b60aefc",
+      "gitTreeState": "clean",
+      "buildDate": "2026-08-26T10:44:25Z",
+      "goVersion": "go1.26.6",
+      "compiler": "gc",
+      "platform": "linux/amd64"
+    }
+  },
+  "samples": [
+    {
+      "elapsed_seconds": 0.1547081470489502,
+      "ready_replicas": 1,
+      "desired_replicas": 1,
+      "queries": {
+        "submitted": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539603.608,
+                  "0"
+                ]
+              }
+            ]
+          }
+        },
+        "processed": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539603.764,
+                  "0"
+                ]
+              }
+            ]
+          }
+        },
+        "backlog": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539603.923,
+                  "0"
+                ]
+              }
+            ]
+          }
+        },
+        "targets": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539604.048,
+                  "1"
+                ]
+              }
+            ]
+          }
+        },
+        "throughput_docs_per_second": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539604.174,
+                  "0"
+                ]
+              }
+            ]
+          }
+        },
+        "wait_max_seconds": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539604.298,
+                  "0"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_seconds": 11.131822109222412,
+      "ready_replicas": 1,
+      "desired_replicas": 1,
+      "queries": {
+        "submitted": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539614.563,
+                  "8"
+                ]
+              }
+            ]
+          }
+        },
+        "processed": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539614.687,
+                  "8"
+                ]
+              }
+            ]
+          }
+        },
+        "backlog": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539614.816,
+                  "0"
+                ]
+              }
+            ]
+          }
+        },
+        "targets": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539614.947,
+                  "1"
+                ]
+              }
+            ]
+          }
+        },
+        "throughput_docs_per_second": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539615.071,
+                  "0.27899831986558926"
+                ]
+              }
+            ]
+          }
+        },
+        "wait_max_seconds": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539615.2,
+                  "0.007982702998560853"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_seconds": 22.026951551437378,
+      "ready_replicas": 1,
+      "desired_replicas": 1,
+      "queries": {
+        "submitted": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539625.443,
+                  "18"
+                ]
+              }
+            ]
+          }
+        },
+        "processed": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539625.568,
+                  "18"
+                ]
+              }
+            ]
+          }
+        },
+        "backlog": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539625.692,
+                  "0"
+                ]
+              }
+            ]
+          }
+        },
+        "targets": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539625.82,
+                  "1"
+                ]
+              }
+            ]
+          }
+        },
+        "throughput_docs_per_second": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539625.945,
+                  "0.6487238979118329"
+                ]
+              }
+            ]
+          }
+        },
+        "wait_max_seconds": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539626.077,
+                  "0.007982702998560853"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_seconds": 32.91685080528259,
+      "ready_replicas": 1,
+      "desired_replicas": 1,
+      "queries": {
+        "submitted": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539636.339,
+                  "115"
+                ]
+              }
+            ]
+          }
+        },
+        "processed": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539636.466,
+                  "59"
+                ]
+              }
+            ]
+          }
+        },
+        "backlog": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539636.591,
+                  "55"
+                ]
+              }
+            ]
+          }
+        },
+        "targets": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539636.716,
+                  "1"
+                ]
+              }
+            ]
+          }
+        },
+        "throughput_docs_per_second": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539636.844,
+                  "2.185466255950714"
+                ]
+              }
+            ]
+          }
+        },
+        "wait_max_seconds": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539636.977,
+                  "4.412436845999764"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_seconds": 43.80858850479126,
+      "ready_replicas": 1,
+      "desired_replicas": 1,
+      "queries": {
+        "submitted": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539647.229,
+                  "235"
+                ]
+              }
+            ]
+          }
+        },
+        "processed": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539647.355,
+                  "109"
+                ]
+              }
+            ]
+          }
+        },
+        "backlog": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539647.477,
+                  "125"
+                ]
+              }
+            ]
+          }
+        },
+        "targets": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539647.611,
+                  "1"
+                ]
+              }
+            ]
+          }
+        },
+        "throughput_docs_per_second": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539647.732,
+                  "3.8404608553026365"
+                ]
+              }
+            ]
+          }
+        },
+        "wait_max_seconds": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539647.875,
+                  "10.303580984000291"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_seconds": 54.74187994003296,
+      "ready_replicas": 4,
+      "desired_replicas": 4,
+      "queries": {
+        "submitted": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539658.2,
+                  "350"
+                ]
+              }
+            ]
+          }
+        },
+        "processed": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539658.365,
+                  "174"
+                ]
+              }
+            ]
+          }
+        },
+        "backlog": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539658.509,
+                  "175"
+                ]
+              }
+            ]
+          }
+        },
+        "targets": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539658.671,
+                  "2"
+                ]
+              }
+            ]
+          }
+        },
+        "throughput_docs_per_second": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539658.816,
+                  "5.76967683174654"
+                ]
+              }
+            ]
+          }
+        },
+        "wait_max_seconds": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539658.97,
+                  "19.055574883997906"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_seconds": 65.81980443000793,
+      "ready_replicas": 4,
+      "desired_replicas": 4,
+      "queries": {
+        "submitted": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539669.244,
+                  "518"
+                ]
+              }
+            ]
+          }
+        },
+        "processed": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539669.369,
+                  "370"
+                ]
+              }
+            ]
+          }
+        },
+        "backlog": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539669.497,
+                  "146"
+                ]
+              }
+            ]
+          }
+        },
+        "targets": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539669.637,
+                  "4"
+                ]
+              }
+            ]
+          }
+        },
+        "throughput_docs_per_second": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539669.767,
+                  "9.239457777777778"
+                ]
+              }
+            ]
+          }
+        },
+        "wait_max_seconds": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539669.919,
+                  "24.891156312998646"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_seconds": 76.75707864761353,
+      "ready_replicas": 4,
+      "desired_replicas": 4,
+      "queries": {
+        "submitted": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539680.203,
+                  "646"
+                ]
+              }
+            ]
+          }
+        },
+        "processed": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539680.34,
+                  "520"
+                ]
+              }
+            ]
+          }
+        },
+        "backlog": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539680.485,
+                  "123"
+                ]
+              }
+            ]
+          }
+        },
+        "targets": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539680.626,
+                  "4"
+                ]
+              }
+            ]
+          }
+        },
+        "throughput_docs_per_second": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539680.77,
+                  "12.542573811146154"
+                ]
+              }
+            ]
+          }
+        },
+        "wait_max_seconds": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539680.907,
+                  "30.722811608000484"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_seconds": 87.74624538421631,
+      "ready_replicas": 4,
+      "desired_replicas": 4,
+      "queries": {
+        "submitted": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539691.178,
+                  "773"
+                ]
+              }
+            ]
+          }
+        },
+        "processed": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539691.348,
+                  "679"
+                ]
+              }
+            ]
+          }
+        },
+        "backlog": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539691.479,
+                  "103"
+                ]
+              }
+            ]
+          }
+        },
+        "targets": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539691.627,
+                  "4"
+                ]
+              }
+            ]
+          }
+        },
+        "throughput_docs_per_second": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539691.836,
+                  "14.041105697225266"
+                ]
+              }
+            ]
+          }
+        },
+        "wait_max_seconds": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539691.999,
+                  "35.92722622399742"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_seconds": 98.83092045783997,
+      "ready_replicas": 4,
+      "desired_replicas": 4,
+      "queries": {
+        "submitted": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539702.27,
+                  "906"
+                ]
+              }
+            ]
+          }
+        },
+        "processed": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539702.49,
+                  "822"
+                ]
+              }
+            ]
+          }
+        },
+        "backlog": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539702.647,
+                  "81"
+                ]
+              }
+            ]
+          }
+        },
+        "targets": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539702.79,
+                  "4"
+                ]
+              }
+            ]
+          }
+        },
+        "throughput_docs_per_second": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539702.94,
+                  "14.200670445635332"
+                ]
+              }
+            ]
+          }
+        },
+        "wait_max_seconds": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539703.071,
+                  "35.92722622399742"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_seconds": 109.91410636901855,
+      "ready_replicas": 4,
+      "desired_replicas": 4,
+      "queries": {
+        "submitted": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539713.35,
+                  "1023"
+                ]
+              }
+            ]
+          }
+        },
+        "processed": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539713.494,
+                  "954"
+                ]
+              }
+            ]
+          }
+        },
+        "backlog": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539713.656,
+                  "68"
+                ]
+              }
+            ]
+          }
+        },
+        "targets": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539713.828,
+                  "4"
+                ]
+              }
+            ]
+          }
+        },
+        "throughput_docs_per_second": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539713.982,
+                  "13.561937882217816"
+                ]
+              }
+            ]
+          }
+        },
+        "wait_max_seconds": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539714.141,
+                  "35.92722622399742"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_seconds": 121.02210426330566,
+      "ready_replicas": 4,
+      "desired_replicas": 4,
+      "queries": {
+        "submitted": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539724.442,
+                  "1106"
+                ]
+              }
+            ]
+          }
+        },
+        "processed": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539724.574,
+                  "1080"
+                ]
+              }
+            ]
+          }
+        },
+        "backlog": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539724.708,
+                  "25"
+                ]
+              }
+            ]
+          }
+        },
+        "targets": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539724.853,
+                  "4"
+                ]
+              }
+            ]
+          }
+        },
+        "throughput_docs_per_second": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539724.99,
+                  "11.081001719823597"
+                ]
+              }
+            ]
+          }
+        },
+        "wait_max_seconds": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539725.128,
+                  "35.92722622399742"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_seconds": 131.9594280719757,
+      "ready_replicas": 4,
+      "desired_replicas": 4,
+      "queries": {
+        "submitted": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539735.381,
+                  "1119"
+                ]
+              }
+            ]
+          }
+        },
+        "processed": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539735.508,
+                  "1119"
+                ]
+              }
+            ]
+          }
+        },
+        "backlog": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539735.645,
+                  "0"
+                ]
+              }
+            ]
+          }
+        },
+        "targets": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539735.77,
+                  "4"
+                ]
+              }
+            ]
+          }
+        },
+        "throughput_docs_per_second": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539735.894,
+                  "7.120569645571645"
+                ]
+              }
+            ]
+          }
+        },
+        "wait_max_seconds": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539736.03,
+                  "35.92722622399742"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_seconds": 142.88983011245728,
+      "ready_replicas": 4,
+      "desired_replicas": 4,
+      "queries": {
+        "submitted": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539746.308,
+                  "1120"
+                ]
+              }
+            ]
+          }
+        },
+        "processed": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539746.438,
+                  "1120"
+                ]
+              }
+            ]
+          }
+        },
+        "backlog": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539746.565,
+                  "0"
+                ]
+              }
+            ]
+          }
+        },
+        "targets": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539746.696,
+                  "4"
+                ]
+              }
+            ]
+          }
+        },
+        "throughput_docs_per_second": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539746.827,
+                  "2.600217618561623"
+                ]
+              }
+            ]
+          }
+        },
+        "wait_max_seconds": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539746.955,
+                  "35.92722622399742"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_seconds": 153.78584098815918,
+      "ready_replicas": 4,
+      "desired_replicas": 4,
+      "queries": {
+        "submitted": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539757.204,
+                  "1120"
+                ]
+              }
+            ]
+          }
+        },
+        "processed": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539757.33,
+                  "1120"
+                ]
+              }
+            ]
+          }
+        },
+        "backlog": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539757.454,
+                  "0"
+                ]
+              }
+            ]
+          }
+        },
+        "targets": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539757.578,
+                  "4"
+                ]
+              }
+            ]
+          }
+        },
+        "throughput_docs_per_second": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539757.705,
+                  "0.3200208022402483"
+                ]
+              }
+            ]
+          }
+        },
+        "wait_max_seconds": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539757.838,
+                  "35.92722622399742"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "elapsed_seconds": 164.67113184928894,
+      "ready_replicas": 4,
+      "desired_replicas": 4,
+      "queries": {
+        "submitted": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539768.089,
+                  "1120"
+                ]
+              }
+            ]
+          }
+        },
+        "processed": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539768.212,
+                  "1120"
+                ]
+              }
+            ]
+          }
+        },
+        "backlog": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539768.334,
+                  "0"
+                ]
+              }
+            ]
+          }
+        },
+        "targets": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539768.46,
+                  "4"
+                ]
+              }
+            ]
+          }
+        },
+        "throughput_docs_per_second": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539768.593,
+                  "0"
+                ]
+              }
+            ]
+          }
+        },
+        "wait_max_seconds": {
+          "status": "success",
+          "data": {
+            "resultType": "vector",
+            "result": [
+              {
+                "metric": {},
+                "value": [
+                  1793539768.717,
+                  "35.92722622399742"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "load": [
+    {
+      "interval": 0,
+      "target_docs_per_second": 1,
+      "accepted": 10,
+      "rejected": 0,
+      "errors": 0,
+      "elapsed_seconds": 9.002471120002156
+    },
+    {
+      "interval": 1,
+      "target_docs_per_second": 1,
+      "accepted": 10,
+      "rejected": 0,
+      "errors": 0,
+      "elapsed_seconds": 19.001920200000313
+    },
+    {
+      "interval": 2,
+      "target_docs_per_second": 12,
+      "accepted": 120,
+      "rejected": 0,
+      "errors": 0,
+      "elapsed_seconds": 29.970062124000833
+    },
+    {
+      "interval": 3,
+      "target_docs_per_second": 12,
+      "accepted": 120,
+      "rejected": 0,
+      "errors": 0,
+      "elapsed_seconds": 39.97027486799925
+    },
+    {
+      "interval": 4,
+      "target_docs_per_second": 12,
+      "accepted": 120,
+      "rejected": 0,
+      "errors": 0,
+      "elapsed_seconds": 49.92929417200139
+    },
+    {
+      "interval": 5,
+      "target_docs_per_second": 12,
+      "accepted": 120,
+      "rejected": 0,
+      "errors": 0,
+      "elapsed_seconds": 59.92422597900077
+    },
+    {
+      "interval": 6,
+      "target_docs_per_second": 12,
+      "accepted": 120,
+      "rejected": 0,
+      "errors": 0,
+      "elapsed_seconds": 69.9186717440025
+    },
+    {
+      "interval": 7,
+      "target_docs_per_second": 12,
+      "accepted": 120,
+      "rejected": 0,
+      "errors": 0,
+      "elapsed_seconds": 79.91881807400205
+    },
+    {
+      "interval": 8,
+      "target_docs_per_second": 12,
+      "accepted": 120,
+      "rejected": 0,
+      "errors": 0,
+      "elapsed_seconds": 89.91863921299955
+    },
+    {
+      "interval": 9,
+      "target_docs_per_second": 12,
+      "accepted": 120,
+      "rejected": 0,
+      "errors": 0,
+      "elapsed_seconds": 99.96550375700099
+    },
+    {
+      "interval": 10,
+      "target_docs_per_second": 12,
+      "accepted": 120,
+      "rejected": 0,
+      "errors": 0,
+      "elapsed_seconds": 109.9561771560002
+    },
+    {
+      "interval": 11,
+      "target_docs_per_second": 1,
+      "accepted": 10,
+      "rejected": 0,
+      "errors": 0,
+      "elapsed_seconds": 119.00487582500136
+    },
+    {
+      "interval": 12,
+      "target_docs_per_second": 1,
+      "accepted": 10,
+      "rejected": 0,
+      "errors": 0,
+      "elapsed_seconds": 129.00222784600192
+    }
+  ],
+  "hpa": {
+    "apiVersion": "autoscaling/v2",
+    "kind": "HorizontalPodAutoscaler",
+    "metadata": {
+      "annotations": {
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"autoscaling/v2\",\"kind\":\"HorizontalPodAutoscaler\",\"metadata\":{\"annotations\":{},\"name\":\"documents\",\"namespace\":\"peakguard-p6\"},\"spec\":{\"behavior\":{\"scaleDown\":{\"stabilizationWindowSeconds\":180}},\"maxReplicas\":4,\"metrics\":[{\"resource\":{\"name\":\"cpu\",\"target\":{\"averageUtilization\":70,\"type\":\"Utilization\"}},\"type\":\"Resource\"}],\"minReplicas\":1,\"scaleTargetRef\":{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"name\":\"documents\"}}}\n"
+      },
+      "creationTimestamp": "2026-11-01T13:20:28Z",
+      "generation": 1,
+      "name": "documents",
+      "namespace": "peakguard-p6",
+      "resourceVersion": "1873",
+      "uid": "95788250-43ce-4924-944a-17f201a3af1e"
+    },
+    "spec": {
+      "behavior": {
+        "scaleDown": {
+          "policies": [
+            {
+              "periodSeconds": 15,
+              "type": "Percent",
+              "value": 100
+            }
+          ],
+          "selectPolicy": "Max",
+          "stabilizationWindowSeconds": 180
+        },
+        "scaleUp": {
+          "policies": [
+            {
+              "periodSeconds": 15,
+              "type": "Pods",
+              "value": 4
+            },
+            {
+              "periodSeconds": 15,
+              "type": "Percent",
+              "value": 100
+            }
+          ],
+          "selectPolicy": "Max",
+          "stabilizationWindowSeconds": 0
+        }
+      },
+      "maxReplicas": 4,
+      "metrics": [
+        {
+          "resource": {
+            "name": "cpu",
+            "target": {
+              "averageUtilization": 70,
+              "type": "Utilization"
+            }
+          },
+          "type": "Resource"
+        }
+      ],
+      "minReplicas": 1,
+      "scaleTargetRef": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "documents"
+      }
+    },
+    "status": {
+      "conditions": [
+        {
+          "lastTransitionTime": "2026-11-01T13:20:28Z",
+          "message": "recent recommendations were higher than current one, applying the highest recent recommendation",
+          "reason": "ScaleDownStabilized",
+          "status": "True",
+          "type": "AbleToScale"
+        },
+        {
+          "lastTransitionTime": "2026-11-01T13:20:58Z",
+          "message": "the HPA was able to successfully calculate a replica count from cpu resource utilization (percentage of request)",
+          "reason": "ValidMetricFound",
+          "status": "True",
+          "type": "ScalingActive"
+        },
+        {
+          "lastTransitionTime": "2026-11-01T13:29:13Z",
+          "message": "the desired count is within the acceptable range",
+          "reason": "DesiredWithinRange",
+          "status": "False",
+          "type": "ScalingLimited"
+        },
+        {
+          "lastTransitionTime": "2026-11-01T13:27:28Z",
+          "message": "the HPA controller did not scale the workload to zero",
+          "reason": "NotScaledToZero",
+          "status": "False",
+          "type": "ScaledToZero"
+        }
+      ],
+      "currentMetrics": [
+        {
+          "resource": {
+            "current": {
+              "averageUtilization": 31,
+              "averageValue": "31m"
+            },
+            "name": "cpu"
+          },
+          "type": "Resource"
+        }
+      ],
+      "currentReplicas": 4,
+      "desiredReplicas": 4,
+      "lastScaleTime": "2026-11-01T13:27:28Z",
+      "observedGeneration": 1
+    }
+  },
+  "estimated_cost_brl": 0.16476805981000264,
+  "price_assumption_brl_per_replica_hour": 1.2,
+  "cost_method": "left-hand integration of sampled ready replicas; excludes node, pending pods and monitoring"
+}

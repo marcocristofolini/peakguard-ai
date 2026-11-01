@@ -1,15 +1,39 @@
-# Prompts curtos por fase
+# Continuação Codex — um comando por fase
 
-P2 — Leia AGENTS.md, ROADMAP.md e docs/STATUS.md. Implemente somente a API FastAPI utilizando o motor existente. Teste e atualize STATUS.md. Não avance para P3.
+## Regra em toda sessão
+`Use Caveman na comunicação, preservando termos e código. Aplique Superpowers: writing-plans só para a fase ainda não planejada; executing-plans inline; TDD RED→GREEN→REFACTOR; systematic-debugging quando falhar; verification-before-completion antes de afirmar sucesso. Leia AGENTS.md, ROADMAP.md e docs/STATUS.md. Sem subagentes/worktrees por padrão, sem refazer contexto ou avançar fases. Teste, atualize STATUS.md (até 20 linhas) e resuma até 8 linhas. Não faça push.`
 
-P3 — Implemente apenas o dashboard Next.js com dados da API, gráficos claros, estados loading/erro e rótulos para dados sintéticos. Rode testes/build relevantes. Atualize STATUS.md.
+### Context7 por fase
+O MCP `context7` está disponível. Para código dependente de APIs externas, confirme versão e sintaxe atual antes de implementar: `resolve-library-id` quando o ID for desconhecido; `query-docs` com pergunta específica. Reutilize documentação obtida, não consulte tarefas de lógica interna ou puro Python e não despeje trechos extensos na resposta.
 
-P4 — Adicione explicação opcional por LLM com tool calling somente read-only; valide propostas determinísticamente. Sem automatizar mudanças ou exigência de chaves para modo offline. Teste, atualize STATUS.md.
+### P2 — API
+**Modelo:** `gpt-6.1-terra` | **Reasoning:** `medium`
+**Iniciar:** `codex -m gpt-6.1-terra -c model_reasoning_effort=medium`
+Confirme o modelo ativo antes de enviar o prompt. O texto não altera o modelo.
+Implemente SOMENTE P2. Consulte Context7 para FastAPI/Pydantic quando houver dúvida de API ou versão. Use motor existente para FastAPI; endpoints de cenários, execução e comparação, validações e testes HTTP. Evite duplicar lógica ou adicionar banco.
 
-P5 — Crie benchmark reproduzível das políticas com seeds fixas e mesmos inputs. Compare latência, backlog, throughput, custo e violações de SLO. Sem fabricar melhorias. Atualize STATUS.md.
+### P3 — Dashboard
+**Modelo:** `gpt-6.1-terra` | **Reasoning:** `medium`
+**Iniciar:** `codex -m gpt-6.1-terra -c model_reasoning_effort=medium`
+Implemente SOMENTE P3. Consulte Context7 para APIs do Next.js na versão usada. Next.js com gráficos dos resultados da API, indicadores synthetic/estimated, comparação A/B, loading e erro. Rode build e testes pertinentes.
 
-P6 — Integração opcional Kubernetes local (Kind), métricas Prometheus e custos OpenCost se necessário e viável. Não introduza serviços sem necessidade. Testes mínimos e documentação.
+### P4 — IA explicativa
+**Modelo:** `gpt-6.1-sol` | **Reasoning:** `high`
+**Iniciar:** `codex -m gpt-6.1-sol -c model_reasoning_effort=high`
+Implemente SOMENTE P4. Consulte Context7 para sintaxe do SDK de LLM escolhido, se necessário. LLM opcional e read-only; saída estruturada, validação determinística de propostas, fallback offline e testes de respostas inseguras. Sem execução autônoma.
 
-P7 — README final, imagens reais da aplicação, roteiro da demo de cinco minutos e revisão de arquitetura, segurança e simplicidade.
+### P5 — Benchmark
+**Modelo:** `gpt-6.1-sol` | **Reasoning:** `medium`
+**Iniciar:** `codex -m gpt-6.1-sol -c model_reasoning_effort=medium`
+Implemente SOMENTE P5. Mesmas cargas e seeds nas duas políticas; meça custo, fila, throughput e SLO. Inclua previsão errada e limitações. Gere relatório reproduzível.
 
-Em toda fase: sem GitHub Actions, sem cloud paga, sem logs extensos, sem avançar fases. Faça apenas o solicitado.
+### P6 — Kubernetes opcional
+**Modelo:** `gpt-6.1-sol` | **Reasoning:** `high`
+**Iniciar:** `codex -m gpt-6.1-sol -c model_reasoning_effort=high`
+Implemente SOMENTE P6 se P0–P5 estiverem validados. Consulte Context7 para APIs/configurações de KEDA/OpenCost e componentes Kubernetes utilizados. Kind, workload, métricas Prometheus e KEDA/OpenCost apenas quando agregarem evidência. Sem cloud paga.
+
+### P7 — Apresentação
+**Modelo:** `gpt-6.1-sol` | **Reasoning:** `medium`
+**Iniciar:** `codex -m gpt-6.1-sol -c model_reasoning_effort=medium`
+Para uma correção isolada de texto no README, opcionalmente use `gpt-6-luna` / `low` em outra sessão; preserve a revisão técnica final no Sol.
+Implemente SOMENTE P7. README, screenshots reais, roteiro de demo até cinco minutos e auditoria de simplicidade, segurança e reprodutibilidade. Não invente resultados.

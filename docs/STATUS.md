@@ -1,10 +1,16 @@
 # STATUS — handoff Codex
-- Fase atual: P0 (não iniciada)
-- Ambiente: Ubuntu 24.04 / WSL2, repositório /caminho/para/peakguard-ai
-- CLI: codex 0.164.0 instalado e autenticado via ChatGPT
-- Projeto: modelo gpt-6.1-sol / esforço medium em .codex/config.toml
-- GitHub: marcocristofolini/peakguard-ai (PRIVATE), branch main
-- Entregue: AGENTS.md, ROADMAP.md, CODEX_START.md e docs/CODEX_NEXT.md
-- Aplicação: ainda não implementada
-- Testes: não executados
-- Próximo passo: iniciar Codex, confiar no repositório e executar CODEX_START.md (P0+P1)
+- Fases: P0–P7 entregues. P2–P7 documentadas no roadmap e nos planos Superpowers.
+- Ambiente: WSL2 Ubuntu 24.04, Python 3.12, Next.js 16.4.3; sem venv nem cloud paga.
+- Recursos: simulador e políticas reativa/antecipativa, API FastAPI, dashboard, LLM opcional validado, benchmark e ensaio Kind separado.
+- Dados: demanda sintética; custos estimados; evidências P6 são observações históricas de um cluster local já desmontado.
+- IA: modo offline demonstrado; SDK com HTTP simulado testado; nenhuma chamada paga real nesta entrega.
+- Segurança: nenhuma ferramenta de execução de infraestrutura; aprovação humana exigida; sem autenticação/rate limiting de produção.
+- P7: README, diagramas, roteiro de cinco minutos, benchmarks e screenshots reais registrados.
+- Pós-P7: dashboard agora separa ranking de aprovação determinística via `/explanations`; mostra abstenção e falha de validação.
+- Python: 103 testes aprovados; 1 aviso preexistente Starlette/TestClient.
+- Frontend: 7 testes aprovados, Next.js build aprovado, npm audit com 0 vulnerabilidades.
+- Integração: pico previsível aprova anticipatory; pico inesperado abstém; `execution_allowed=false` em ambos.
+- Visual: Chromium real, capturas `docs/p7-dashboard.png` e `docs/p7-abstention.png`, mobile 390px sem overflow.
+- Estáticos: compileall, bash -n, git diff --check sem erros.
+- Benchmark: 108 comparações reproduzíveis, sem alegação de economia real.
+- Próximo: ensaiar roteiro; revisão externa de segurança antes de produção. Repositório permanece privado; sem push.
