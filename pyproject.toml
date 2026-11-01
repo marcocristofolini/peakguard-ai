@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "peakguard-ai"
+version = "0.1.0"
+description = "Simulador offline de capacidade e custos com dados sintéticos"
+requires-python = ">=3.12"
+dependencies = ["fastapi>=0.115,<1", "pydantic>=2,<3", "uvicorn>=0.30,<1"]
+
+[project.optional-dependencies]
+llm = ["openai==2.26.0"]
+dev = ["pytest>=8,<9", "httpx>=0.27,<1"]
+
+[tool.setuptools.package-data]
+peakguard = ["fixtures/*.json"]
+
+[tool.setuptools.packages.find]
+include = ["peakguard*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

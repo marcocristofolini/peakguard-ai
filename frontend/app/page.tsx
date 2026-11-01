@@ -1,0 +1,565 @@
+"use client";
+import { useEffect, useState } from "react";
+import { recommend } from "../lib/recommendation.mjs";
+import { interpretDecision, type Validation } from "../lib/decision.mjs";
+
+type Tick = {
+  time_minutes: number;
+  demand_docs_per_minute: number;
+  capacity_docs_per_minute: number;
+  backlog_docs: number;
+  active_replicas: number;
+  slo_violated: boolean;
+};
+type Summary = {
+  cost_brl: number;
+  cost_brl_per_1000_docs: number | null;
+  max_backlog_docs: number;
+  slo_violation_minutes: number;
+  processed_docs: number;
+  demand_docs: number;
+};
+type Run = { ticks: Tick[]; summary: Summary };
+type Comparison = { results: { reactive: Run; anticipatory: Run } };
+const names: Record<string, string> = {
+  stable: "Carga estável",
+  predictable_peak: "Pico previsível",
+  unexpected_peak: "Pico inesperado",
+  wrong_forecast: "Previsão incorreta",
+};
+const money = (x: number | null) =>
+  x === null
+    ? "—"
+    : new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        maximumFractionDigits: 2,
+      }).format(x);
+const num = (x: number) =>
+  new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 1 }).format(x);
+const labels: Record<string, string> = {
+  reactive: "Reativa",
+  anticipatory: "Antecipativa",
+  tie: "Empate",
+};
+
+function Chart({
+  title,
+  unit,
+  series,
+  lastTime,
+}: {
+  title: string;
+  unit: string;
+  lastTime: number;
+  series: { name: string; color: string; values: number[] }[];
+}) {
+  const length = Math.max(...series.map((s) => s.values.length), 1),
+    max = Math.max(...series.flatMap((s) => s.values), 1);
+  const points = (v: number[]) =>
+    v
+      .map(
+        (y, i) =>
+          `${40 + (i * 700) / Math.max(length - 1, 1)},${164 - (y / max) * 140}`,
+      )
+      .join(" ");
+  return (
+    <section className="panel chart">
+      <div className="panelhead">
+        <div>
+          <span className="eyebrow">SÉRIE TEMPORAL</span>
+          <h3>{title}</h3>
+        </div>
+        <span className="unit">{unit}</span>
+      </div>
+      <div className="plot">
+        <svg
+          viewBox="0 0 760 190"
+          role="img"
+          aria-label={`${title}, ${unit}`}
+          preserveAspectRatio="none"
+        >
+          {[0, 1, 2, 3].map((i) => (
+            <g key={i}>
+              <line
+                x1="40"
+                x2="740"
+                y1={24 + i * 46.7}
+                y2={24 + i * 46.7}
+                stroke="#263645"
+                strokeDasharray="3 5"
+              />
+              <text x="2" y={28 + i * 46.7} fill="#8194a4" fontSize="10">
+                {num(max * (1 - i / 3))}
+              </text>
+            </g>
+          ))}
+          {series.map((s) => (
+            <polyline
+              key={s.name}
+              fill="none"
+              stroke={s.color}
+              strokeWidth="2.5"
+              vectorEffect="non-scaling-stroke"
+              points={points(s.values)}
+            />
+          ))}
+          <text x="40" y="186" fill="#8194a4" fontSize="10">
+            0 min
+          </text>
+          <text x="694" y="186" fill="#8194a4" fontSize="10">
+            {num(lastTime)} min
+          </text>
+        </svg>
+      </div>
+      <div className="legend">
+        {series.map((s) => (
+          <span key={s.name}>
+            <i style={{ background: s.color }} />
+            {s.name}
+          </span>
+        ))}
+      </div>
+    </section>
+  );
+}
+export default function Home() {
+  const [scenarios, setScenarios] = useState<string[]>([]),
+    [scenario, setScenario] = useState("predictable_peak"),
+    [seed, setSeed] = useState(42),
+    [budget, setBudget] = useState(10),
+    [maxReplicas, setMaxReplicas] = useState(10),
+    [slo, setSlo] = useState(2),
+    [result, setResult] = useState<Comparison | null>(null),
+    [validation, setValidation] = useState<Validation | null>(null),
+    [loading, setLoading] = useState(false),
+    [error, setError] = useState("");
+  useEffect(() => {
+    fetch("/api/scenarios")
+      .then(async (r) => {
+        if (!r.ok)
+          throw new Error(
+            "Não foi possível carregar os cenários. Verifique a API.",
+          );
+        return r.json();
+      })
+      .then(setScenarios)
+      .catch((e) => setError(e.message));
+  }, []);
+  async function execute(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setResult(null);
+    setValidation(null);
+    try {
+      const payload = JSON.stringify({
+        scenario,
+        seed,
+        config: {
+          budget_brl: budget,
+          max_replicas: maxReplicas,
+          slo_queue_minutes: slo,
+        },
+      });
+      const r = await fetch("/api/comparisons", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      });
+      const data = await r.json();
+      if (!r.ok)
+        throw new Error(
+          typeof data.detail === "string"
+            ? data.detail
+            : "Parâmetros inválidos. Revise os valores informados.",
+        );
+      setResult(data);
+      try {
+        const v = await fetch("/api/explanations", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: payload,
+        });
+        if (v.ok) setValidation(await v.json());
+      } catch {
+        setValidation(null);
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Falha ao executar simulação.");
+    } finally {
+      setLoading(false);
+    }
+  }
+  const a = result?.results.reactive,
+    b = result?.results.anticipatory,
+    ranking = a && b ? recommend(a, b) : null,
+    rec = a && b ? interpretDecision(validation) : null;
+  return (
+    <div className="shell">
+      <aside className="side">
+        <div className="brand">
+          <div className="logo">✳</div>
+          <div>
+            <strong>
+              peakguard<span>.ai</span>
+            </strong>
+            <small>CAPACITY INTELLIGENCE</small>
+          </div>
+        </div>
+        <div className="navtitle">WORKSPACE</div>
+        <div className="navactive">
+          <span>◫</span> Visão geral <b>01</b>
+        </div>
+        <div className="sidebottom">
+          <div className="status">
+            <i /> AMBIENTE LOCAL
+          </div>
+          <p>
+            Simulações offline
+            <br />
+            Dados sintéticos
+          </p>
+        </div>
+      </aside>
+      <main>
+        <header className="topbar">
+          <div>
+            <span className="crumb">
+              WORKSPACE <b>/</b> CAPACITY PLANNING
+            </span>
+          </div>
+          <div className="topright">
+            <span className="dot" /> SISTEMA LOCAL{" "}
+            <span className="avatar">PG</span>
+          </div>
+        </header>
+        <div className="content">
+          <div className="heading">
+            <div>
+              <div className="kicker">
+                <span /> SIMULATION WORKSPACE
+              </div>
+              <h1>
+                Inteligência de capacidade<span>.</span>
+              </h1>
+              <p>
+                Antecipe riscos de demanda e compare decisões de escalonamento.
+              </p>
+            </div>
+            <div className="tag">
+              ◈ &nbsp; DADOS SINTÉTICOS <span> / </span> CUSTOS ESTIMADOS
+            </div>
+          </div>
+          <div className="workspace">
+            <section className="panel controls">
+              <div className="panelhead">
+                <div>
+                  <span className="eyebrow">CONFIGURAÇÃO</span>
+                  <h2>Nova simulação</h2>
+                </div>
+                <span className="step">01</span>
+              </div>
+              <p className="muted">
+                Defina o cenário e os limites da comparação.
+              </p>
+              <form onSubmit={execute}>
+                <label>
+                  Cenário
+                  <select
+                    value={scenario}
+                    onChange={(e) => setScenario(e.target.value)}
+                    disabled={!scenarios.length}
+                  >
+                    {scenarios.length === 0 ? (
+                      <option>Carregando cenários...</option>
+                    ) : (
+                      scenarios.map((s) => (
+                        <option key={s} value={s}>
+                          {names[s] || s}
+                        </option>
+                      ))
+                    )}
+                  </select>
+                </label>
+                <div className="fieldrow">
+                  <label>
+                    Seed
+                    <input
+                      type="number"
+                      step="1"
+                      value={seed}
+                      onChange={(e) => setSeed(Number(e.target.value))}
+                      required
+                    />
+                  </label>
+                  <label>
+                    Máx. réplicas
+                    <input
+                      type="number"
+                      min="1"
+                      max="1000"
+                      step="1"
+                      value={maxReplicas}
+                      onChange={(e) => setMaxReplicas(Number(e.target.value))}
+                      required
+                    />
+                  </label>
+                </div>
+                <div className="fieldrow">
+                  <label>
+                    Orçamento <small>BRL</small>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={budget}
+                      onChange={(e) => setBudget(Number(e.target.value))}
+                      required
+                    />
+                  </label>
+                  <label>
+                    SLO fila <small>min</small>
+                    <input
+                      type="number"
+                      min="0.1"
+                      step="0.1"
+                      value={slo}
+                      onChange={(e) => setSlo(Number(e.target.value))}
+                      required
+                    />
+                  </label>
+                </div>
+                <button disabled={loading || !scenarios.length}>
+                  {loading ? "Simulando..." : "Executar comparação"}{" "}
+                  <span>↗</span>
+                </button>
+              </form>
+              <div className="controlnote">
+                <span>ⓘ</span> As duas políticas usam a mesma carga e seed.
+                Nenhuma infraestrutura é alterada.
+              </div>
+            </section>
+            <div className="maincol">
+              <div className="sectiontitle">
+                <div>
+                  <span className="eyebrow">ANÁLISE DE CENÁRIO</span>
+                  <h2>Visão de risco</h2>
+                </div>
+                <span className="badge">
+                  {result ? "SIMULAÇÃO CONCLUÍDA" : "AGUARDANDO EXECUÇÃO"}
+                </span>
+              </div>
+              {error && (
+                <div className="error" role="alert">
+                  {error}
+                </div>
+              )}
+              {loading && (
+                <div className="empty" role="status">
+                  <div className="spinner" />
+                  Executando comparação...
+                </div>
+              )}
+              {!result && !loading && !error && (
+                <div className="empty">
+                  <div className="emptyicon">⌁</div>
+                  <strong>Pronto para simular</strong>
+                  <p>
+                    Selecione um cenário e execute a comparação para visualizar
+                    os resultados.
+                  </p>
+                </div>
+              )}
+              {a && b && rec && (
+                <>
+                  <div className="metrics">
+                    <div className="metric">
+                      <span>DEMANDA TOTAL</span>
+                      <strong>{num(a.summary.demand_docs)}</strong>
+                      <small>documentos sintéticos</small>
+                    </div>
+                    <div className="metric">
+                      <span>MAIOR BACKLOG</span>
+                      <strong>
+                        {num(
+                          Math.max(
+                            a.summary.max_backlog_docs,
+                            b.summary.max_backlog_docs,
+                          ),
+                        )}
+                      </strong>
+                      <small>documentos em fila</small>
+                    </div>
+                    <div className="metric">
+                      <span>MENOR CUSTO</span>
+                      <strong>
+                        {money(
+                          Math.min(a.summary.cost_brl, b.summary.cost_brl),
+                        )}
+                      </strong>
+                      <small>estimativa da execução</small>
+                    </div>
+                    <div className="metric">
+                      <span>VIOLAÇÃO DE SLO</span>
+                      <strong>
+                        {num(
+                          Math.min(
+                            a.summary.slo_violation_minutes,
+                            b.summary.slo_violation_minutes,
+                          ),
+                        )}
+                        <em> min</em>
+                      </strong>
+                      <small>melhor resultado</small>
+                    </div>
+                  </div>
+                  <div
+                    className={`recommend ${rec.status === "approved" ? "" : "recommend-warning"}`}
+                  >
+                    <div className="recicon">✳</div>
+                    <div>
+                      <div className="eyebrow">
+                        VALIDAÇÃO DE SEGURANÇA ·{" "}
+                        {rec.status === "approved"
+                          ? "APROVADA"
+                          : rec.status === "abstained"
+                            ? "ABSTENÇÃO"
+                            : "INCOMPLETA"}
+                      </div>
+                      <h3>{rec.title}</h3>
+                      <p>{rec.reason}</p>
+                      <p className="footnote">
+                        Ranking por SLO/custo:{" "}
+                        {ranking?.policy === "tie"
+                          ? "empate"
+                          : labels[ranking?.policy || ""] || "indisponível"}
+                        . Ranking não substitui validação por políticas.
+                      </p>
+                    </div>
+                    <span className="recchip">SEM EXECUÇÃO AUTOMÁTICA</span>
+                  </div>
+                  <Chart
+                    lastTime={a.ticks.at(-1)?.time_minutes ?? 0}
+                    title="Demanda e capacidade"
+                    unit="documentos / minuto"
+                    series={[
+                      {
+                        name: "Demanda sintética",
+                        color: "#f4c66a",
+                        values: a.ticks.map((t) => t.demand_docs_per_minute),
+                      },
+                      {
+                        name: "Capacidade reativa",
+                        color: "#6e92ff",
+                        values: a.ticks.map((t) => t.capacity_docs_per_minute),
+                      },
+                      {
+                        name: "Capacidade antecipativa",
+                        color: "#45d8b4",
+                        values: b.ticks.map((t) => t.capacity_docs_per_minute),
+                      },
+                    ]}
+                  />
+                  <div className="chartgrid">
+                    <Chart
+                      lastTime={a.ticks.at(-1)?.time_minutes ?? 0}
+                      title="Réplicas ativas"
+                      unit="réplicas"
+                      series={[
+                        {
+                          name: "Reativa",
+                          color: "#6e92ff",
+                          values: a.ticks.map((t) => t.active_replicas),
+                        },
+                        {
+                          name: "Antecipativa",
+                          color: "#45d8b4",
+                          values: b.ticks.map((t) => t.active_replicas),
+                        },
+                      ]}
+                    />
+                    <Chart
+                      lastTime={a.ticks.at(-1)?.time_minutes ?? 0}
+                      title="Backlog"
+                      unit="documentos"
+                      series={[
+                        {
+                          name: "Reativa",
+                          color: "#6e92ff",
+                          values: a.ticks.map((t) => t.backlog_docs),
+                        },
+                        {
+                          name: "Antecipativa",
+                          color: "#45d8b4",
+                          values: b.ticks.map((t) => t.backlog_docs),
+                        },
+                      ]}
+                    />
+                  </div>
+                  <section className="panel tablepanel">
+                    <div className="panelhead">
+                      <div>
+                        <span className="eyebrow">ANÁLISE COMPARATIVA</span>
+                        <h3>Políticas lado a lado</h3>
+                      </div>
+                      <span className="unit">VALORES ESTIMADOS</span>
+                    </div>
+                    <div className="tablewrap">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>POLÍTICA</th>
+                            <th>CUSTO TOTAL</th>
+                            <th>CUSTO / 1.000 DOC.</th>
+                            <th>BACKLOG MÁX.</th>
+                            <th>VIOLAÇÃO SLO</th>
+                            <th>PROCESSADOS</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(
+                            [
+                              ["Reativa", a],
+                              ["Antecipativa", b],
+                            ] as [string, Run][]
+                          ).map(([name, r]) => (
+                            <tr key={name}>
+                              <td>
+                                <i
+                                  className={
+                                    name === "Reativa" ? "blue" : "green"
+                                  }
+                                />
+                                {name}
+                              </td>
+                              <td>{money(r.summary.cost_brl)}</td>
+                              <td>{money(r.summary.cost_brl_per_1000_docs)}</td>
+                              <td>{num(r.summary.max_backlog_docs)}</td>
+                              <td>
+                                {num(r.summary.slo_violation_minutes)} min
+                              </td>
+                              <td>{num(r.summary.processed_docs)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <p className="footnote">
+                      SLO: tempo máximo em fila. Resultados dependem das
+                      premissas do simulador; não são medições de produção.
+                    </p>
+                  </section>
+                </>
+              )}
+            </div>
+          </div>
+          <footer>
+            PEAKGUARD AI <span> / </span> CAPACITY PLANNING <span>·</span>{" "}
+            SIMULAÇÃO OFFLINE
+          </footer>
+        </div>
+      </main>
+    </div>
+  );
+}

@@ -1,0 +1,97 @@
+"""API HTTP para simulações locais com dados sintéticos."""
+
+from typing import Any, Literal
+
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, ConfigDict, Field
+
+from .scenarios import SCENARIOS, load_scenario
+from .simulator import Config, compare, simulate
+from .explanations import explain, evidence
+
+
+class SimulationConfig(BaseModel):
+    model_config = ConfigDict(extra='forbid', allow_inf_nan=False, strict=True)
+    tick_minutes: float = Field(1, gt=0, le=1440)
+    capacity_docs_per_minute_per_replica: float = Field(100, gt=0, le=1_000_000)
+    price_brl_per_replica_hour: float = Field(1.2, ge=0, le=1_000_000)
+    min_replicas: int = Field(1, ge=1, le=1000)
+    max_replicas: int = Field(10, ge=1, le=1000)
+    initial_replicas: int = Field(1, ge=1, le=1000)
+    activation_delay_ticks: int = Field(2, ge=0, le=1000)
+    cooldown_ticks: int = Field(2, ge=0, le=1000)
+    forecast_horizon_ticks: int = Field(3, ge=1, le=1000)
+    target_utilization: float = Field(0.8, gt=0, le=1)
+    budget_brl: float = Field(10, ge=0, le=1_000_000_000)
+    slo_queue_minutes: float = Field(2, gt=0, le=1_000_000)
+    base_latency_minutes: float = Field(0.1, ge=0, le=1_000_000)
+
+
+class ComparisonRequest(BaseModel):
+    model_config = ConfigDict(extra='forbid', strict=True)
+    scenario: Literal['stable', 'predictable_peak', 'unexpected_peak', 'wrong_forecast']
+    seed: int = Field(42, ge=-(2**63), le=2**63 - 1)
+    config: SimulationConfig = Field(default_factory=SimulationConfig)
+
+
+class SimulationRequest(ComparisonRequest):
+    policy: Literal['reactive', 'anticipatory'] = 'reactive'
+
+
+class ExplanationRequest(ComparisonRequest):
+    use_llm: bool = False
+
+
+class SimulationResponse(BaseModel):
+    schema_version: int
+    scenario: str
+    seed: int
+    policy: str
+    data_labels: dict[str, str]
+    config: SimulationConfig
+    input: dict[str, list[float]]
+    ticks: list[dict[str, Any]]
+    summary: dict[str, Any]
+
+
+class ComparisonResponse(BaseModel):
+    schema_version: int
+    results: dict[str, SimulationResponse]
+
+
+app = FastAPI(title='PeakGuard AI', description='Simulações sintéticas offline de capacidade e custo.', version='0.2.0')
+
+
+@app.get('/scenarios', response_model=list[str])
+def scenarios():
+    return list(SCENARIOS)
+
+
+def run(request: ComparisonRequest, policy: str | None = None):
+    try:
+        scenario = load_scenario(request.scenario, request.seed)
+        config = Config(**request.config.model_dump())
+        return compare(scenario, config) if policy is None else simulate(scenario, policy, config)
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+
+
+@app.post('/simulations', response_model=SimulationResponse)
+def simulations(request: SimulationRequest):
+    return run(request, request.policy)
+
+
+@app.post('/comparisons', response_model=ComparisonResponse)
+def comparisons(request: ComparisonRequest):
+    return run(request)
+
+
+@app.post('/evidence')
+def read_evidence(request: ComparisonRequest):
+    """Consulta sem persistência; evidências calculadas pelo motor, nunca pelo cliente."""
+    return evidence(run(request))
+
+
+@app.post('/explanations')
+def explanations(request: ExplanationRequest):
+    return explain(run(request), use_llm=request.use_llm)

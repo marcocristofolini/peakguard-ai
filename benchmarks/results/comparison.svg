@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="650" viewBox="0 0 1000 650" role="img" aria-label="Comparação nominal sintética de custos e SLO">
+<rect width="1000" height="650" fill="white"/>
+<g font-family="sans-serif" fill="#182c3b"><text x="30" y="30" font-size="20">P5 — médias das três seeds, previsão ×1 e preço 1,2 BRL/réplica-h</text>
+<text x="30" y="55">Dados sintéticos; valores estimados. Matriz completa: report.json e comparison.md.</text>
+<text x="30" y="80" fill="#3559b5">■ Reativa</text><text x="160" y="80" fill="#16775c">■ Antecipativa</text>
+<text x="30" y="120">Custo estimado (BRL) — eixo inicia em zero</text>
+<text x="45" y="325" font-size="12">stable</text>
+<rect x="70" y="249.60" width="48" height="50.40" fill="#3559b5"/><text x="70" y="239.60" font-size="12">0.480</text>
+<rect x="140" y="249.60" width="48" height="50.40" fill="#16775c"/><text x="140" y="239.60" font-size="12">0.480</text>
+<text x="285" y="325" font-size="12">predictable_peak</text>
+<rect x="310" y="160.00" width="48" height="140.00" fill="#3559b5"/><text x="310" y="150.00" font-size="12">1.333</text>
+<rect x="380" y="186.60" width="48" height="113.40" fill="#16775c"/><text x="380" y="176.60" font-size="12">1.080</text>
+<text x="525" y="325" font-size="12">unexpected_peak</text>
+<rect x="550" y="160.00" width="48" height="140.00" fill="#3559b5"/><text x="550" y="150.00" font-size="12">1.333</text>
+<rect x="620" y="178.20" width="48" height="121.80" fill="#16775c"/><text x="620" y="168.20" font-size="12">1.160</text>
+<text x="765" y="325" font-size="12">wrong_forecast</text>
+<rect x="790" y="249.60" width="48" height="50.40" fill="#3559b5"/><text x="790" y="239.60" font-size="12">0.480</text>
+<rect x="860" y="192.90" width="48" height="107.10" fill="#16775c"/><text x="860" y="182.90" font-size="12">1.020</text>
+<text x="30" y="380">Violação de SLO (minutos) — eixo inicia em zero</text>
+<text x="45" y="585" font-size="12">stable</text>
+<rect x="70" y="560.00" width="48" height="0.00" fill="#3559b5"/><text x="70" y="550.00" font-size="12">0.000</text>
+<rect x="140" y="560.00" width="48" height="0.00" fill="#16775c"/><text x="140" y="550.00" font-size="12">0.000</text>
+<text x="285" y="585" font-size="12">predictable_peak</text>
+<rect x="310" y="420.00" width="48" height="140.00" fill="#3559b5"/><text x="310" y="410.00" font-size="12">2.000</text>
+<rect x="380" y="560.00" width="48" height="0.00" fill="#16775c"/><text x="380" y="550.00" font-size="12">0.000</text>
+<text x="525" y="585" font-size="12">unexpected_peak</text>
+<rect x="550" y="420.00" width="48" height="140.00" fill="#3559b5"/><text x="550" y="410.00" font-size="12">2.000</text>
+<rect x="620" y="420.00" width="48" height="140.00" fill="#16775c"/><text x="620" y="410.00" font-size="12">2.000</text>
+<text x="765" y="585" font-size="12">wrong_forecast</text>
+<rect x="790" y="560.00" width="48" height="0.00" fill="#3559b5"/><text x="790" y="550.00" font-size="12">0.000</text>
+<rect x="860" y="560.00" width="48" height="0.00" fill="#16775c"/><text x="860" y="550.00" font-size="12">0.000</text>
+</g></svg>

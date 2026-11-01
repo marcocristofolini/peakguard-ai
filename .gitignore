@@ -13,3 +13,6 @@ coverage/
 *.sqlite
 *.sqlite3
 .DS_Store
+local/p6/.kubeconfig
+*.egg-info/
+*.tsbuildinfo

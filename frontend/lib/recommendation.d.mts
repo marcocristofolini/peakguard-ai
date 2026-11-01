@@ -1,0 +1,1 @@
+export function recommend(a: {summary: {slo_violation_minutes: number; cost_brl: number; max_backlog_docs: number}}, b: {summary: {slo_violation_minutes: number; cost_brl: number; max_backlog_docs: number}}): {policy: string; reason: string};
