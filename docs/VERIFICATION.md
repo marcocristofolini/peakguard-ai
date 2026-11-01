@@ -33,6 +33,20 @@ Exemplo de rejeição do roteiro executado: proposta injetada `reactive`, rejei�
 - Chromium headless acionou a interface nos dois cenários, capturou `docs/p7-dashboard.png` e `docs/p7-abstention.png` e não encontrou overflow horizontal a 390 px.
 - Auditoria focal: recomendações não autorizam ações, custos permanecem estimados, configurações de produção (autenticação, limites de requisições e segredos) ainda precisam de projeto próprio. Sem alegação de auditoria independente de segurança.
 
+## Atualização de autenticação, dependências e cluster (2026-11-01)
+
+- API: middleware em `local` restringe IP loopback; em `token`, exige Bearer em todas as rotas. Testes incluem credenciais inválidas, ausentes, válidas e falha fechada de configuração. Modo token não substitui TLS, rate limiting ou autenticação do dashboard público.
+- A dependência de testes `httpx2` foi adicionada conforme orientação do Starlette. Com `PYTHONPATH=/tmp/peakguard-p7-clean python3 -m pytest -q` e `httpx2` instalado, **108 testes aprovados, sem o aviso anterior de depreciação**.
+- Frontend: proxy Next envia token de serviço apenas se configurado em `PEAKGUARD_BACKEND_TOKEN`; 7 testes e build Next.js foram verificados após a mudança.
+- Kubernetes: novo cluster Kind foi criado; KEDA 2.21.0 e OpenCost chart 2.5.33 foram instalados com Helm e ficaram Ready. `ScaledObject/documents-keda` Ready/Active com HPA separado; OpenCost pod 2/2 Ready. O uso de Kubernetes 1.37 ultrapassa a matriz testada declarada do KEDA 2.21 (1.34–1.36).
+- Nenhuma fatura ou economia cloud foi medida; relatórios OpenCost dependem das métricas disponíveis no Prometheus local.
+
+## Archify e verificações finais da atualização
+
+- Arquitetura em `.archify/architecture-peakguard-ai-20261101-112333/peakguard-architecture.html` gerada de evidências do commit `e8f76f6`. Gates Archify: `validate`, `deliver`, `check` e `browser-check` aprovados com Chromium local. Foi registrada recomendação de revisão perceptual de uma rota com quatro curvas; a topologia não foi alterada.
+- Prévia real capturada em `docs/peakguard-archify.png` pelo Chromium. Os componentes do cluster de demonstração são distintos do motor/LLM.
+- KEDA e OpenCost são instalações locais do cluster `peakguard-p6`; Helm marcou ambos os releases como `deployed` e os pods como `Running/Ready`. ScaledObject `documents-keda` com status Ready e HPA dedicado. Sem aferição real de gasto cloud.
+
 ## Limites da entrega
 
 Diagramas refletem o código: explicações por API/terminal, dashboard comparativo, demonstração Kind separada e nenhum caminho da IA para infraestrutura. README foi verificado por instalação nova, CLI instalada, testes e execução no navegador; isso não substitui teste por pessoa externa em outro sistema. Custos são estimados, inclusive aqueles calculados sobre réplicas observadas. Evidências P6 são históricas, não métricas de cluster atual.

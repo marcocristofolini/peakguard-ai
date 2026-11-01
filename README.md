@@ -1,5 +1,9 @@
 # PeakGuard AI
 
+[![Arquitetura Archify — visão geral](docs/peakguard-archify.png)](.archify/architecture-peakguard-ai-20261101-112333/peakguard-architecture.html)
+
+[Explorar a arquitetura interativa (HTML Archify)](.archify/architecture-peakguard-ai-20261101-112333/peakguard-architecture.html) · [Diagrama explicado](docs/ARCHITECTURE.md) · [Segurança e autenticação](docs/SECURITY.md)
+
 Demonstrador local de capacidade, confiabilidade e FinOps para processamento de documentos. Compara escalonamento reativo e antecipativo sob a mesma carga, expõe risco de SLO e custo estimado e permite uma seleção assistida por LLM sujeita a validação determinística.
 
 Projeto independente: não usa sistemas ou dados internos da Contabilizei. Dados de demanda são **sintéticos**; simulações e custos são **estimados**. Há métricas **observadas** de um ensaio Kind local, sem alegação de economia em produção.
@@ -66,6 +70,10 @@ curl -fsS http://127.0.0.1:8000/explanations -H 'Content-Type: application/json'
 python3 -m peakguard compare wrong_forecast --seed 42 --output /tmp/peakguard-comparison.json
 ```
 
+## Autenticação da API
+
+Por padrão, `PEAKGUARD_AUTH_MODE=local` permite apenas clientes loopback. Para exigir autenticação Bearer em todas as rotas, defina `PEAKGUARD_AUTH_MODE=token` e um `PEAKGUARD_API_TOKEN` aleatório com pelo menos 32 caracteres. O proxy Next pode usar `PEAKGUARD_BACKEND_TOKEN` no servidor, mas **o dashboard não autentica usuários finais**; não o publique sem proteção de acesso no gateway. Consulte [SECURITY.md](docs/SECURITY.md) para exemplos, TLS e limites.
+
 ## IA, segurança e modo offline
 
 O padrão é `offline`, sem chave ou LLM. Para habilitar IA, configure `OPENAI_API_KEY`, `PEAKGUARD_LLM_MODEL` com modelo compatível com Structured Outputs e `PEAKGUARD_LLM_ENABLED=true` no ambiente da API; acrescente `"use_llm":true` ao corpo. `.env.example` contém nomes, não valores reais; o arquivo não é carregado automaticamente. Chamadas habilitadas podem ser cobradas pelo provedor.
@@ -104,7 +112,7 @@ python3 local/p6/experiment.py
 bash local/p6/down.sh
 ```
 
-O ensaio P6 observado processou 1.120 documentos e escalou de 1 para 4 pods; o cluster foi removido após a coleta. Evidências estão em `evidence/p6/`. Filas por pod são voláteis; custos sobre réplicas observadas continuam sendo estimados. OpenCost e KEDA não foram instalados.
+O ensaio P6 original processou 1.120 documentos e escalou de 1 para 4 pods. Suas evidências foram preservadas em `evidence/p6/`. Posteriormente, recriei o Kind local e instalei **KEDA 2.21.0 e OpenCost 1.121.3 (chart 2.5.33)**, com um ScaledObject isolado e Prometheus local. Consulte [Kubernetes](docs/KUBERNETES.md) para comandos e limites; custos seguem estimados. O cluster local está ativo nesta verificação.
 
 ## Limitações
 

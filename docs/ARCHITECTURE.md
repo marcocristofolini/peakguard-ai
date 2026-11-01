@@ -1,5 +1,7 @@
 # Arquitetura implementada
 
+**Diagrama Archify validado:** [abrir versão interativa](../.archify/architecture-peakguard-ai-20261101-112333/peakguard-architecture.html) — [prévia PNG](peakguard-archify.png). A visão separa o fluxo de simulação/autorização do experimento Kind, sem ligação de execução automática. Referências de código estão incorporadas nos nós.
+
 ```mermaid
 flowchart LR
     Browser[Dashboard React / TypeScript] --> Next[Next.js: proxies de cenários e comparação]
@@ -31,7 +33,7 @@ flowchart LR
     Capture --> Cost[Integração de réplicas prontas: custo estimado]
 ```
 
-Kind é uma demonstração separada, sob `local/p6`, não um destino de alterações feitas pela API. Não há banco, broker, autenticação de produção, KEDA, OpenCost, cloud ou framework de agentes.
+Kind é uma demonstração separada sob `local/p6`, nunca um destino de ações do agente. O cluster possui HPA nativo e um ScaledObject KEDA em implantação distinta, além de OpenCost conectado ao Prometheus local. Não há banco, broker, cloud paga ou framework multiagente.
 
 ## Fronteiras e escolhas
 
@@ -48,7 +50,7 @@ O ranking da interface minimiza violações e depois custo, mas não equivale à
 
 Fila central fluida no motor difere das filas por pod. Espera tem resolução de um tick; não há percentis de atendimento. Previsão vem de calendário declarado, não de modelo treinado. A política antecipativa real não foi implantada no Kind. Custos são sintéticos/estimados, inclusive quando derivados de réplicas observadas. IA não estima infraestrutura externa nem autoriza alterações.
 
-A API é destinada a localhost: sem autenticação, rate limiting ou proteção para publicação. O proxy usa backend configurado no servidor e não destinos fornecidos pelo usuário. Não exponha publicamente a demonstração como serviço de produção. Auditoria é retornada no JSON, sem persistência automática. Filas Kubernetes podem perder documentos em reinícios/reduções. Testes de segurança são delimitados; não equivalem a uma auditoria independente.
+A API tem modo local (IP loopback) e modo Bearer token obrigatório, com falha fechada se faltar configuração. O proxy Next usa segredo somente do servidor; o próprio dashboard **não autentica usuários externos**. Não há rate limiting nem TLS embutido. Para implantação pública, aplicar autenticação no gateway/dashboard, TLS e controles adicionais; detalhes em [SECURITY.md](SECURITY.md). Auditoria é retornada no JSON, sem persistência automática. Filas Kubernetes podem perder documentos em reinícios/reduções. Testes de segurança são delimitados; não equivalem a uma auditoria independente.
 
 ## Revisão de complexidade
 
