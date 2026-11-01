@@ -16,3 +16,10 @@ coverage/
 local/p6/.kubeconfig
 *.egg-info/
 *.tsbuildinfo
+
+# Artefatos temporários de validação do Archify
+.archify/**/review-*/
+.archify/**/*.browser-check.json
+.archify/**/*.delivery.json
+.archify/**/*.finalize.json
+.archify/**/*.finalize-summary.json

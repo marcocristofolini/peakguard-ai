@@ -1,16 +1,15 @@
 # STATUS — handoff Codex
-- Fases: P0–P7 entregues. P2–P7 documentadas no roadmap e nos planos Superpowers.
-- Ambiente: WSL2 Ubuntu 24.04, Python 3.12, Next.js 16.4.3; sem venv nem cloud paga.
-- Recursos: simulador e políticas reativa/antecipativa, API FastAPI, dashboard, LLM opcional validado, benchmark e ensaio Kind separado.
-- Dados: demanda sintética; custos estimados; evidências P6 são observações históricas de um cluster local já desmontado.
-- IA: modo offline demonstrado; SDK com HTTP simulado testado; nenhuma chamada paga real nesta entrega.
-- Segurança: nenhuma ferramenta de execução de infraestrutura; aprovação humana exigida; sem autenticação/rate limiting de produção.
-- P7: README, diagramas, roteiro de cinco minutos, benchmarks e screenshots reais registrados.
-- Pós-P7: dashboard agora separa ranking de aprovação determinística via `/explanations`; mostra abstenção e falha de validação.
-- Python: 103 testes aprovados; 1 aviso preexistente Starlette/TestClient.
-- Frontend: 7 testes aprovados, Next.js build aprovado, npm audit com 0 vulnerabilidades.
-- Integração: pico previsível aprova anticipatory; pico inesperado abstém; `execution_allowed=false` em ambos.
-- Visual: Chromium real, capturas `docs/p7-dashboard.png` e `docs/p7-abstention.png`, mobile 390px sem overflow.
-- Estáticos: compileall, bash -n, git diff --check sem erros.
-- Benchmark: 108 comparações reproduzíveis, sem alegação de economia real.
-- Próximo: ensaiar roteiro; revisão externa de segurança antes de produção. Repositório permanece privado; sem push.
+- Fases P0–P7 concluídas; revisão complementar de 2026-11-01 incorporada.
+- WSL Ubuntu 24.04; FastAPI, Next.js 16.4.3, simulador sintético, LLM opcional e benchmarks.
+- Autenticação API: modo local limitado a loopback; modo token requer Bearer em todas as rotas; sem credenciais no Git.
+- Segurança: dashboard Next não autentica usuários remotos; deployment público requer IdP/gateway, TLS, rate limit e revisão independente.
+- Depreciação TestClient: `httpx2` no extra dev; 108 testes Python sem aviso anterior.
+- Frontend: 7 testes aprovados e build Next.js verificado.
+- Helm local: KEDA 2.21.0 (pods Ready) e OpenCost chart 2.5.33/app 1.121.3 (pod 2/2 Ready).
+- KEDA: ScaledObject `documents-keda` e HPA separado, sem disputar HPA original; estado Ready/Active.
+- Kubernetes Kind v1.37.0 fica fora da matriz declarada de testes KEDA 2.21 (1.34–1.36).
+- OpenCost usa Prometheus local; custo e tarifas são estimados, nunca faturamento real.
+- Arquitetura interativa HTML e PNG criados com Archify 3.1, 4 gates automáticos aprovados.
+- Artefatos: `.archify/architecture-peakguard-ai-20261101-112333/`, `docs/peakguard-archify.png`.
+- Cloud e implantação externa: não executadas; LLM real ainda não foi testado com chave externa.
+- Próximo: usar roteiro docs/DEMO.md e avaliar publicação externa com controle de acesso.

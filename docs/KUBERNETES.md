@@ -30,7 +30,7 @@ A carga nominal é controlada: 20 segundos a 1 documento/s, 90 segundos a 12/s e
 
 HPA `autoscaling/v2`, mínimo 1 e máximo 4, busca CPU média de 70% do request de 100m (70m por pod). Não é 70% do limite de 500m. Metrics-server fornece CPU; Prometheus coleta a aplicação, sem servir como fonte do HPA. A estabilização de redução é de 180 segundos. Readiness e atualização das métricas introduzem atrasos reais.
 
-Escolha HPA: demonstra reação à carga com recursos Kubernetes nativos. KEDA exigiria instalação de operador e outra integração de métricas, sem necessidade para este ensaio. OpenCost não foi instalado: Kind não possui preço real atribuível ao pod; uma tarifa sintética explícita evita apresentar custo inventado como observado.
+Na execução original, o HPA nativo demonstrou a reação à carga. Em 2026-11-01, KEDA e OpenCost foram instalados **posteriormente** no mesmo cluster local. O HPA original continua controlando `documents`. KEDA controla uma implantação **separada**, `documents-keda`, por CPU, sem disputar o HPA antigo. OpenCost é um serviço adicional para análise de custos estimados: valores locais não representam faturas cloud.
 
 Prometheus descobre todos os pods da aplicação no namespace e lê `/metrics` a cada 5 segundos. Seu RBAC permite apenas get/list/watch de pods nesse namespace. São exportados contadores de admitidos, processados e rejeitados, tamanho da fila e máximo acumulado de espera em segundos. O máximo é acumulado por processo; não é percentil. Throughput é `sum(rate(documents_processed_total[30s]))`, em documentos/s. Fila não inclui o item em processamento.
 
@@ -55,3 +55,32 @@ Evidência em `evidence/p6/observed.json`: 1.120 admissões e 1.120 processament
 A integração de réplicas prontas resultou em BRL 0,164768 **estimados**, sob tarifa arbitrária de BRL 1,2/réplica-hora. Na referência simulada de 130 segundos, o reativo teve backlog máximo de 210 documentos e custo estimado BRL 0,133333; o antecipativo teve backlog zero e BRL 0,123333. Ambos processaram os 1.120 documentos simulados, com zero minutos em violação do SLO de fila de dois minutos. Os horizontes de custo e mecanismos são distintos; não subtrair esses valores como ganho real.
 
 Os quatro pods observados contrastam com o pré-escalonamento idealizado, mas esta execução não testa uma política antecipativa real no Kubernetes. Autoscaling observado valida funcionamento do HPA, não equivalência ao controlador simulado. Erros, indisponibilidade de métricas e ausência de escala não são tratados como sucesso. O setup foi reaplicado com sucesso no mesmo cluster; a limpeza foi exercitada após preservar os resultados.
+
+## KEDA e OpenCost instalados após o ensaio original (2026-11-01)
+
+Instalação comprovada no cluster Kind `peakguard-p6`:
+- KEDA Helm chart `2.21.0`, operador, metrics API server e admission webhook em `keda` (pods Ready).
+- `ScaledObject/documents-keda` com trigger CPU 70%, limites 1–3, estado Ready/Active, HPA `keda-hpa-documents-keda`. A implantação `documents-keda` é isolada da implantação `documents` do ensaio original.
+- OpenCost Helm chart `2.5.33`, aplicação `1.121.3` no namespace `opencost`, pod 2/2 Ready; Prometheus `peakguard-p6/prometheus:9090`. O Prometheus desta demo não inclui, necessariamente, todas as métricas de kube-state-metrics utilizadas por relatórios completos do OpenCost. Custo nominal é estimado.
+- O Kind atual usa Kubernetes **v1.37.0**; KEDA 2.21 foi documentado como testado com **1.34–1.36**. Embora tenha iniciado e reconciliado o ScaledObject nesta execução, 1.37 fica fora da matriz de compatibilidade declarada. Para demonstrações compatíveis, ajuste a versão do nó Kind.
+
+Instalação/reinstalação reprodutível (Docker/Kind, Helm 3 e internet):
+
+```bash
+bash local/p6/up.sh
+bash local/p6/install-keda-opencost.sh
+export KUBECONFIG="$PWD/local/p6/.kubeconfig"
+kubectl -n keda get pods
+kubectl -n peakguard-p6 get scaledobject documents-keda
+kubectl -n peakguard-p6 get hpa
+kubectl -n opencost get pods
+```
+
+Visualize o OpenCost localmente (em terminal separado):
+
+```bash
+kubectl -n opencost port-forward svc/opencost 19090:9090
+# UI: http://127.0.0.1:19090
+```
+
+O OpenCost não equivale a uma fatura de cloud: Kind não tem preços faturados. O ScaledObject KEDA é uma demonstração separada; não prova que o sistema antecipativo simulado controla o cluster. Encerre port-forward com Ctrl+C. Para remover **todo o cluster dedicado**, use `bash local/p6/down.sh` quando terminar os testes.
