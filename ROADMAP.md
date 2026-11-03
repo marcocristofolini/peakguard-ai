@@ -105,5 +105,14 @@ P0–P7 estão concluídas. A segunda rodada aprofunda o rigor técnico; a espec
 - P13 (concluída) — Calibração do simulador contra medições do Kind local.
 - P14 (concluída) — Apresentação v2 com os novos resultados.
 
+## Fases v3 (P15–P19)
+Derivadas dos "Próximos passos" do README, em ordem de valor: primeiro explicar o resultado negativo da calibração, depois levar a antecipativa ao cluster. Especificação em `docs/prompts/`.
+
+- P15 — Atraso de decisão do controlador separado do startup; recalibrar com `evidence/p13/observed.json`, sem subir cluster.
+- P16 — Paridade da API e do dashboard: chegadas estocásticas, percentil e campos novos do `Config`.
+- P17 — Antecipativa no Kubernetes: KEDA com gatilho `cron` do calendário declarado × HPA reativo no Kind, 3 repetições.
+- P18 — Chamada real à LLM, uma única vez, quando houver chave.
+- P19 — Apresentação v3 com os resultados de P15–P18.
+
 ## Contrato de trabalho
 Cada execução implementa só uma fase pedida, testa mudanças relacionadas e atualiza docs/STATUS.md (até 20 linhas). Não fazer push nem deploy automaticamente. Não refatorar áreas não relacionadas. Se o simulador mudar, regenerar `benchmarks/results`: o CI (`ci-python`) compara os resultados commitados. Ao encerrar, responder em até oito linhas com entrega, arquivos, comandos de teste e bloqueios.
