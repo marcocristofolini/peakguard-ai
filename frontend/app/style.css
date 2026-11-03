@@ -412,12 +412,42 @@ button:disabled {
   margin-bottom: 13px;
 }
 .plot {
+  position: relative;
   height: 190px;
   margin-top: 20px;
 }
 .plot svg {
   width: 100%;
   height: 100%;
+}
+/* Rótulos fora do SVG esticado: tamanho fixo e legível em qualquer largura. */
+.axes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.tick {
+  position: absolute;
+  color: #8194a4;
+  font-size: 11px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+/* Alinhado à direita no início da área útil (x = 40 do viewBox); em cards
+   estreitos o rótulo avança sobre o padding do painel em vez de cortar. */
+.tick.y {
+  right: calc(100% - 40 / 760 * 100% + 12px);
+  transform: translateY(-50%);
+}
+.tick.x {
+  bottom: 0;
+}
+.tick.x.start {
+  left: calc(40 / 760 * 100%);
+}
+.tick.x.end {
+  right: calc(20 / 760 * 100%);
 }
 .legend {
   display: flex;

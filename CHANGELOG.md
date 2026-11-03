@@ -6,6 +6,7 @@ Entregas por fase. O histórico Git não é reescrito; os commits desta rodada (
 - README e `docs/DEMO.md` com resultados P9–P13, roteiro de 5 minutos, três perguntas técnicas e "Próximos passos".
 - `local/p14/results.py` gera `evidence/p14/results.json` (reproduzível, conferido por `tests/test_p14.py`).
 - Capturas reais do dashboard: `docs/p14-fiscal.png` e `docs/p14-pareto.png`; rótulos dos cenários fiscais e eixo zero no gráfico de Pareto.
+- Eixos com valores redondos e inteiros (`frontend/lib/axis.mjs`, com testes) e rótulos em HTML, legíveis em qualquer largura; capturas refeitas a partir do build de produção (Docker Compose), com o Pareto no cenário `unexpected_peak` citado no roteiro.
 
 ## P13 — Calibração contra o Kind
 - Kind recriado em Kubernetes v1.36.4; 3 repetições em `evidence/p13/` (capacidade 294 doc/min por réplica, startup mediano de 12 s).
