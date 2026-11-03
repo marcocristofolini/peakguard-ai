@@ -4,6 +4,7 @@ import math
 from collections import deque
 from dataclasses import asdict, dataclass
 
+from .budget import empirical_quantile
 from .scenarios import Scenario
 
 POLICIES = ("reactive", "anticipatory")
@@ -43,10 +44,14 @@ class Config:
             raise ValueError("target_utilization deve estar em (0, 1].")
 
 
-def _propose(policy, scenario, tick, previous_demand, backlog, provisioned, config):
+def _propose(policy, scenario, tick, previous_demand, backlog, provisioned, config, risk_appetite=None):
     unit = config.capacity_docs_per_minute_per_replica
     if policy == "anticipatory":
         forecast = max(scenario.predicted_docs_per_minute[tick:tick + config.forecast_horizon_ticks])
+        if risk_appetite is not None and tick:
+            # Quantil empírico causal: só resíduos (real − previsto) de ticks já observados.
+            residuals = [a - p for a, p in zip(scenario.demand_docs_per_minute[:tick], scenario.predicted_docs_per_minute[:tick])]
+            forecast = max(0.0, forecast + empirical_quantile(residuals, risk_appetite))
         return math.ceil(forecast / (unit * config.target_utilization))
     utilization = previous_demand / (provisioned * unit)
     if utilization > config.target_utilization or backlog > 0:
@@ -119,9 +124,13 @@ def _validate_numerics(scenario: Scenario, config: Config) -> None:
         raise ValueError("Limites numéricos excedidos pela combinação de parâmetros.") from error
 
 
-def simulate(scenario: Scenario, policy: str, config: Config) -> dict:
+def simulate(scenario: Scenario, policy: str, config: Config, risk_appetite: float | None = None) -> dict:
+    """risk_appetite: quantil (0,1) dos resíduos de previsão somado ao lookahead antecipativo; None = sem ajuste."""
     if policy not in POLICIES:
         raise ValueError(f"política desconhecida: {policy}")
+    if risk_appetite is not None and (isinstance(risk_appetite, bool) or not isinstance(risk_appetite, (int, float))
+                                      or not 0 < risk_appetite < 1):
+        raise ValueError("risk_appetite deve estar em (0, 1).")
     _validate_numerics(scenario, config)
     duration = len(scenario.demand_docs_per_minute)
     per_replica_tick = config.price_brl_per_replica_hour * config.tick_minutes / 60
@@ -141,7 +150,7 @@ def simulate(scenario: Scenario, policy: str, config: Config) -> dict:
             events.append("activation")
         pending = [(ready, count) for ready, count in pending if ready > tick]
         provisioned = active + sum(count for _, count in pending)
-        proposed = _propose(policy, scenario, tick, previous_demand, backlog, provisioned, config)
+        proposed = _propose(policy, scenario, tick, previous_demand, backlog, provisioned, config, risk_appetite)
         target, limits = _safe_target(proposed, previous_demand, backlog, spent, duration - tick, config)
         events.extend(limits)
         if target != provisioned:
@@ -199,6 +208,7 @@ def simulate(scenario: Scenario, policy: str, config: Config) -> dict:
     processed_total = math.fsum(t["processed_docs"] for t in ticks)
     return {
         "schema_version": 1, "scenario": scenario.name, "seed": scenario.seed, "policy": policy,
+        "risk_appetite": risk_appetite,
         "data_labels": {"demand": "synthetic", "forecast": "predicted", "simulation": "estimated",
                         "cost": "estimated", "observed": "none; no external infrastructure measurements"},
         "config": asdict(config),
@@ -221,6 +231,6 @@ def simulate(scenario: Scenario, policy: str, config: Config) -> dict:
     }
 
 
-def compare(scenario: Scenario, config: Config) -> dict:
+def compare(scenario: Scenario, config: Config, risk_appetite: float | None = None) -> dict:
     """Executa políticas sobre a mesma realização imutável e a mesma configuração."""
-    return {"schema_version": 1, "results": {policy: simulate(scenario, policy, config) for policy in POLICIES}}
+    return {"schema_version": 1, "results": {policy: simulate(scenario, policy, config, risk_appetite) for policy in POLICIES}}
