@@ -2,6 +2,10 @@
 
 Entregas por fase. O histórico Git não é reescrito; os commits desta rodada (P8–P14) seguem Conventional Commits. Dados são sintéticos e valores estimados, salvo indicação de métricas observadas no Kind local.
 
+## P17 — Antecipativa no Kubernetes
+- `manifest_diff(..., schedule_start=...)` e `POST /manifest-diff` com `schedule_start`: ScaledObject com gatilho `cron` do KEDA derivado do calendário previsto e CPU como piso; nada aplicado pela API.
+- `local/p17/` (instalação só do KEDA e experimento): HPA reativo × KEDA cron no Kind local, 3 repetições cada. Backlog máximo observado 166 → 3,3 doc com +32% de réplicas-minuto (custo hipotético); detalhes em `docs/KUBERNETES.md`.
+
 ## Interface — investigação de capacidade
 - Dashboard redesenhado como investigação: cenários viram perguntas, o relatório mostra o comando, um log de eventos derivado das séries (`frontend/lib/investigation.mjs`, com testes), o achado e o veredito do validador.
 - Base escura com brilho violeta, gradiente violeta→magenta só em ações e destaques, cores fixas por grandeza (demanda, reativa, antecipativa, risco) e tipografia Ubuntu/Ubuntu Mono.
