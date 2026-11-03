@@ -102,7 +102,7 @@ P0–P7 estão concluídas. A segunda rodada aprofunda o rigor técnico; a espec
 - P10 (concluída) — Error budget, burn rate multi-janela, custo por minuto de budget preservado e previsão por percentil com MAE/MAPE.
 - P11 (concluída) — Fronteira de Pareto custo × SLO e modelo FinOps estendido (requests, bin-packing, ocioso, spot, scale-to-zero).
 - P12 (concluída, exceto chamada real à LLM: sem chave) — Governança: validador como policy-as-code, diff de manifesto para PR e checker de fidelidade da explicação da LLM.
-- P13 — Calibração do simulador contra medições do Kind local.
+- P13 (concluída) — Calibração do simulador contra medições do Kind local.
 - P14 — Apresentação v2 com os novos resultados.
 
 ## Contrato de trabalho

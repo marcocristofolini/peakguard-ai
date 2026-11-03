@@ -1,0 +1,102 @@
+{
+ "labels": {
+  "observed": "observed local Kind cluster",
+  "simulation": "estimated",
+  "load": "synthetic",
+  "delay": "estimated via Little (backlog/throughput)",
+  "cost": "hypothetical"
+ },
+ "kubernetes_server_version": "v1.36.4",
+ "measurements": {
+  "service_rate_docs_per_second_per_replica": {
+   "median": 4.9,
+   "per_repetition": [
+    5.0,
+    4.9,
+    4.9
+   ],
+   "saturated_samples": [
+    29,
+    24,
+    26
+   ]
+  },
+  "startup_seconds": {
+   "median": 12.0,
+   "min": 3.0,
+   "max": 13.0,
+   "pods": 9
+  },
+  "first_scale_after_load_seconds": [
+   32.750821590423584,
+   21.098294734954834,
+   28.36960768699646
+  ]
+ },
+ "parameters": {
+  "old": {
+   "capacity_docs_per_minute_per_replica": 300.0,
+   "activation_delay_ticks": 2
+  },
+  "calibrated": {
+   "capacity_docs_per_minute_per_replica": 294.0,
+   "activation_delay_ticks": 1
+  },
+  "tick_seconds": 10,
+  "policy": "reactive",
+  "max_replicas": 4
+ },
+ "mae_per_repetition": [
+  {
+   "repetition": 0,
+   "old": {
+    "backlog_docs": 48.0,
+    "throughput_docs_per_second": 3.868255001366499,
+    "delay_seconds_little": 8.40404334342992
+   },
+   "calibrated": {
+    "backlog_docs": 54.6875,
+    "throughput_docs_per_second": 4.19394983283652,
+    "delay_seconds_little": 8.897240622341485
+   }
+  },
+  {
+   "repetition": 1,
+   "old": {
+    "backlog_docs": 28.333333333333332,
+    "throughput_docs_per_second": 3.228791295393773,
+    "delay_seconds_little": 5.866505512213977
+   },
+   "calibrated": {
+    "backlog_docs": 26.533333333333335,
+    "throughput_docs_per_second": 3.198119417013629,
+    "delay_seconds_little": 4.502982309968967
+   }
+  },
+  {
+   "repetition": 2,
+   "old": {
+    "backlog_docs": 33.1875,
+    "throughput_docs_per_second": 3.0149443843210717,
+    "delay_seconds_little": 6.331123492371932
+   },
+   "calibrated": {
+    "backlog_docs": 42.75,
+    "throughput_docs_per_second": 3.502850306913331,
+    "delay_seconds_little": 7.52296022706581
+   }
+  }
+ ],
+ "mae_mean": {
+  "old": {
+   "backlog_docs": 36.50694444444444,
+   "throughput_docs_per_second": 3.3706635603604482,
+   "delay_seconds_little": 6.867224116005278
+  },
+  "calibrated": {
+   "backlog_docs": 41.32361111111111,
+   "throughput_docs_per_second": 3.631639852254493,
+   "delay_seconds_little": 6.974394386458754
+  }
+ }
+}
