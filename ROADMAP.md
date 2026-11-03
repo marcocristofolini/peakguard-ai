@@ -101,7 +101,7 @@ P0–P7 estão concluídas. A segunda rodada aprofunda o rigor técnico; a espec
 - P9 (concluída) — Cenários do calendário fiscal brasileiro (sintéticos), chegadas estocásticas, multi-seed com IC 95% e checagem pela Lei de Little.
 - P10 (concluída) — Error budget, burn rate multi-janela, custo por minuto de budget preservado e previsão por percentil com MAE/MAPE.
 - P11 (concluída) — Fronteira de Pareto custo × SLO e modelo FinOps estendido (requests, bin-packing, ocioso, spot, scale-to-zero).
-- P12 — Governança: validador como policy-as-code, diff de manifesto para PR e checker de fidelidade da explicação da LLM.
+- P12 (concluída, exceto chamada real à LLM: sem chave) — Governança: validador como policy-as-code, diff de manifesto para PR e checker de fidelidade da explicação da LLM.
 - P13 — Calibração do simulador contra medições do Kind local.
 - P14 — Apresentação v2 com os novos resultados.
 

@@ -1,0 +1,6 @@
+# Regras do validador determinístico (policy-as-code). A IA nunca altera este arquivo.
+version: 1
+replicas: {min: 1, max: 1000}      # limites absolutos aceitos para qualquer execução proposta
+budget_brl_max: 1000000000         # teto de orçamento (BRL); vale o menor entre este e o da execução
+slo: {violation_minutes_max: 0}    # minutos de violação de SLO tolerados
+evidence: {min_policy_claims: 1}   # claims mínimas que citam a política proposta
