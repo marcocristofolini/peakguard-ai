@@ -1,5 +1,10 @@
 # PeakGuard AI
 
+[![ci-python](https://github.com/marcocristofolini/peakguard-ai/actions/workflows/ci-python.yml/badge.svg)](https://github.com/marcocristofolini/peakguard-ai/actions/workflows/ci-python.yml)
+[![ci-frontend](https://github.com/marcocristofolini/peakguard-ai/actions/workflows/ci-frontend.yml/badge.svg)](https://github.com/marcocristofolini/peakguard-ai/actions/workflows/ci-frontend.yml)
+[![codeql](https://github.com/marcocristofolini/peakguard-ai/actions/workflows/codeql.yml/badge.svg)](https://github.com/marcocristofolini/peakguard-ai/actions/workflows/codeql.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 [![Arquitetura Archify — visão geral](docs/peakguard-archify.png)](.archify/architecture-peakguard-ai-20261101-112333/peakguard-architecture.html)
 
 [Explorar a arquitetura interativa (HTML Archify)](.archify/architecture-peakguard-ai-20261101-112333/peakguard-architecture.html) · [Diagrama explicado](docs/ARCHITECTURE.md) · [Segurança e autenticação](docs/SECURITY.md)
