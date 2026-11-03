@@ -1,13 +1,13 @@
 # STATUS — handoff
-- Fases P0–P7 concluídas; próxima rodada P8–P14 especificada em `docs/prompts/` (ver ROADMAP).
+- Fases P0–P8 concluídas; P9–P14 especificadas em `docs/prompts/` (ver ROADMAP).
 - WSL Ubuntu 24.04; FastAPI, Next.js 16.4.3, simulador sintético, LLM opcional e benchmarks.
 - 2026-11-03: dependências atualizadas pelo Dependabot (FastAPI 0.162, Pydantic 2.14, openai 3.42, React 19.3, TypeScript 7); 108 testes Python, 7 do frontend, build e `npm audit` (0 vulnerabilidades) aprovados; benchmarks idênticos.
 - GitHub: repositório público, MIT, CI (`ci-python`, `ci-frontend`), CodeQL, dependency-review, Dependabot mensal, ruleset na `main` exigindo `test` e `build`.
 - Autenticação API: modo local limitado a loopback; modo token requer Bearer em todas as rotas; sem credenciais no Git.
 - Segurança: dashboard Next não autentica usuários remotos; deployment público requer IdP/gateway, TLS, rate limit e revisão independente.
-- Kubernetes local: KEDA 2.21.0 e OpenCost 1.121.3 (chart 2.5.33) verificados em Kind v1.37.0, fora da matriz testada do KEDA 2.21 (1.34–1.36); fixar v1.36 é item da P8.
+- Kubernetes local: KEDA 2.21.0 e OpenCost 1.121.3 (chart 2.5.33) verificados em Kind v1.37.0, fora da matriz testada do KEDA 2.21 (1.34–1.36); `up.sh` agora fixa v1.36.4 (P8), ainda não recriado/verificado.
 - OpenCost usa Prometheus local; custo e tarifas são estimados, nunca faturamento real.
 - Arquitetura interativa (Archify 3.1): `.archify/architecture-peakguard-ai-20261101-112333/`, `docs/peakguard-archify.png`.
 - Cloud e implantação externa: não executadas; LLM real ainda não foi testado com chave externa (item da P12).
-- Pendências conhecidas: sem `compose.yaml`/Dockerfiles para o app (P8).
-- Próximo: P8 (`docs/prompts/P8.md`).
+- P8 (2026-11-03): `Dockerfile.api`, `frontend/Dockerfile`, `compose.yaml` (API em modo token); clone limpo provado com o docker nativo do WSL (integração do Docker Desktop; ver VERIFICATION). Custo da sessão: registrar via `/cost` (não acessível ao agente).
+- Próximo: P9 (`docs/prompts/P9.md`).
