@@ -36,6 +36,7 @@ def build() -> dict:
     for name in ("unexpected_peak", "wrong_forecast"):
         result = sweep(name, 42, Config())
         pareto[name] = {"combinations": result["combinations"], "front_size": len(result["front"]),
+                        "front_distinct_points": len({(p["cost_brl"], p["slo_violation_ticks"]) for p in result["front"]}),
                         "front_policies": sorted({p["policy"] for p in result["front"]})}
     return {"labels": {"demand": "synthetic", "simulation": "estimated", "cost": "estimated"},
             "fiscal_seed42": fiscal, "irpf_poisson_20_seeds": irpf,
