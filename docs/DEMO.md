@@ -9,7 +9,7 @@ Antes da entrevista: seguir README, manter API e dashboard ativos, preparar `/do
 | 1:15–2:00 | **Pareto** custo × ticks fora do SLO ([captura](p14-pareto.png)). Em `unexpected_peak` a fronteira só tem configurações antecipativas: 16 delas, em 2 pontos distintos (os dois pontos cheios; as demais estão sobrepostas). Em `wrong_forecast` só reativas: 12 configurações num único ponto (previsão errada torna a reativa dominante). 56 configurações por cenário. |
 | 2:00–2:45 | **Error budget** (comando abaixo): percentil p90 gasta R$ 0,28 a mais que p50 e preserva 4 min de budget (R$ 0,07 por minuto). Alerta rápido de burn rate dispara no p50 (tick 12) e não no p90. |
 | 2:45–3:30 | **Governança**: proposta insegura rejeitada (exemplo abaixo), texto da LLM com número inventado cai no fallback, e `POST /manifest-diff` gera o diff HPA/ScaledObject sem aplicar nada. |
-| 3:30–4:15 | **Calibração** contra o Kind v1.36.4 ([docs/CALIBRATION.md](CALIBRATION.md)): capacidade medida 294 doc/min contra 300 assumidos, startup 12 s; calibrar **não reduziu** o erro (MAE de backlog 36,5 → 41,3 doc). Resultado negativo mostrado de propósito. |
+| 3:30–4:15 | **Calibração: hipótese → medição → nova hipótese** ([CALIBRATION](CALIBRATION.md), [KUBERNETES](KUBERNETES.md)). (1) P13: capacidade medida 294 doc/min contra 300 assumidos, startup 12 s; calibrar **não reduziu** o erro (MAE de backlog 36,5 → 41,3 doc). (2) Hipótese: atraso de decisão do HPA. P15: o atraso derivado dos dados é 0 ticks (1º pod 8,4 s após o degrau), então a hipótese **também não se sustentou**; próxima: filas por pod. (3) P17, no Kind: HPA reativo, backlog máximo 166 doc; KEDA com cron do calendário, 3,3 doc, com +32% de réplicas-minuto (custo hipotético; previsão perfeita). Resultados negativos mostrados de propósito. |
 | 4:15–5:00 | Diagramas e limites: motor único, adaptador sem ferramentas, HPA separado. Fechar em "Próximos passos" do README. |
 
 ## Explicação offline
@@ -69,10 +69,10 @@ curl -fsS http://127.0.0.1:8000/manifest-diff -H 'Content-Type: application/json
 PYTHONPATH=. python3 local/p14/results.py   # regenera evidence/p14/results.json (todos os números do roteiro)
 ```
 
-Os números de p50 × p90 usam chegadas `burst` e `activation_delay_ticks=3`, que a API ainda não expõe; por isso vêm de `evidence/p14/results.json` e do teste `tests/test_p10.py::test_higher_percentile_costs_more_and_burns_less_budget`.
+Os números de p50 × p90 usam chegadas `burst` e `activation_delay_ticks=3` (a API aceita `arrivals` e `config.activation_delay_ticks`); eles vêm de `evidence/p14/results.json` e do teste `tests/test_p10.py::test_higher_percentile_costs_more_and_burns_less_budget`. Para ver o sinal v3 no manifesto, `POST /manifest-diff` com `"kind":"scaledobject"` e `"schedule_start"` gera o gatilho `cron` (nada é aplicado).
 
 ## Perguntas técnicas previsíveis
 
-1. **Por que não usar só o HPA?** O HPA reage à CPU média e leva 20–30 s só para criar pods (`first_scale_after_load_seconds` em `evidence/p13/calibration.json`); a política antecipativa simulada usa o calendário. Mas o simulador não foi implantado no Kubernetes: a comparação indica tendência, não equivalência de algoritmos.
+1. **Por que não usar só o HPA?** O HPA reage à CPU média: a 1ª escala veio 30,7 s após o início da carga (cerca de 10 s depois do degrau) e o backlog máximo foi 166 doc; com KEDA e cron do calendário declarado a 1ª escala veio 32,7 s antes e o backlog máximo foi 3,3 doc, ao custo de +32% de réplicas-minuto (`evidence/p17/results.json`). O calendário era exato e a curva de carga única; o motor simulado não é o controlador do cluster, então a comparação indica tendência, não equivalência de algoritmos.
 2. **E se a previsão estiver errada?** É um cenário essencial: em `wrong_forecast` a fronteira de Pareto só tem pontos reativos, e o validador determinístico (guarda de SLO, min/max, orçamento) continua cobrindo a proposta. O percentil maior (p90) compra margem pagando mais, como mostra o error budget.
 3. **A IA pode alterar o cluster?** Não. A LLM só explica propostas; validação de SLO, custo e permissões é determinística, qualquer número fora das evidências aciona o fallback, e o manifesto é apenas um diff para PR (`applied=false`, `execution_allowed=false`). A chamada real à LLM ainda não foi executada (sem chave; ver [VERIFICATION](VERIFICATION.md)).

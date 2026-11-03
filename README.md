@@ -13,11 +13,11 @@ Demonstrador local de capacidade, confiabilidade e FinOps para processamento de 
 
 Projeto independente: não usa sistemas ou dados internos de terceiros. Dados de demanda são **sintéticos**; simulações e custos são **estimados**. Há métricas **observadas** de um ensaio Kind local, sem alegação de economia em produção.
 
-![Dashboard com seleção aprovada pelo backend](docs/p7-dashboard.png)
+![Dashboard com seleção aprovada pelo validador (Pico previsível, seed 42)](docs/p7-dashboard.png)
 
 Quando nenhuma política satisfaz as regras de segurança, o dashboard apresenta uma abstenção explícita:
 
-![Dashboard indicando ausência de política segura](docs/p7-abstention.png)
+![Dashboard indicando ausência de política segura (Pico inesperado, seed 42)](docs/p7-abstention.png)
 
 ## Executar a demonstração
 
@@ -122,7 +122,7 @@ Dados sintéticos e valores estimados, exceto a calibração (métricas observad
 | Error budget (pico inesperado, chegadas `burst`, seed 1) | p50 consome 4 min (16,7× o budget de 0,24 min; alerta rápido no tick 12). p90 consome 0 min e custa R$ 0,28 a mais (R$ 0,07 por minuto preservado) | `evidence/p14/results.json`; `tests/test_p10.py` |
 | Pareto custo × ticks fora do SLO (seed 42) | 56 configurações. Em `unexpected_peak`, a fronteira tem 16 configurações, todas antecipativas, que se resumem a 2 pontos distintos de custo × ticks; em `wrong_forecast`, 12 configurações, todas reativas, num único ponto. Configurações com o mesmo resultado aparecem sobrepostas no gráfico | `evidence/p14/results.json` (`pareto_seed42`); [captura](docs/p14-pareto.png) |
 | Governança | Regras em `peakguard/rules.yaml`; número fora das evidências ou URL no texto da LLM rejeita a resposta; diff de manifesto sem chamar o cluster | `tests/test_p12.py`; [VERIFICATION](docs/VERIFICATION.md) |
-| Calibração (Kind v1.36.4, 3 repetições) | Capacidade medida 4,9 doc/s por réplica (294 doc/min) e startup mediano de 12 s. Os parâmetros calibrados **não reduziram** o erro (MAE de backlog 36,5 → 41,3 doc); o erro dominante é o atraso de decisão do HPA | `docs/CALIBRATION.md`; `evidence/p13/calibration.json` |
+| Calibração (Kind v1.36.4, 3 repetições) | Capacidade medida 4,9 doc/s por réplica (294 doc/min) e startup mediano de 12 s. Os parâmetros calibrados **não reduziram** o erro (MAE de backlog 36,5 → 41,3 doc). A hipótese seguinte (atraso de decisão do HPA de 20–30 s) **também não se sustentou** (veja v3 abaixo) | `docs/CALIBRATION.md`; `evidence/p13/calibration.json` |
 
 ![Cenário fiscal no dashboard](docs/p14-fiscal.png)
 
@@ -130,13 +130,25 @@ Dados sintéticos e valores estimados, exceto a calibração (métricas observad
 
 Sem benchmark reproduzível em produção, nada acima é economia real nem ganho de confiabilidade. Detalhes por fase em [CHANGELOG](CHANGELOG.md).
 
+## Resultados v3 (P15–P17)
+
+Mesmos rótulos da v2: demanda `synthetic`, simulação `estimated`, métricas do cluster `observed` (Kind local, 1 nó, 3 repetições), custo sempre hipotético (R$ 1,2 por réplica-hora × minutos de pods prontos).
+
+| Tema | Resultado | Artefato |
+| --- | --- | --- |
+| Atraso de decisão (P15) | `Config.decision_delay_ticks` (padrão 0) separa a decisão do HPA do startup. O atraso derivado das medições é **0 ticks**: o 1º pod nasce 12,8 / 1,1 / 8,4 s depois do degrau de carga, já coberto pelo tick embutido na reativa. Os 20–30 s da hipótese da P13 vinham de não descontar os 20 s iniciais de carga baixa. MAE de backlog continua 41,3 doc (antigo 36,5); sensibilidade de 1 e 2 ticks (36,4 e 44,8) não foi adotada | `docs/CALIBRATION.md`; `evidence/p15/calibration.json`; `tests/test_p15.py` |
+| Paridade da API (P16) | A API aceita `arrivals`, `ewma_window` e `config.decision_delay_ticks`; o dashboard expõe chegadas e percentil de risco. Padrão idêntico às respostas anteriores | `tests/test_p16.py` |
+| HPA × antecipativa no Kind (P17) | HPA reativo: backlog máximo 166 doc (171; 145; 182), 1ª escala +30,7 s após o início da carga, 9,14 réplicas-minuto. ScaledObject KEDA (cron do calendário + CPU como piso): backlog máximo 3,3 doc, 1ª escala −32,7 s, 12,08 réplicas-minuto (+32%, custo hipotético R$ 0,24 contra R$ 0,18). O motor previu 142 e 0 doc; divergências em `docs/KUBERNETES.md` | `evidence/p17/results.json`; `docs/KUBERNETES.md` |
+
+Leitura: a antecipativa trocou custo por fila, mas com previsão perfeita (o calendário conhece a curva) e uma única curva de carga. O cenário de previsão errada não foi medido no cluster. Resultado negativo mantido: o atraso de decisão **não** explica o erro de calibração. Nada acima é economia real nem ganho de confiabilidade em produção. A chamada real à LLM (P18) não foi executada por falta de chave.
+
 ## Próximos passos
 
-- **Chamada real à LLM:** nunca executada (sem chave no ambiente); falta registrar tokens, latência e custo em `docs/VERIFICATION.md` (procedimento em `local/p12/real_llm_call.py`).
-- **Atraso de decisão do HPA:** modelar separadamente do startup do pod e usar filas por pod; é a principal fonte de erro apontada pela calibração.
-- **Antecipativa no Kubernetes:** a política antecipativa só existe no simulador; falta controlá-la sobre o Kind (por exemplo, via KEDA) e medir.
+- **Chamada real à LLM (P18):** nunca executada (sem chave no ambiente); falta registrar tokens, latência e custo em `docs/VERIFICATION.md` (procedimento em `local/p12/real_llm_call.py`).
+- **Filas por pod:** é a hipótese pendente da calibração. O atraso de decisão derivado das medições é 0 ticks (P15), então o erro restante vem do FIFO central e das taxas fluidas do motor, contra filas independentes por pod no cluster. Não testada.
+- **Previsão errada no Kubernetes:** a P17 mediu a antecipativa só com o calendário correto; falta o caso `wrong_forecast` no cluster e com mais de uma curva de carga.
 - **Cenários e previsão:** previsões são calendários declarados, não um modelo treinado.
-- **KEDA e OpenCost:** não reinstalados no cluster v1.36.4 recriado na P13.
+- **OpenCost:** não reinstalado no cluster v1.36.4 (a P17 instalou só o KEDA 2.21).
 - **Produção:** revisão independente, autenticação de usuários no dashboard e durabilidade de filas.
 
 ## Verificação

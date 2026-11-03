@@ -112,7 +112,7 @@ Derivadas dos "Próximos passos" do README, em ordem de valor: primeiro explicar
 - P16 (concluída) — Paridade da API e do dashboard: chegadas estocásticas, percentil e campos novos do `Config`.
 - P17 (concluída) — Antecipativa no Kubernetes: KEDA com gatilho `cron` do calendário declarado × HPA reativo no Kind, 3 repetições.
 - P18 — Chamada real à LLM, uma única vez, quando houver chave.
-- P19 — Apresentação v3 com os resultados de P15–P18.
+- P19 (concluída) — Apresentação v3 com os resultados de P15–P18.
 
 ## Contrato de trabalho
 Cada execução implementa só uma fase pedida, testa mudanças relacionadas e atualiza docs/STATUS.md (até 20 linhas). Não fazer push nem deploy automaticamente. Não refatorar áreas não relacionadas. Se o simulador mudar, regenerar `benchmarks/results`: o CI (`ci-python`) compara os resultados commitados. Ao encerrar, responder em até oito linhas com entrega, arquivos, comandos de teste e bloqueios.
