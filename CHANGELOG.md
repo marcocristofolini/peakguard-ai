@@ -2,6 +2,10 @@
 
 Entregas por fase. O histórico Git não é reescrito; os commits desta rodada (P8–P14) seguem Conventional Commits. Dados são sintéticos e valores estimados, salvo indicação de métricas observadas no Kind local.
 
+## P15 — Atraso de decisão do controlador
+- `Config.decision_delay_ticks` (padrão 0; só política reativa), separado de `activation_delay_ticks`; benchmarks inalterados.
+- `local/p15/recalibrate.py` reanalisa `evidence/p13/observed.json` sem cluster → `evidence/p15/calibration.json`. Atraso extra derivado = 0 ticks; o MAE de backlog não melhora (41,3 doc). Próxima hipótese: filas por pod (`docs/CALIBRATION.md`).
+
 ## P14 — Apresentação v2
 - README e `docs/DEMO.md` com resultados P9–P13, roteiro de 5 minutos, três perguntas técnicas e "Próximos passos".
 - `local/p14/results.py` gera `evidence/p14/results.json` (reproduzível, conferido por `tests/test_p14.py`).

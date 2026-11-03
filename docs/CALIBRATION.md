@@ -34,3 +34,19 @@ Motor: política `reactive`, tick de 10 s, `max_replicas=4`, chegadas = admissõ
 - Limites: 3 repetições, um único nó, uma curva de carga; o simulador usa FIFO central e taxas fluidas, o cluster tem filas por pod. Não alegar precisão do simulador nem economia real.
 
 Cluster apagado ao final com `bash local/p6/down.sh` (`No kind clusters found`).
+
+## P15 — Atraso de decisão separado do startup
+
+Sem cluster: `python3 local/p15/recalibrate.py` relê `evidence/p13/observed.json` e grava `evidence/p15/calibration.json` (mesmos dados `observed`, simulação `estimated`). O `Config` ganhou `decision_delay_ticks` (padrão 0): a política reativa decide com demanda e backlog de `decision_delay_ticks` ticks antes; a antecipativa não muda; benchmarks e `evidence/p14/results.json` idênticos.
+
+**Derivação (regra fixada antes de ver o MAE).** `first_scale_after_load_seconds` (32,8; 21,1; 28,4 s) inclui os 20 s iniciais de carga baixa. Descontados: 12,8; 1,1; 8,4 s entre o degrau de carga e a criação do 1º pod (mediana 8,4 s). A reativa simulada já tem 1 tick (10 s) embutido, por usar a demanda do tick anterior. Atraso extra = `max(0, round((8,4 − 10)/10))` = **0 ticks**. A hipótese da P13 (HPA leva ~20–30 s para decidir) vinha de ler esse valor sem descontar a carga baixa; os dados não a sustentam.
+
+| MAE médio (3 rep.) | Antigo | P13 | P13 + atraso derivado (0) | Sensib. 1 tick* | Sensib. 2 ticks* |
+| --- | --- | --- | --- | --- | --- |
+| Backlog (documentos) | 36,5 | 41,3 | 41,3 | 36,4 | 44,8 |
+| Throughput (doc/s) | 3,37 | 3,63 | 3,63 | 3,38 | 3,33 |
+| Atraso estimado (s) | 6,87 | 6,97 | 6,97 | 7,02 | 9,55 |
+
+\* Não derivados dos dados; só delimitam o efeito. Não escolhidos pelo erro.
+
+Leitura: o atraso derivado é 0, então a configuração P13 não muda e o MAE segue 41,3 (sem melhora). Atraso de 1 tick aproxima o backlog do valor antigo (36,4 vs 36,5), mas piora o atraso estimado, e 2 ticks piora backlog e atraso; com 3 repetições e diferenças menores que a variação entre repetições, isso não demonstra ganho e não foi adotado (sem ajuste até o número melhorar). Próxima hipótese: filas por pod (o cluster balanceia por pod; o motor usa FIFO central e taxa fluida), a testar numa fase própria.
