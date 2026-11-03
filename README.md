@@ -105,6 +105,8 @@ npm run build
 npm audit
 ```
 
+O mesmo conjunto roda no GitHub Actions a cada PR e push na `main` (`ci-python`, que também confere se os benchmarks commitados são reproduzíveis, e `ci-frontend`), junto com CodeQL e revisão de dependências.
+
 [Registro de verificação](docs/VERIFICATION.md), [roteiro de cinco minutos](docs/DEMO.md) e [status](docs/STATUS.md). O roteiro inclui rejeição de proposta insegura e distingue análise offline, SDK com transporte simulado e provedor real opcional.
 
 ## Kubernetes local opcional
@@ -117,8 +119,12 @@ python3 local/p6/experiment.py
 bash local/p6/down.sh
 ```
 
-O ensaio P6 original processou 1.120 documentos e escalou de 1 para 4 pods. Suas evidências foram preservadas em `evidence/p6/`. Posteriormente, recriei o Kind local e instalei **KEDA 2.21.0 e OpenCost 1.121.3 (chart 2.5.33)**, com um ScaledObject isolado e Prometheus local. Consulte [Kubernetes](docs/KUBERNETES.md) para comandos e limites; custos seguem estimados. O cluster local está ativo nesta verificação.
+O ensaio P6 original processou 1.120 documentos e escalou de 1 para 4 pods. Suas evidências foram preservadas em `evidence/p6/`. Posteriormente, recriei o Kind local e instalei **KEDA 2.21.0 e OpenCost 1.121.3 (chart 2.5.33)**, com um ScaledObject isolado e Prometheus local. Consulte [Kubernetes](docs/KUBERNETES.md) para comandos e limites; custos seguem estimados. O cluster é efêmero: suba-o só para o ensaio e remova com `down.sh`.
 
 ## Limitações
 
 Previsões são calendários declarados, não um modelo treinado. O motor usa fila fluida e resolução de um tick, sem percentis de latência ou falhas reais de máquinas. A política antecipativa não foi implantada no Kubernetes. SLO validado em simulação não garante SLO produtivo. P7 não fez chamada externa paga a LLM; a integração foi exercitada por testes com transporte simulado. Próximos experimentos devem calibrar capacidade e atraso com medições, testar durabilidade de filas e realizar revisão independente antes de qualquer uso produtivo.
+
+## Roadmap, contribuição e licença
+
+As fases P0–P7 estão concluídas; a segunda rodada (P8–P14) está descrita no [ROADMAP](ROADMAP.md). Para contribuir, veja o [guia de contribuição](CONTRIBUTING.md) e o [código de conduta](CODE_OF_CONDUCT.md). Vulnerabilidades devem ser relatadas pela [política de segurança](.github/SECURITY.md). Código sob [licença MIT](LICENSE).

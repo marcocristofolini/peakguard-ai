@@ -94,5 +94,16 @@ Entrega:
 - Revisão de over-engineering e verificação de segredos.
 Aceite: pessoa externa consegue rodar a demo local e reproduzir benchmarks.
 
-## Contrato de trabalho do Codex
-Cada execução implementa só uma fase pedida, testa mudanças relacionadas e atualiza docs/STATUS.md (até 20 linhas). Não fazer push nem deploy automaticamente. Não refatorar áreas não relacionadas. Ao encerrar, responder em até oito linhas com entrega, arquivos, comandos de teste e bloqueios.
+## Fases v2 (P8–P14)
+P0–P7 estão concluídas. A segunda rodada aprofunda o rigor técnico; a especificação de cada fase está em `docs/prompts/`.
+
+- P8 — Reprodutibilidade: Dockerfiles, `compose.yaml`, prova de clone limpo e Kind fixado em v1.36.
+- P9 — Cenários do calendário fiscal brasileiro (sintéticos), chegadas estocásticas, multi-seed com IC 95% e checagem pela Lei de Little.
+- P10 — Error budget, burn rate multi-janela, custo por minuto de budget preservado e previsão por percentil com MAE/MAPE.
+- P11 — Fronteira de Pareto custo × SLO e modelo FinOps estendido (requests, bin-packing, ocioso, spot, scale-to-zero).
+- P12 — Governança: validador como policy-as-code, diff de manifesto para PR e checker de fidelidade da explicação da LLM.
+- P13 — Calibração do simulador contra medições do Kind local.
+- P14 — Apresentação v2 com os novos resultados.
+
+## Contrato de trabalho
+Cada execução implementa só uma fase pedida, testa mudanças relacionadas e atualiza docs/STATUS.md (até 20 linhas). Não fazer push nem deploy automaticamente. Não refatorar áreas não relacionadas. Se o simulador mudar, regenerar `benchmarks/results`: o CI (`ci-python`) compara os resultados commitados. Ao encerrar, responder em até oito linhas com entrega, arquivos, comandos de teste e bloqueios.

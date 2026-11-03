@@ -1,15 +1,13 @@
-# STATUS — handoff Codex
-- Fases P0–P7 concluídas; revisão complementar de 2026-11-01 incorporada.
+# STATUS — handoff
+- Fases P0–P7 concluídas; próxima rodada P8–P14 especificada em `docs/prompts/` (ver ROADMAP).
 - WSL Ubuntu 24.04; FastAPI, Next.js 16.4.3, simulador sintético, LLM opcional e benchmarks.
+- 2026-11-03: dependências atualizadas pelo Dependabot (FastAPI 0.162, Pydantic 2.14, openai 3.42, React 19.3, TypeScript 7); 108 testes Python, 7 do frontend, build e `npm audit` (0 vulnerabilidades) aprovados; benchmarks idênticos.
+- GitHub: repositório público, MIT, CI (`ci-python`, `ci-frontend`), CodeQL, dependency-review, Dependabot mensal, ruleset na `main` exigindo `test` e `build`.
 - Autenticação API: modo local limitado a loopback; modo token requer Bearer em todas as rotas; sem credenciais no Git.
 - Segurança: dashboard Next não autentica usuários remotos; deployment público requer IdP/gateway, TLS, rate limit e revisão independente.
-- Depreciação TestClient: `httpx2` no extra dev; 108 testes Python sem aviso anterior.
-- Frontend: 7 testes aprovados e build Next.js verificado.
-- Helm local: KEDA 2.21.0 (pods Ready) e OpenCost chart 2.5.33/app 1.121.3 (pod 2/2 Ready).
-- KEDA: ScaledObject `documents-keda` e HPA separado, sem disputar HPA original; estado Ready/Active.
-- Kubernetes Kind v1.37.0 fica fora da matriz declarada de testes KEDA 2.21 (1.34–1.36).
+- Kubernetes local: KEDA 2.21.0 e OpenCost 1.121.3 (chart 2.5.33) verificados em Kind v1.37.0, fora da matriz testada do KEDA 2.21 (1.34–1.36); fixar v1.36 é item da P8.
 - OpenCost usa Prometheus local; custo e tarifas são estimados, nunca faturamento real.
-- Arquitetura interativa HTML e PNG criados com Archify 3.1, 4 gates automáticos aprovados.
-- Artefatos: `.archify/architecture-peakguard-ai-20261101-112333/`, `docs/peakguard-archify.png`.
-- Cloud e implantação externa: não executadas; LLM real ainda não foi testado com chave externa.
-- Próximo: usar roteiro docs/DEMO.md e avaliar publicação externa com controle de acesso.
+- Arquitetura interativa (Archify 3.1): `.archify/architecture-peakguard-ai-20261101-112333/`, `docs/peakguard-archify.png`.
+- Cloud e implantação externa: não executadas; LLM real ainda não foi testado com chave externa (item da P12).
+- Pendências conhecidas: sem `compose.yaml`/Dockerfiles para o app (P8).
+- Próximo: P8 (`docs/prompts/P8.md`).
