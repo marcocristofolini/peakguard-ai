@@ -97,7 +97,7 @@ Aceite: pessoa externa consegue rodar a demo local e reproduzir benchmarks.
 ## Fases v2 (P8–P14)
 P0–P7 estão concluídas. A segunda rodada aprofunda o rigor técnico; a especificação de cada fase está em `docs/prompts/`.
 
-- P8 — Reprodutibilidade: Dockerfiles, `compose.yaml`, prova de clone limpo e Kind fixado em v1.36.
+- P8 (concluída) — Reprodutibilidade: Dockerfiles, `compose.yaml`, prova de clone limpo e Kind fixado em v1.36.
 - P9 — Cenários do calendário fiscal brasileiro (sintéticos), chegadas estocásticas, multi-seed com IC 95% e checagem pela Lei de Little.
 - P10 — Error budget, burn rate multi-janela, custo por minuto de budget preservado e previsão por percentil com MAE/MAPE.
 - P11 — Fronteira de Pareto custo × SLO e modelo FinOps estendido (requests, bin-packing, ocioso, spot, scale-to-zero).

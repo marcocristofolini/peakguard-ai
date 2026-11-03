@@ -1,0 +1,32 @@
+# Exige PEAKGUARD_API_TOKEN (>= 32 caracteres) no ambiente: ex. export PEAKGUARD_API_TOKEN=$(openssl rand -hex 32)
+# A API roda em modo token (Bearer em todas as rotas) porque o modo local só aceita loopback
+# e o tráfego entre containers não é loopback. Portas publicadas só em 127.0.0.1.
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    environment:
+      PEAKGUARD_AUTH_MODE: token
+      PEAKGUARD_API_TOKEN: ${PEAKGUARD_API_TOKEN:?defina PEAKGUARD_API_TOKEN com 32+ caracteres}
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import os,urllib.request as u;u.urlopen(u.Request('http://127.0.0.1:8000/scenarios',headers={'Authorization':'Bearer '+os.environ['PEAKGUARD_API_TOKEN']}),timeout=3)"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  web:
+    build: ./frontend
+    environment:
+      PEAKGUARD_API_URL: http://api:8000
+      PEAKGUARD_BACKEND_TOKEN: ${PEAKGUARD_API_TOKEN}
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy

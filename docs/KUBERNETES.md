@@ -14,7 +14,7 @@ bash local/p6/down.sh
 
 O setup cria somente `peakguard-p6`, com kubeconfig dedicado em `local/p6/.kubeconfig` (ignorado pelo Git). Todas as operações kubectl fixam `kind-peakguard-p6`. O kubeconfig corrente do operador não é utilizado. O container Kind tem limite de 4 CPUs/6 GiB, swap adicional zero. Kind usa container privilegiado para executar o nó Kubernetes; esse privilégio não é concedido ao workload.
 
-A imagem Kind está fixada por digest no script; a execução verificada usou Kubernetes v1.37.0 e Kind v0.33.0. O workload usa Python 3.14 Alpine; Prometheus usa v3.2.1; metrics-server v0.8.0. Não há cloud, LoadBalancer externo ou volume persistente. Downloads de imagens e manifests exigem internet na primeira execução. Os scripts reaplicam os mesmos recursos e reutilizam o cluster existente; não criam clusters adicionais. Após mudar o código da imagem, recrie a demonstração para garantir novos pods e métricas limpas.
+A imagem Kind está fixada por digest no script; o digest é o de `kindest/node` **v1.36.4** (release notes do Kind v0.33.0), dentro da matriz testada do KEDA 2.21. A última execução verificada (anterior à fixação) usou Kubernetes v1.37.0 e Kind v0.33.0; o cluster v1.36.4 ainda não foi recriado. O workload usa Python 3.14 Alpine; Prometheus usa v3.2.1; metrics-server v0.8.0. Não há cloud, LoadBalancer externo ou volume persistente. Downloads de imagens e manifests exigem internet na primeira execução. Os scripts reaplicam os mesmos recursos e reutilizam o cluster existente; não criam clusters adicionais. Após mudar o código da imagem, recrie a demonstração para garantir novos pods e métricas limpas.
 
 O procedimento de limpeza remove somente o cluster de nome fixo, sendo repetível. Imagens Docker permanecem como cache reutilizável. Não remove clusters, imagens ou volumes de outros projetos. O kubeconfig dedicado contém credenciais apenas desse cluster local e nunca deve ser versionado.
 
@@ -62,7 +62,7 @@ Instalação comprovada no cluster Kind `peakguard-p6`:
 - KEDA Helm chart `2.21.0`, operador, metrics API server e admission webhook em `keda` (pods Ready).
 - `ScaledObject/documents-keda` com trigger CPU 70%, limites 1–3, estado Ready/Active, HPA `keda-hpa-documents-keda`. A implantação `documents-keda` é isolada da implantação `documents` do ensaio original.
 - OpenCost Helm chart `2.5.33`, aplicação `1.121.3` no namespace `opencost`, pod 2/2 Ready; Prometheus `peakguard-p6/prometheus:9090`. O Prometheus desta demo não inclui, necessariamente, todas as métricas de kube-state-metrics utilizadas por relatórios completos do OpenCost. Custo nominal é estimado.
-- O Kind atual usa Kubernetes **v1.37.0**; KEDA 2.21 foi documentado como testado com **1.34–1.36**. Embora tenha iniciado e reconciliado o ScaledObject nesta execução, 1.37 fica fora da matriz de compatibilidade declarada. Para demonstrações compatíveis, ajuste a versão do nó Kind.
+- `local/p6/up.sh` fixa Kubernetes **v1.36.4**, dentro da matriz declarada do KEDA 2.21 (1.34–1.36). A execução anterior em v1.37.0 ficou fora dessa matriz; a verificação em v1.36.4 está pendente (cluster não foi recriado na P8).
 
 Instalação/reinstalação reprodutível (Docker/Kind, Helm 3 e internet):
 

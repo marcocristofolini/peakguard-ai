@@ -4,7 +4,7 @@ cd "$(dirname "$0")/../.."
 KIND=${KIND:-/tmp/kind}
 export KUBECONFIG="$PWD/local/p6/.kubeconfig"
 if ! "$KIND" get clusters | rg -qx peakguard-p6; then
-  "$KIND" create cluster --name peakguard-p6 --image kindest/node@sha256:a1ed56cfb0e7b93589bdf97c8cd566405a265939e3620fc4f5de89adff580ae5 --config local/p6/kind.yaml --kubeconfig "$KUBECONFIG" --wait 120s
+  "$KIND" create cluster --name peakguard-p6 --image kindest/node@sha256:099e049362a1526b2db71494e1947aae99bd16290d7c895f2b7ea312e3cbfaed --config local/p6/kind.yaml --kubeconfig "$KUBECONFIG" --wait 120s
 fi
 "$KIND" export kubeconfig --name peakguard-p6 --kubeconfig "$KUBECONFIG"
 docker update --cpus 4 --memory 6g --memory-swap 6g peakguard-p6-control-plane

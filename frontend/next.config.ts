@@ -1,3 +1,3 @@
 import type { NextConfig } from 'next';
-const config: NextConfig = { turbopack: { root: process.cwd() }, outputFileTracingRoot: process.cwd() };
+const config: NextConfig = { output: 'standalone', turbopack: { root: process.cwd() }, outputFileTracingRoot: process.cwd() };
 export default config;

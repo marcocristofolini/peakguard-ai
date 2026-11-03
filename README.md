@@ -44,6 +44,15 @@ Abra `http://localhost:3000`. Selecione **Pico previsível**, seed **42**, e exe
 
 API: `http://127.0.0.1:8000/docs`; esquema OpenAPI: `/openapi.json`. Para outro backend, defina `PEAKGUARD_API_URL` no ambiente do servidor Next.js. Encerre os dois processos com Ctrl+C. Para build de produção local: `npm run build` e `npm run start -- --hostname 127.0.0.1` em `frontend/`.
 
+## Executar com Docker
+
+```bash
+export PEAKGUARD_API_TOKEN=$(openssl rand -hex 32)
+docker compose up --build
+```
+
+Abra `http://127.0.0.1:3000`. A API fica em modo `token` (o modo `local` só aceita loopback, o que não vale entre containers); o web usa o mesmo token no servidor via `PEAKGUARD_BACKEND_TOKEN`. Portas publicadas só em `127.0.0.1`; não há LLM nem cloud. Detalhes e prova em [docs/VERIFICATION.md](docs/VERIFICATION.md).
+
 ## Componentes implementados
 
 ```mermaid

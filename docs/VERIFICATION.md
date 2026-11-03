@@ -62,3 +62,21 @@ Após o merge dos PRs agrupados do Dependabot (FastAPI 0.162.0, Pydantic 2.14.2,
 Diagramas refletem o código: explicações por API/terminal, dashboard comparativo, demonstração Kind separada e nenhum caminho da IA para infraestrutura. README foi verificado por instalação nova, CLI instalada, testes e execução no navegador; isso não substitui teste por pessoa externa em outro sistema. Custos são estimados, inclusive aqueles calculados sobre réplicas observadas. Evidências P6 são históricas, não métricas de cluster atual.
 
 Sem push, merge, deploy externo ou publicação. Próximos passos: ensaio cronometrado do roteiro e, se desejado, configuração explícita do provedor para a sequência de IA real. Antes de produção: revisão independente, segurança de acesso, calibração e durabilidade de filas.
+
+## P8 — Clone limpo com Docker (2026-11-03)
+
+Ambiente: WSL Ubuntu 24.04 com o `docker` nativo da integração WSL do Docker Desktop 4.97 (engine e cliente 29.9.2, Compose v5.6.1). Comandos reais:
+
+```bash
+git clone -q . /tmp/pg-clean         # + overlay dos arquivos P8 ainda não commitados
+cd /tmp/pg-clean
+export PEAKGUARD_API_TOKEN=$(openssl rand -hex 32)
+docker compose -p pgclean up --build -d
+docker compose -p pgclean down --rmi local -v
+```
+
+Resultado: build ok (imagens `api` 202 MB, `web` 393 MB); `api` ficou `healthy`; sem token `GET :8000/scenarios` → 401, com Bearer → 200; `GET :3000/` → 200; `GET :3000/api/scenarios` → 200 com `["stable","predictable_peak","unexpected_peak","wrong_forecast"]` (web→api por `http://api:8000`). Usuários dos containers: `peakguard` (api) e `node` (web). Limpeza: `down --rmi local -v`.
+
+Observação: numa primeira tentativa o comando `docker` não existia no WSL porque o Docker Desktop ainda não tinha iniciado a integração (o link `/usr/bin/docker` → `/mnt/wsl/docker-desktop/cli-tools/usr/bin/docker` só é criado quando ele sobe). Não é necessário usar `docker.exe` nem `WSLENV`; se `docker` não for encontrado, inicie o Docker Desktop e confirme a integração com a distro em Settings → Resources → WSL integration.
+
+Escolha de segurança: modo `local` só aceita loopback, então o compose usa `PEAKGUARD_AUTH_MODE=token` com token obrigatório pelo ambiente (nunca no Git). Portas publicadas só em 127.0.0.1. Limite: o clone foi do commit atual com overlay dos arquivos novos (não commitados no momento da prova); repita após o commit. Kind: digest alterado para v1.36.4; cluster não foi recriado nesta fase.
