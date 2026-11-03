@@ -47,6 +47,16 @@ Exemplo de rejeição do roteiro executado: proposta injetada `reactive`, rejei�
 - Prévia real capturada em `docs/peakguard-archify.png` pelo Chromium. Os componentes do cluster de demonstração são distintos do motor/LLM.
 - KEDA e OpenCost são instalações locais do cluster `peakguard-p6`; Helm marcou ambos os releases como `deployed` e os pods como `Running/Ready`. ScaledObject `documents-keda` com status Ready e HPA dedicado. Sem aferição real de gasto cloud.
 
+## Atualização de dependências e CI (2026-11-03)
+
+Após o merge dos PRs agrupados do Dependabot (FastAPI 0.162.0, Pydantic 2.14.2, Starlette 1.10.0, openai 3.42.0, pytest <10, React 19.3.1, TypeScript 7, @types/node 26):
+
+- Instalação nova: `python3 -m pip install --target ~/.cache/peakguard-test-deps '.[dev,llm]'`. O extra `dev` exigia `httpx2<1`, versão inexistente; corrigido para `httpx2>=2,<3`.
+- `python3 -m pytest -q` — **108 aprovados, nenhum pulado**, incluindo o adaptador com o SDK openai 3.42 e transporte simulado.
+- `python3 -m peakguard.benchmarks` + `diff -qr benchmarks/results` — sem diferenças.
+- Em `frontend/`: `npm ci`, `npm test` (**7 aprovados**), `npm run build` (Next.js 16.4.3 com TypeScript 7) e `npm audit --omit=dev` — **0 vulnerabilidades**.
+- GitHub Actions: `ci-python` (agora com o extra `llm`, para testar atualizações do SDK), `ci-frontend`, `codeql` e `dependency-review` verdes na `main` e nos PRs do Dependabot.
+
 ## Limites da entrega
 
 Diagramas refletem o código: explicações por API/terminal, dashboard comparativo, demonstração Kind separada e nenhum caminho da IA para infraestrutura. README foi verificado por instalação nova, CLI instalada, testes e execução no navegador; isso não substitui teste por pessoa externa em outro sistema. Custos são estimados, inclusive aqueles calculados sobre réplicas observadas. Evidências P6 são históricas, não métricas de cluster atual.
