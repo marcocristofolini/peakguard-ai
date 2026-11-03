@@ -23,3 +23,9 @@ local/p6/.kubeconfig
 .archify/**/*.delivery.json
 .archify/**/*.finalize.json
 .archify/**/*.finalize-summary.json
+
+# Configuração local do Claude Code (não versionar)
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+.mcp.json

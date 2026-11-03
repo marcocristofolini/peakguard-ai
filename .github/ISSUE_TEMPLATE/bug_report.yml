@@ -1,0 +1,43 @@
+name: Bug
+description: Algo não funciona como documentado
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Componente
+      options:
+        - Simulador / CLI
+        - API (FastAPI)
+        - Dashboard (Next.js)
+        - Benchmarks
+        - Kubernetes local (local/p6)
+        - Documentação
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Como reproduzir
+      description: Comandos exatos, cenário e seed usados.
+      placeholder: |
+        python3 -m peakguard compare wrong_forecast --seed 42
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Esperado × obtido
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Ambiente
+      placeholder: "Ubuntu 24.04 (WSL2), Python 3.12, Node 22, commit abc1234"
+  - type: textarea
+    id: logs
+    attributes:
+      label: Saída relevante
+      description: Só o trecho decisivo do erro. Nunca cole segredos ou tokens.
+      render: shell

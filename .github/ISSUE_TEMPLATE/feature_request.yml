@@ -1,0 +1,26 @@
+name: Melhoria
+description: Proponha um cenário, política, métrica ou recurso
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema ou pergunta que a melhoria responde
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposta
+      description: O que muda e como seria validado (teste, benchmark, artefato).
+    validations:
+      required: true
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: Regras do projeto
+      options:
+        - label: Usa apenas dados sintéticos ou observados localmente, devidamente rotulados.
+          required: true
+        - label: Não dá à IA poder de alterar a decisão do validador.
+          required: true
