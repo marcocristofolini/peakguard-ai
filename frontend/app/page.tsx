@@ -238,6 +238,8 @@ export default function Home() {
     [budget, setBudget] = useState(10),
     [maxReplicas, setMaxReplicas] = useState(10),
     [slo, setSlo] = useState(2),
+    [arrivals, setArrivals] = useState("deterministic"),
+    [risk, setRisk] = useState(""),
     [result, setResult] = useState<Comparison | null>(null),
     [validation, setValidation] = useState<Validation | null>(null),
     [pareto, setPareto] = useState<Pareto | null>(null),
@@ -266,6 +268,8 @@ export default function Home() {
       const payload = JSON.stringify({
         scenario,
         seed,
+        arrivals,
+        ...(risk !== "" ? { risk_appetite: Number(risk) } : {}),
         config: {
           budget_brl: budget,
           max_replicas: maxReplicas,
@@ -448,6 +452,37 @@ export default function Home() {
                     />
                   </label>
                 </div>
+                <div className="fieldrow">
+                  <label>
+                    Chegadas
+                    <select
+                      value={arrivals}
+                      onChange={(e) => setArrivals(e.target.value)}
+                    >
+                      <option value="deterministic">Determinísticas</option>
+                      <option value="poisson">Poisson</option>
+                      <option value="burst">Burst</option>
+                    </select>
+                  </label>
+                  <label>
+                    Percentil de risco <small>0–1 (opcional)</small>
+                    <input
+                      type="number"
+                      min="0.01"
+                      max="0.99"
+                      step="0.01"
+                      placeholder="ex.: 0.9"
+                      value={risk}
+                      onChange={(e) => setRisk(e.target.value)}
+                    />
+                  </label>
+                </div>
+                {arrivals !== "deterministic" && (
+                  <p className="muted">
+                    <b>synthetic</b>: chegadas {arrivals} sorteadas pela seed
+                    (reproduzíveis).
+                  </p>
+                )}
                 <button disabled={loading || !scenarios.length}>
                   {loading ? "Simulando..." : "Executar comparação"}{" "}
                   <span>↗</span>

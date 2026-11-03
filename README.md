@@ -89,7 +89,7 @@ python3 -m peakguard compare wrong_forecast --seed 42 --output /tmp/peakguard-co
 python3 -m peakguard multiseed fiscal_irpf_april --arrivals poisson --seeds 20 --csv /tmp/peakguard-irpf.csv
 ```
 
-`--arrivals poisson|burst` sorteia chegadas de forma reproduzível pela seed (o padrão continua determinístico). `multiseed` resume as métricas com média e IC 95% e checa a Lei de Little nas execuções drenadas. Todos os cenários são sintéticos.
+`--arrivals poisson|burst` sorteia chegadas de forma reproduzível pela seed (o padrão continua determinístico); a API aceita `arrivals`, `ewma_window` e `config.decision_delay_ticks`, e o dashboard expõe chegadas e percentil de risco. `multiseed` resume as métricas com média e IC 95% e checa a Lei de Little nas execuções drenadas. Todos os cenários são sintéticos.
 
 ## Autenticação da API
 
@@ -135,7 +135,7 @@ Sem benchmark reproduzível em produção, nada acima é economia real nem ganho
 - **Chamada real à LLM:** nunca executada (sem chave no ambiente); falta registrar tokens, latência e custo em `docs/VERIFICATION.md` (procedimento em `local/p12/real_llm_call.py`).
 - **Atraso de decisão do HPA:** modelar separadamente do startup do pod e usar filas por pod; é a principal fonte de erro apontada pela calibração.
 - **Antecipativa no Kubernetes:** a política antecipativa só existe no simulador; falta controlá-la sobre o Kind (por exemplo, via KEDA) e medir.
-- **Cenários e previsão:** chegadas `burst`/`poisson` e `ewma_window` ainda não estão na API; previsões são calendários declarados, não um modelo treinado.
+- **Cenários e previsão:** previsões são calendários declarados, não um modelo treinado.
 - **KEDA e OpenCost:** não reinstalados no cluster v1.36.4 recriado na P13.
 - **Produção:** revisão independente, autenticação de usuários no dashboard e durabilidade de filas.
 
