@@ -2,9 +2,12 @@
 
 import hashlib
 import json
+import re
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
+
+from .rules import RULES, Rules
 
 
 class Claim(BaseModel):
@@ -18,6 +21,7 @@ class Proposal(BaseModel):
     policy: Literal['reactive', 'anticipatory']
     claims: list[Claim] = Field(min_length=1, max_length=20)
     hypotheses: list[Literal['forecast_may_be_wrong']] = Field(max_length=1)
+    rationale: str | None = Field(None, max_length=600)  # texto livre da LLM; só passa se fiel às evidências
 
 
 METRICS = {
@@ -46,29 +50,67 @@ def evidence(comparison: dict) -> dict:
             'hypotheses': {'forecast_may_be_wrong': 'A previsão pode divergir da demanda futura; hipótese, não observação.'}}
 
 
-def _safety(run):
+NUMBER = re.compile(r'(?<![\w.,])\d+(?:[.,]\d+)?(?!\w)')
+URL = re.compile(r'https?://|www\.', re.I)
+
+
+def _numbers(node):
+    if isinstance(node, bool):
+        return
+    if isinstance(node, (int, float)):
+        yield float(node)
+    elif isinstance(node, dict):
+        for v in node.values():
+            yield from _numbers(v)
+    elif isinstance(node, list):
+        for v in node:
+            yield from _numbers(v)
+
+
+def check_fidelity(text: str, context: dict) -> list[str]:
+    """Números do texto ausentes das evidências (arredondamento às casas escritas é aceito)."""
+    known = list(_numbers(context))
+    missing = []
+    for token in NUMBER.findall(text):
+        decimals = len(token) - max(token.find('.'), token.find(',')) - 1 if ('.' in token or ',' in token) else 0
+        value = float(token.replace(',', '.'))
+        if not any(round(k, decimals) == value for k in known):
+            missing.append(token)
+    return missing
+
+
+def _safety(run, rules: Rules = None):
+    rules = rules or RULES
     config, ticks = run['config'], run['ticks']
     reasons = []
-    if any(not config['min_replicas'] <= t['active_replicas'] <= t['provisioned_replicas'] <= config['max_replicas'] for t in ticks):
+    low, high = rules.replicas.min, rules.replicas.max
+    if config['min_replicas'] < low or config['max_replicas'] > high or any(
+            not max(config['min_replicas'], low) <= t['active_replicas'] <= t['provisioned_replicas'] <= min(config['max_replicas'], high) for t in ticks):
         reasons.append('replicas')
-    if max(run['summary']['cost_brl'], sum(t['cost_brl'] for t in ticks)) > config['budget_brl'] + 1e-12:
+    if max(run['summary']['cost_brl'], sum(t['cost_brl'] for t in ticks)) > min(config['budget_brl'], rules.budget_brl_max) + 1e-12:
         reasons.append('budget')
-    if run['summary']['slo_violation_minutes'] > 0 or any(t['slo_violated'] or t['queue_wait_minutes'] > config['slo_queue_minutes'] for t in ticks):
+    tolerated = rules.slo.violation_minutes_max
+    if run['summary']['slo_violation_minutes'] > tolerated or (tolerated == 0 and any(
+            t['slo_violated'] or t['queue_wait_minutes'] > config['slo_queue_minutes'] for t in ticks)):
         reasons.append('slo')
     return reasons
 
 
-def validate_proposal(raw, comparison: dict) -> dict:
+def validate_proposal(raw, comparison: dict, rules: Rules = None) -> dict:
+    rules = rules or RULES
     try:
         proposal = Proposal.model_validate(raw)
     except (ValidationError, TypeError):
         return {'accepted': False, 'reasons': ['invalid_response']}
-    facts = evidence(comparison)['facts']
-    reasons = _safety(comparison['results'][proposal.policy])
+    context = evidence(comparison)
+    facts = context['facts']
+    reasons = _safety(comparison['results'][proposal.policy], rules)
     if any(c.id not in facts or c.value != facts[c.id]['value'] for c in proposal.claims):
         reasons.append('unsupported_evidence')
-    if not any(c.id.startswith(proposal.policy + '.') for c in proposal.claims):
+    if sum(c.id.startswith(proposal.policy + '.') for c in proposal.claims) < rules.evidence.min_policy_claims:
         reasons.append('missing_policy_evidence')
+    if proposal.rationale and (check_fidelity(proposal.rationale, context) or URL.search(proposal.rationale)):
+        reasons.append('unfaithful_numbers' if check_fidelity(proposal.rationale, context) else 'forbidden_content')
     return {'accepted': not reasons, 'reasons': reasons}
 
 
@@ -113,7 +155,8 @@ def explain(comparison: dict, *, provider=None, use_llm: bool = False) -> dict:
             if selected else 'Nenhuma alternativa segura para todos os limites nesta simulação; revisar parâmetros.')
     justification = [f"{c['id']}: {c['value']} {context['facts'][c['id']]['unit']} "
                      f"({context['facts'][c['id']]['label']})." for c in selected['claims']] if selected else []
-    return {'mode': mode, 'proposal': selected, 'explanation': text, 'alternatives': details,
+    rationale = {'rationale': selected['rationale']} if mode == 'llm' and selected.get('rationale') else {}
+    return {**rationale, 'mode': mode, 'proposal': selected, 'explanation': text, 'alternatives': details,
             'justification': justification,
             'evidence': context, 'evidence_sha256': digest, 'audit': audit,
             'execution_allowed': False, 'human_approval_required': True}

@@ -12,6 +12,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 
 from .budget import Slo, budget_report
+from .manifest import manifest_diff
 from .finops import FinopsModel, extended_cost
 from .scenarios import ALL_SCENARIOS, load_scenario
 from .sweep import sweep
@@ -180,5 +181,23 @@ def finops(request: FinopsRequest):
     """Custo estendido (nós, ocioso, spot, scale-to-zero) com tabela de preços hipotética."""
     try:
         return extended_cost(run(request, request.policy), FinopsModel(**request.finops.model_dump()))
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+
+
+class ManifestRequest(ComparisonRequest):
+    kind: Literal['hpa', 'scaledobject']
+    name: str = Field(pattern=r'^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$')
+    namespace: str = Field('default', pattern=r'^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$')
+    current_manifest: str | None = Field(None, max_length=50_000)
+
+
+@app.post('/manifest-diff')
+def manifest(request: ManifestRequest):
+    """Diff para PR a partir da proposta determinística validada; nada é aplicado ao cluster."""
+    comparison = run(request)
+    try:
+        return manifest_diff(explain(comparison), comparison, kind=request.kind, name=request.name,
+                             namespace=request.namespace, current=request.current_manifest)
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
