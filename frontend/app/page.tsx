@@ -34,6 +34,10 @@ const names: Record<string, string> = {
   predictable_peak: "Pico previsível",
   unexpected_peak: "Pico inesperado",
   wrong_forecast: "Previsão incorreta",
+  fiscal_month_close: "Fiscal: fechamento do mês",
+  fiscal_das_day20: "Fiscal: DAS dia 20",
+  fiscal_ancillary_obligations: "Fiscal: obrigações acessórias",
+  fiscal_irpf_april: "Fiscal: IRPF de abril",
 };
 const money = (x: number | null) =>
   x === null
@@ -155,6 +159,9 @@ function ParetoChart({ data }: { data: Pareto }) {
         >
           <text x="2" y="28" fill="#8194a4" fontSize="10">
             {num(maxY)}
+          </text>
+          <text x="2" y="168" fill="#8194a4" fontSize="10">
+            0
           </text>
           <text x="40" y="186" fill="#8194a4" fontSize="10">
             {money(minX)}

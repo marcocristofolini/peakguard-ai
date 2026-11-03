@@ -1,0 +1,113 @@
+{
+ "error_budget_unexpected_peak_burst_seed1_activation3": {
+  "p50": {
+   "budget_minutes": 0.2400000000000002,
+   "consumed_fraction": 16.666666666666654,
+   "consumed_minutes": 4,
+   "cost_brl": 1.4400000000000004,
+   "fast_alert_tick": 12
+  },
+  "p90": {
+   "budget_minutes": 0.2400000000000002,
+   "consumed_fraction": 0.0,
+   "consumed_minutes": 0,
+   "cost_brl": 1.7200000000000004,
+   "fast_alert_tick": null
+  },
+  "p90_vs_p50_cost_per_budget_minute": {
+   "extra_cost_brl": 0.28,
+   "preserved_minutes": 4,
+   "status": "ok",
+   "value": 0.07
+  }
+ },
+ "fiscal_seed42": {
+  "fiscal_ancillary_obligations": {
+   "anticipatory": {
+    "cost_brl": 0.9800000000000004,
+    "slo_violation_minutes": 0
+   },
+   "reactive": {
+    "cost_brl": 1.28,
+    "slo_violation_minutes": 0
+   }
+  },
+  "fiscal_das_day20": {
+   "anticipatory": {
+    "cost_brl": 1.1,
+    "slo_violation_minutes": 0
+   },
+   "reactive": {
+    "cost_brl": 1.52,
+    "slo_violation_minutes": 2
+   }
+  },
+  "fiscal_irpf_april": {
+   "anticipatory": {
+    "cost_brl": 1.6400000000000003,
+    "slo_violation_minutes": 0
+   },
+   "reactive": {
+    "cost_brl": 1.7600000000000005,
+    "slo_violation_minutes": 0
+   }
+  },
+  "fiscal_month_close": {
+   "anticipatory": {
+    "cost_brl": 0.9600000000000002,
+    "slo_violation_minutes": 0
+   },
+   "reactive": {
+    "cost_brl": 1.1200000000000003,
+    "slo_violation_minutes": 0
+   }
+  }
+ },
+ "irpf_poisson_20_seeds": {
+  "anticipatory": {
+   "cost_brl": {
+    "ci95_high": 1.6400000000000001,
+    "ci95_low": 1.6400000000000001,
+    "mean": 1.6400000000000001
+   },
+   "max_backlog_docs": {
+    "ci95_high": 0.0,
+    "ci95_low": 0.0,
+    "mean": 0.0
+   }
+  },
+  "reactive": {
+   "cost_brl": {
+    "ci95_high": 1.7681294022988712,
+    "ci95_low": 1.7238705977011297,
+    "mean": 1.7460000000000004
+   },
+   "max_backlog_docs": {
+    "ci95_high": 495.4687329102399,
+    "ci95_low": 468.0312670897601,
+    "mean": 481.75
+   }
+  }
+ },
+ "labels": {
+  "cost": "estimated",
+  "demand": "synthetic",
+  "simulation": "estimated"
+ },
+ "pareto_seed42": {
+  "unexpected_peak": {
+   "combinations": 56,
+   "front_policies": [
+    "anticipatory"
+   ],
+   "front_size": 16
+  },
+  "wrong_forecast": {
+   "combinations": 56,
+   "front_policies": [
+    "reactive"
+   ],
+   "front_size": 12
+  }
+ }
+}
