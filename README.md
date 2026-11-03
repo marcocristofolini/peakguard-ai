@@ -76,6 +76,10 @@ flowchart LR
 | `POST /comparisons` | Duas políticas com entradas e parâmetros iguais |
 | `POST /evidence` | Consulta sem persistência de evidências calculadas |
 | `POST /explanations` | Seleção, justificativas verificadas e auditoria |
+| `POST /error-budget` | Error budget, burn rate multi-janela, custo por minuto preservado; aceita `risk_appetite` (p50/p80/p90) |
+| `POST /pareto` | Varredura de 56 configurações e fronteira custo × ticks fora do SLO |
+| `POST /finops` | Custo estendido (nós, ocioso, spot, scale-to-zero) com preços hipotéticos |
+| `POST /manifest-diff` | Diff HPA/ScaledObject para PR; nada é aplicado |
 
 O corpo aceita `scenario`, `seed` e `config` opcional. Parâmetros e fórmulas: [contrato da simulação](docs/SIMULATION.md). Entradas inválidas retornam HTTP 422.
 
@@ -107,6 +111,34 @@ python3 -m peakguard.benchmarks --output /tmp/peakguard-benchmark
 
 108 comparações/216 execuções, quatro cenários, três seeds, três escalas de previsão e três preços. Produz `report.json`, tabela completa `comparison.md` e gráfico nominal `comparison.svg`. Veja [método, resultados negativos e limitações](docs/BENCHMARKS.md). No ponto nominal, o falso positivo custa em média BRL 0,48 reativo contra BRL 1,02 antecipativo. No pico inesperado, ambas violam SLO por 2 minutos. São estimativas do modelo.
 
+## Resultados v2 (P9–P13)
+
+Dados sintéticos e valores estimados, exceto a calibração (métricas observadas no Kind local). Cada número aponta para o artefato que o gera; `evidence/p14/results.json` é reproduzível com `PYTHONPATH=. python3 local/p14/results.py` e conferido por `tests/test_p14.py`.
+
+| Tema | Resultado | Artefato |
+| --- | --- | --- |
+| Cenário fiscal (DAS dia 20, seed 42) | Reativa: 2 min de SLO violado, R$ 1,52. Antecipativa: 0 min, R$ 1,10. A previsão do calendário é declarada, não aprendida | `evidence/p14/results.json` (`fiscal_seed42`) |
+| Multi-seed (IRPF de abril, Poisson, 20 seeds) | Custo reativo R$ 1,746 (IC 95% 1,724–1,768) contra R$ 1,640 antecipativo; backlog máximo 481,75 contra 0 doc | `evidence/p14/results.json` (`irpf_poisson_20_seeds`); `python3 -m peakguard multiseed` |
+| Error budget (pico inesperado, chegadas `burst`, seed 1) | p50 consome 4 min (16,7× o budget de 0,24 min; alerta rápido no tick 12). p90 consome 0 min e custa R$ 0,28 a mais (R$ 0,07 por minuto preservado) | `evidence/p14/results.json`; `tests/test_p10.py` |
+| Pareto custo × ticks fora do SLO (seed 42) | 56 configurações; fronteira de 16 pontos só antecipativos em `unexpected_peak` e de 12 só reativos em `wrong_forecast` | `evidence/p14/results.json` (`pareto_seed42`); [captura](docs/p14-pareto.png) |
+| Governança | Regras em `peakguard/rules.yaml`; número fora das evidências ou URL no texto da LLM rejeita a resposta; diff de manifesto sem chamar o cluster | `tests/test_p12.py`; [VERIFICATION](docs/VERIFICATION.md) |
+| Calibração (Kind v1.36.4, 3 repetições) | Capacidade medida 4,9 doc/s por réplica (294 doc/min) e startup mediano de 12 s. Os parâmetros calibrados **não reduziram** o erro (MAE de backlog 36,5 → 41,3 doc); o erro dominante é o atraso de decisão do HPA | `docs/CALIBRATION.md`; `evidence/p13/calibration.json` |
+
+![Cenário fiscal no dashboard](docs/p14-fiscal.png)
+
+![Fronteira de Pareto no dashboard](docs/p14-pareto.png)
+
+Sem benchmark reproduzível em produção, nada acima é economia real nem ganho de confiabilidade. Detalhes por fase em [CHANGELOG](CHANGELOG.md).
+
+## Próximos passos
+
+- **Chamada real à LLM:** nunca executada (sem chave no ambiente); falta registrar tokens, latência e custo em `docs/VERIFICATION.md` (procedimento em `local/p12/real_llm_call.py`).
+- **Atraso de decisão do HPA:** modelar separadamente do startup do pod e usar filas por pod; é a principal fonte de erro apontada pela calibração.
+- **Antecipativa no Kubernetes:** a política antecipativa só existe no simulador; falta controlá-la sobre o Kind (por exemplo, via KEDA) e medir.
+- **Cenários e previsão:** chegadas `burst`/`poisson` e `ewma_window` ainda não estão na API; previsões são calendários declarados, não um modelo treinado.
+- **KEDA e OpenCost:** não reinstalados no cluster v1.36.4 recriado na P13.
+- **Produção:** revisão independente, autenticação de usuários no dashboard e durabilidade de filas.
+
 ## Verificação
 
 ```bash
@@ -135,8 +167,8 @@ O ensaio P6 original processou 1.120 documentos e escalou de 1 para 4 pods. Suas
 
 ## Limitações
 
-Previsões são calendários declarados, não um modelo treinado. O motor usa fila fluida e resolução de um tick, sem percentis de latência ou falhas reais de máquinas. A política antecipativa não foi implantada no Kubernetes. SLO validado em simulação não garante SLO produtivo. P7 não fez chamada externa paga a LLM; a integração foi exercitada por testes com transporte simulado. Próximos experimentos devem calibrar capacidade e atraso com medições, testar durabilidade de filas e realizar revisão independente antes de qualquer uso produtivo.
+Previsões são calendários declarados, não um modelo treinado. O motor usa fila fluida e resolução de um tick, sem percentis de latência ou falhas reais de máquinas. A política antecipativa não foi implantada no Kubernetes. SLO validado em simulação não garante SLO produtivo. P7 não fez chamada externa paga a LLM; a integração foi exercitada por testes com transporte simulado. A calibração P13 mediu capacidade e startup num único nó Kind e não melhorou o erro do simulador (ver Resultados v2). Testar durabilidade de filas e realizar revisão independente antes de qualquer uso produtivo.
 
 ## Roadmap, contribuição e licença
 
-As fases P0–P7 estão concluídas; a segunda rodada (P8–P14) está descrita no [ROADMAP](ROADMAP.md). Para contribuir, veja o [guia de contribuição](CONTRIBUTING.md) e o [código de conduta](CODE_OF_CONDUCT.md). Vulnerabilidades devem ser relatadas pela [política de segurança](.github/SECURITY.md). Código sob [licença MIT](LICENSE).
+As fases P0–P14 estão concluídas (P12 sem a chamada real à LLM); o histórico por fase está no [CHANGELOG](CHANGELOG.md) e o plano no [ROADMAP](ROADMAP.md). Para contribuir, veja o [guia de contribuição](CONTRIBUTING.md) e o [código de conduta](CODE_OF_CONDUCT.md). Vulnerabilidades devem ser relatadas pela [política de segurança](.github/SECURITY.md). Código sob [licença MIT](LICENSE).

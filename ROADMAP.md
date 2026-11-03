@@ -103,7 +103,7 @@ P0–P7 estão concluídas. A segunda rodada aprofunda o rigor técnico; a espec
 - P11 (concluída) — Fronteira de Pareto custo × SLO e modelo FinOps estendido (requests, bin-packing, ocioso, spot, scale-to-zero).
 - P12 (concluída, exceto chamada real à LLM: sem chave) — Governança: validador como policy-as-code, diff de manifesto para PR e checker de fidelidade da explicação da LLM.
 - P13 (concluída) — Calibração do simulador contra medições do Kind local.
-- P14 — Apresentação v2 com os novos resultados.
+- P14 (concluída) — Apresentação v2 com os novos resultados.
 
 ## Contrato de trabalho
 Cada execução implementa só uma fase pedida, testa mudanças relacionadas e atualiza docs/STATUS.md (até 20 linhas). Não fazer push nem deploy automaticamente. Não refatorar áreas não relacionadas. Se o simulador mudar, regenerar `benchmarks/results`: o CI (`ci-python`) compara os resultados commitados. Ao encerrar, responder em até oito linhas com entrega, arquivos, comandos de teste e bloqueios.
