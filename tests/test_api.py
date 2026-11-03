@@ -10,7 +10,7 @@ client = TestClient(app)
 
 
 def test_scenarios_and_openapi():
-    assert set(client.get('/scenarios').json()) == {'stable', 'predictable_peak', 'unexpected_peak', 'wrong_forecast'}
+    assert set(client.get('/scenarios').json()) >= {'stable', 'predictable_peak', 'unexpected_peak', 'wrong_forecast'}
     assert client.get('/openapi.json').status_code == 200
     assert client.get('/docs').status_code == 200
 
@@ -59,3 +59,9 @@ def test_offline_explanations_and_read_only_evidence():
 
 def test_explanations_reject_client_supplied_results():
     assert client.post('/explanations', json={'scenario': 'stable', 'results': {}}).status_code == 422
+
+
+def test_api_lists_and_runs_fiscal_scenarios():
+    client = TestClient(app)
+    assert "fiscal_month_close" in client.get('/scenarios').json()
+    assert client.post('/comparisons', json={'scenario': 'fiscal_irpf_april'}).status_code == 200
