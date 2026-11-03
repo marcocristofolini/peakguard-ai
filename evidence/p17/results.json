@@ -1,0 +1,236 @@
+{
+ "labels": {
+  "observed": "observed local Kind cluster",
+  "simulation": "estimated",
+  "load": "synthetic",
+  "cost": "hypothetical (BRL 1.2/replica-hour \u00d7 ready-pod minutes)"
+ },
+ "kubernetes_server_version": "v1.36.4",
+ "config": {
+  "tick_minutes": 0.16666666666666666,
+  "capacity_docs_per_minute_per_replica": 294,
+  "price_brl_per_replica_hour": 1.2,
+  "min_replicas": 1,
+  "max_replicas": 4,
+  "initial_replicas": 1,
+  "activation_delay_ticks": 1,
+  "decision_delay_ticks": 0,
+  "cooldown_ticks": 2,
+  "forecast_horizon_ticks": 3,
+  "target_utilization": 0.7,
+  "budget_brl": 10,
+  "slo_queue_minutes": 2,
+  "base_latency_minutes": 0.1
+ },
+ "cron_windows": [
+  [
+   {
+    "start": "2026-11-03T15:35:00+00:00",
+    "end": "2026-11-03T15:38:00+00:00",
+    "desired_replicas": 4,
+    "first_tick": 2,
+    "end_tick": 11
+   }
+  ],
+  [
+   {
+    "start": "2026-11-03T15:40:00+00:00",
+    "end": "2026-11-03T15:43:00+00:00",
+    "desired_replicas": 4,
+    "first_tick": 2,
+    "end_tick": 11
+   }
+  ],
+  [
+   {
+    "start": "2026-11-03T15:45:00+00:00",
+    "end": "2026-11-03T15:48:00+00:00",
+    "desired_replicas": 4,
+    "first_tick": 2,
+    "end_tick": 11
+   }
+  ]
+ ],
+ "per_repetition": [
+  {
+   "strategy": "reactive",
+   "repetition": 0,
+   "observed": {
+    "max_backlog_docs": 171.0,
+    "first_scale_after_load_seconds": 33.0,
+    "replica_minutes": 8.333333333333334,
+    "cost_brl_hypothetical": 0.16666666666666666,
+    "window_seconds": 215.02726078033447
+   },
+   "simulated": {
+    "reactive": {
+     "max_backlog_docs": 142.0,
+     "first_scale_after_load_seconds": 30,
+     "replica_minutes": 7.666666666666666,
+     "cost_brl_hypothetical": 0.15333333333333332
+    },
+    "anticipatory": {
+     "max_backlog_docs": 0.0,
+     "first_scale_after_load_seconds": 0,
+     "replica_minutes": 9.333333333333332,
+     "cost_brl_hypothetical": 0.18666666666666662
+    }
+   }
+  },
+  {
+   "strategy": "reactive",
+   "repetition": 1,
+   "observed": {
+    "max_backlog_docs": 145.0,
+    "first_scale_after_load_seconds": 30.0,
+    "replica_minutes": 9.833333333333334,
+    "cost_brl_hypothetical": 0.19666666666666666,
+    "window_seconds": 215.74399161338806
+   },
+   "simulated": {
+    "reactive": {
+     "max_backlog_docs": 142.0,
+     "first_scale_after_load_seconds": 30,
+     "replica_minutes": 7.666666666666666,
+     "cost_brl_hypothetical": 0.15333333333333332
+    },
+    "anticipatory": {
+     "max_backlog_docs": 0.0,
+     "first_scale_after_load_seconds": 0,
+     "replica_minutes": 9.333333333333332,
+     "cost_brl_hypothetical": 0.18666666666666662
+    }
+   }
+  },
+  {
+   "strategy": "reactive",
+   "repetition": 2,
+   "observed": {
+    "max_backlog_docs": 182.0,
+    "first_scale_after_load_seconds": 29.0,
+    "replica_minutes": 9.25,
+    "cost_brl_hypothetical": 0.185,
+    "window_seconds": 215.4435064792633
+   },
+   "simulated": {
+    "reactive": {
+     "max_backlog_docs": 142.0,
+     "first_scale_after_load_seconds": 30,
+     "replica_minutes": 7.666666666666666,
+     "cost_brl_hypothetical": 0.15333333333333332
+    },
+    "anticipatory": {
+     "max_backlog_docs": 0.0,
+     "first_scale_after_load_seconds": 0,
+     "replica_minutes": 9.333333333333332,
+     "cost_brl_hypothetical": 0.18666666666666662
+    }
+   }
+  },
+  {
+   "strategy": "anticipatory",
+   "repetition": 0,
+   "observed": {
+    "max_backlog_docs": 3.0,
+    "first_scale_after_load_seconds": -26.0,
+    "replica_minutes": 11.833333333333334,
+    "cost_brl_hypothetical": 0.2366666666666667,
+    "window_seconds": 215.0803771018982
+   },
+   "simulated": {
+    "reactive": {
+     "max_backlog_docs": 142.0,
+     "first_scale_after_load_seconds": 30,
+     "replica_minutes": 7.666666666666666,
+     "cost_brl_hypothetical": 0.15333333333333332
+    },
+    "anticipatory": {
+     "max_backlog_docs": 0.0,
+     "first_scale_after_load_seconds": 0,
+     "replica_minutes": 9.333333333333332,
+     "cost_brl_hypothetical": 0.18666666666666662
+    }
+   }
+  },
+  {
+   "strategy": "anticipatory",
+   "repetition": 1,
+   "observed": {
+    "max_backlog_docs": 5.0,
+    "first_scale_after_load_seconds": -36.0,
+    "replica_minutes": 12.25,
+    "cost_brl_hypothetical": 0.245,
+    "window_seconds": 215.05131196975708
+   },
+   "simulated": {
+    "reactive": {
+     "max_backlog_docs": 142.0,
+     "first_scale_after_load_seconds": 30,
+     "replica_minutes": 7.666666666666666,
+     "cost_brl_hypothetical": 0.15333333333333332
+    },
+    "anticipatory": {
+     "max_backlog_docs": 0.0,
+     "first_scale_after_load_seconds": 0,
+     "replica_minutes": 9.333333333333332,
+     "cost_brl_hypothetical": 0.18666666666666662
+    }
+   }
+  },
+  {
+   "strategy": "anticipatory",
+   "repetition": 2,
+   "observed": {
+    "max_backlog_docs": 2.0,
+    "first_scale_after_load_seconds": -36.0,
+    "replica_minutes": 12.166666666666666,
+    "cost_brl_hypothetical": 0.24333333333333332,
+    "window_seconds": 215.92058801651
+   },
+   "simulated": {
+    "reactive": {
+     "max_backlog_docs": 142.0,
+     "first_scale_after_load_seconds": 30,
+     "replica_minutes": 7.666666666666666,
+     "cost_brl_hypothetical": 0.15333333333333332
+    },
+    "anticipatory": {
+     "max_backlog_docs": 0.0,
+     "first_scale_after_load_seconds": 0,
+     "replica_minutes": 9.333333333333332,
+     "cost_brl_hypothetical": 0.18666666666666662
+    }
+   }
+  }
+ ],
+ "mean": {
+  "reactive": {
+   "observed": {
+    "max_backlog_docs": 166.0,
+    "first_scale_after_load_seconds": 30.666666666666668,
+    "replica_minutes": 9.13888888888889,
+    "cost_brl_hypothetical": 0.1827777777777778
+   },
+   "simulated": {
+    "max_backlog_docs": 142.0,
+    "first_scale_after_load_seconds": 30.0,
+    "replica_minutes": 7.666666666666667,
+    "cost_brl_hypothetical": 0.15333333333333332
+   }
+  },
+  "anticipatory": {
+   "observed": {
+    "max_backlog_docs": 3.3333333333333335,
+    "first_scale_after_load_seconds": -32.666666666666664,
+    "replica_minutes": 12.083333333333334,
+    "cost_brl_hypothetical": 0.24166666666666667
+   },
+   "simulated": {
+    "max_backlog_docs": 0.0,
+    "first_scale_after_load_seconds": 0.0,
+    "replica_minutes": 9.333333333333332,
+    "cost_brl_hypothetical": 0.18666666666666662
+   }
+  }
+ }
+}

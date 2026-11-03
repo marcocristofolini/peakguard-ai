@@ -84,3 +84,35 @@ kubectl -n opencost port-forward svc/opencost 19090:9090
 ```
 
 O OpenCost não equivale a uma fatura de cloud: Kind não tem preços faturados. O ScaledObject KEDA é uma demonstração separada; não prova que o sistema antecipativo simulado controla o cluster. Encerre port-forward com Ctrl+C. Para remover **todo o cluster dedicado**, use `bash local/p6/down.sh` quando terminar os testes.
+
+## P17 — Antecipativa no Kubernetes (2026-11-03)
+
+Natureza: **observed local cluster** (Kind `peakguard-p6`, Kubernetes v1.36.4, WSL2, 4 CPUs/6 GiB) × **simulation** (`estimated`). Carga `synthetic` (Job P6, 1.120 tentativas). Custo **hipotético** (BRL 1,2/réplica-hora × minutos de pods prontos). Nada roda no CI.
+
+Reprodução (ação explícita no cluster de demonstração; o script aplica e remove HPA/ScaledObject):
+
+```bash
+bash local/p6/up.sh
+bash local/p17/install-keda.sh          # só KEDA 2.21; sem OpenCost e sem documents-keda
+python3 local/p17/experiment.py collect --repetitions 3   # evidence/p17/observed.json
+python3 local/p17/experiment.py analyze                   # evidence/p17/results.json
+bash local/p6/down.sh
+```
+
+**Estratégias no mesmo Deployment `documents`, nunca ao mesmo tempo.** Antes de cada repetição o script remove os controladores, drena e volta a 1 pod. Reativa: HPA original (CPU 70%). Antecipativa: o HPA é apagado e se aplica um `ScaledObject` gerado por `manifest_diff(..., schedule_start=...)`, o mesmo gerador de `POST /manifest-diff` (que só gera texto). O manifesto tem CPU 70% como piso reativo e um gatilho `cron` com `desiredReplicas: 4`. A janela vem do calendário declarado (curva nominal: pico nos ticks 2–10 de 10 s), antecipada em `forecast_horizon_ticks` (30 s) e arredondada para o minuto (resolução do cron). Antes de cada repetição o script confere que existe um único controlador; ao final remove o ScaledObject e restaura o HPA. Config do motor: P13 (294 doc/min, ativação 1 tick), alvo 70%, máximo 4 réplicas.
+
+O validador determinístico propôs `reactive` para essa curva (mais barato, sem violar o SLO simulado). O cron deriva do calendário, não da política proposta; a antecipativa foi medida como alternativa, não como recomendação.
+
+| Média de 3 repetições | Reativa (HPA) observada | Reativa simulada | Antecipativa (KEDA cron + CPU) observada | Antecipativa simulada |
+| --- | --- | --- | --- | --- |
+| Backlog máximo (documentos) | 166 (171; 145; 182) | 142 | 3,3 (3; 5; 2) | 0 |
+| 1ª escala em relação ao início da carga (s) | +30,7 | +30 | −32,7 (−26; −36; −36) | 0 |
+| Réplicas-minuto (janela de ~215 s, 60 s antes da carga até a drenagem) | 9,14 | 7,67 | 12,08 | 9,33 |
+| Custo hipotético (BRL) | 0,183 | 0,153 | 0,242 | 0,187 |
+
+Leitura:
+- No cluster, a pré-escala reduziu o backlog máximo de 166 para ~3 documentos, com ~32% mais réplicas-minuto (12,08 × 9,14). Isso é uma troca de custo por fila, medida em 3 repetições num único nó com uma curva de carga, e não economia nem ganho de confiabilidade em produção.
+- Divergências: (1) o cron escala ~33 s antes da carga, contra 0 s no motor. O minuto arredondado para baixo e o polling do KEDA antecipam mais que o horizonte de 30 s. (2) O fim da janela é arredondado para cima, e o HPA do KEDA usa estabilização de redução padrão (300 s). As réplicas ficam além da necessidade; o motor cancela a escala logo após o pico, daí +2,7 réplicas-minuto observadas. (3) A reativa observada tem backlog maior (166 × 142) e mais réplicas-minuto (9,14 × 7,67), porque o HPA decide por CPU média e o motor por demanda, e a fila é por pod. (4) O backlog observado da antecipativa não é zero, pela fila por pod e pela distribuição por conexão.
+- Limites: o calendário conhece exatamente a curva (previsão perfeita); o cenário de previsão errada não foi testado no cluster. 3 repetições, um nó, uma carga.
+
+Evidências: `evidence/p17/observed.json` (séries Prometheus `query_range`, logs do Job, horários de criação dos pods, manifesto aplicado por repetição) e `evidence/p17/results.json`. A 1ª tentativa da antecipativa abortou: o pré-requisito "1 réplica antes da carga", herdado da P13, é incompatível com a pré-escala. O script passou a dispensá-lo só nessa estratégia, e as 3 repetições reativas já coletadas foram mantidas. Cluster apagado ao final (`No kind clusters found`).

@@ -110,7 +110,7 @@ Derivadas dos "Próximos passos" do README, em ordem de valor: primeiro explicar
 
 - P15 (concluída) — Atraso de decisão do controlador separado do startup; recalibrar com `evidence/p13/observed.json`, sem subir cluster.
 - P16 (concluída) — Paridade da API e do dashboard: chegadas estocásticas, percentil e campos novos do `Config`.
-- P17 — Antecipativa no Kubernetes: KEDA com gatilho `cron` do calendário declarado × HPA reativo no Kind, 3 repetições.
+- P17 (concluída) — Antecipativa no Kubernetes: KEDA com gatilho `cron` do calendário declarado × HPA reativo no Kind, 3 repetições.
 - P18 — Chamada real à LLM, uma única vez, quando houver chave.
 - P19 — Apresentação v3 com os resultados de P15–P18.
 

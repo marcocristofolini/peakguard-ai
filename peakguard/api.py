@@ -3,6 +3,7 @@
 import hmac
 import ipaddress
 import os
+from datetime import datetime
 from typing import Any, Literal
 
 from fastapi import Request
@@ -196,6 +197,7 @@ class ManifestRequest(ComparisonRequest):
     name: str = Field(pattern=r'^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$')
     namespace: str = Field('default', pattern=r'^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$')
     current_manifest: str | None = Field(None, max_length=50_000)
+    schedule_start: datetime | None = Field(None, strict=False, description='Instante (com fuso) do tick 0; gera gatilhos cron do KEDA a partir do calendário previsto.')
 
 
 @app.post('/manifest-diff')
@@ -204,6 +206,7 @@ def manifest(request: ManifestRequest):
     comparison = run(request)
     try:
         return manifest_diff(explain(comparison), comparison, kind=request.kind, name=request.name,
-                             namespace=request.namespace, current=request.current_manifest)
+                             namespace=request.namespace, current=request.current_manifest,
+                             schedule_start=request.schedule_start)
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error

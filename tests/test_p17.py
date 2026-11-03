@@ -57,3 +57,16 @@ def test_api_accepts_schedule_start():
     assert r.status_code == 200, r.text
     assert "type: cron" in r.json()["proposed_manifest"] and r.json()["applied"] is False
     assert TestClient(app).post("/manifest-diff", json={**body, "kind": "hpa"}).status_code == 422
+
+
+def test_committed_p17_results_are_reproducible():
+    import json
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    sys.path.insert(0, str(root / "local" / "p17"))
+    import experiment
+    committed = json.loads((root / "evidence/p17/results.json").read_text())
+    runs = json.loads((root / "evidence/p17/observed.json").read_text())["runs"]
+    assert [experiment.observed_metrics(r) for r in runs] == [r["observed"] for r in committed["per_repetition"]]
+    assert [experiment.simulated_metrics(r) for r in runs] == [r["simulated"] for r in committed["per_repetition"]]
