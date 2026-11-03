@@ -1,5 +1,5 @@
 # STATUS — handoff
-- Fases P0–P10 concluídas; P11–P14 especificadas em `docs/prompts/` (ver ROADMAP).
+- Fases P0–P11 concluídas; P12–P14 especificadas em `docs/prompts/` (ver ROADMAP).
 - WSL Ubuntu 24.04; FastAPI, Next.js 16.4.3, simulador sintético, LLM opcional e benchmarks.
 - 2026-11-03: dependências atualizadas pelo Dependabot (FastAPI 0.162, Pydantic 2.14, openai 3.42, React 19.3, TypeScript 7); 108 testes Python, 7 do frontend, build e `npm audit` (0 vulnerabilidades) aprovados; benchmarks idênticos.
 - GitHub: repositório público, MIT, CI (`ci-python`, `ci-frontend`), CodeQL, dependency-review, Dependabot mensal, ruleset na `main` exigindo `test` e `build`.
@@ -13,4 +13,5 @@
 - P9 (2026-11-03): 4 cenários fiscais sintéticos (`FISCAL_SCENARIOS`; `SCENARIOS` e benchmarks inalterados), chegadas `--arrivals poisson|burst` por seed (padrão determinístico), `python -m peakguard multiseed <cenário> [--seeds 20] [--csv f]` com média e IC 95% (t de Student, `peakguard/analysis.py`), `littles_law_check` (L vs λW, tolerância relativa 1e-6, só execuções drenadas). 132 testes Python aprovados (inclui regressão do --help); benchmarks idênticos. Custo da sessão: registrar via `/cost` (não acessível ao agente).
 - Ambiente: pytest/fastapi não estavam instalados; instalados com `pip --user --break-system-packages` (`.[dev,llm]`, pacote em modo `-e`).
 - P10 (2026-11-03): `peakguard/budget.py` (SLO 0,99, error budget, burn rate 1h/5m e 6h/30m com 1 tick = 5 min equivalentes, `first_alert_tick`, custo por minuto de budget preservado com `None` se denominador ≤ 0, MAE/MAPE, quantil empírico causal). `risk_appetite` (0–1; p50/p80/p90) em `simulate`/`compare`/API; `POST /error-budget`. 146 testes Python aprovados; benchmarks idênticos. Tudo synthetic/predicted/estimated. Custo da sessão: registrar via `/cost` (não acessível ao agente).
-- Próximo: P11 (`docs/prompts/P11.md`).
+- P11 (2026-11-03): `ewma_window` (reativa) em `simulate`; `peakguard/sweep.py` (grade 56 combinações, máx. 200, cache JSON por hash do motor, Pareto custo × ticks fora do SLO; CLI `python -m peakguard sweep <cenário> [--cache f]`, fora do CI); `peakguard/finops.py` (requests, bin-packing, ocioso, spot×on-demand esperado, scale-to-zero; preços HIPOTÉTICOS) + `POST /pareto`, `POST /finops`; gráfico de Pareto no dashboard. 156 testes Python, 7 do frontend e build aprovados; benchmarks idênticos. Custo da sessão: registrar via `/cost` (não acessível ao agente).
+- Próximo: P12 (`docs/prompts/P12.md`).

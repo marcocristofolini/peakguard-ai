@@ -21,6 +21,14 @@ type Summary = {
 };
 type Run = { ticks: Tick[]; summary: Summary };
 type Comparison = { results: { reactive: Run; anticipatory: Run } };
+type ParetoPoint = {
+  policy: "reactive" | "anticipatory";
+  cost_brl: number;
+  slo_violation_ticks: number;
+  pareto: boolean;
+  target_utilization: number;
+};
+type Pareto = { points: ParetoPoint[]; combinations: number };
 const names: Record<string, string> = {
   stable: "Carga estável",
   predictable_peak: "Pico previsível",
@@ -123,6 +131,68 @@ function Chart({
     </section>
   );
 }
+function ParetoChart({ data }: { data: Pareto }) {
+  const xs = data.points.map((p) => p.cost_brl),
+    minX = Math.min(...xs),
+    spanX = Math.max(Math.max(...xs) - minX, 1e-9),
+    maxY = Math.max(...data.points.map((p) => p.slo_violation_ticks), 1),
+    color = { reactive: "#6e92ff", anticipatory: "#45d8b4" };
+  return (
+    <section className="panel chart">
+      <div className="panelhead">
+        <div>
+          <span className="eyebrow">FRONTEIRA DE PARETO · {data.combinations} CONFIGURAÇÕES</span>
+          <h3>Custo × passos fora do SLO</h3>
+        </div>
+        <span className="unit">BRL estimado · ticks (menor é melhor)</span>
+      </div>
+      <div className="plot">
+        <svg
+          viewBox="0 0 760 190"
+          role="img"
+          aria-label="Dispersão de custo estimado por passos fora do SLO; pontos cheios formam a fronteira de Pareto"
+          preserveAspectRatio="none"
+        >
+          <text x="2" y="28" fill="#8194a4" fontSize="10">
+            {num(maxY)}
+          </text>
+          <text x="40" y="186" fill="#8194a4" fontSize="10">
+            {money(minX)}
+          </text>
+          <text x="660" y="186" fill="#8194a4" fontSize="10">
+            {money(minX + spanX)}
+          </text>
+          {data.points.map((p, i) => (
+            <circle
+              key={i}
+              cx={40 + ((p.cost_brl - minX) / spanX) * 700}
+              cy={164 - (p.slo_violation_ticks / maxY) * 140}
+              r={p.pareto ? 5 : 3.5}
+              fill={p.pareto ? color[p.policy] : "none"}
+              stroke={color[p.policy]}
+              strokeWidth="1.5"
+              opacity={p.pareto ? 1 : 0.6}
+            >
+              <title>{`${labels[p.policy]} · utilização ${p.target_utilization} · ${money(p.cost_brl)} · ${p.slo_violation_ticks} ticks fora do SLO${p.pareto ? " · fronteira" : ""}`}</title>
+            </circle>
+          ))}
+        </svg>
+      </div>
+      <div className="legend">
+        <span>
+          <i style={{ background: color.reactive }} />
+          Reativa
+        </span>
+        <span>
+          <i style={{ background: color.anticipatory }} />
+          Antecipativa
+        </span>
+        <span>Ponto cheio = fronteira; vazado = dominado</span>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   const [scenarios, setScenarios] = useState<string[]>([]),
     [scenario, setScenario] = useState("predictable_peak"),
@@ -132,6 +202,7 @@ export default function Home() {
     [slo, setSlo] = useState(2),
     [result, setResult] = useState<Comparison | null>(null),
     [validation, setValidation] = useState<Validation | null>(null),
+    [pareto, setPareto] = useState<Pareto | null>(null),
     [loading, setLoading] = useState(false),
     [error, setError] = useState("");
   useEffect(() => {
@@ -152,6 +223,7 @@ export default function Home() {
     setError("");
     setResult(null);
     setValidation(null);
+    setPareto(null);
     try {
       const payload = JSON.stringify({
         scenario,
@@ -175,6 +247,14 @@ export default function Home() {
             : "Parâmetros inválidos. Revise os valores informados.",
         );
       setResult(data);
+      fetch("/api/pareto", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      })
+        .then((p) => (p.ok ? p.json() : null))
+        .then(setPareto)
+        .catch(() => setPareto(null));
       try {
         const v = await fetch("/api/explanations", {
           method: "POST",
@@ -497,6 +577,7 @@ export default function Home() {
                       ]}
                     />
                   </div>
+                  {pareto && <ParetoChart data={pareto} />}
                   <section className="panel tablepanel">
                     <div className="panelhead">
                       <div>

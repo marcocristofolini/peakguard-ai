@@ -12,7 +12,9 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 
 from .budget import Slo, budget_report
+from .finops import FinopsModel, extended_cost
 from .scenarios import ALL_SCENARIOS, load_scenario
+from .sweep import sweep
 from .simulator import Config, compare, simulate
 from .explanations import explain, evidence
 
@@ -53,6 +55,22 @@ class ExplanationRequest(ComparisonRequest):
 class ErrorBudgetRequest(ComparisonRequest):
     slo_target: float = Field(0.99, gt=0, lt=1)
     slo_window_minutes: float | None = Field(None, gt=0, le=1_000_000)
+
+
+class FinopsConfig(BaseModel):
+    model_config = ConfigDict(extra='forbid', allow_inf_nan=False, strict=True)
+    node_vcpu: float = Field(4, gt=0, le=10_000)
+    node_mem_gib: float = Field(16, gt=0, le=100_000)
+    pod_vcpu: float = Field(0.5, gt=0, le=10_000)
+    pod_mem_gib: float = Field(1.0, gt=0, le=100_000)
+    spot_fraction: float = Field(0, ge=0, le=1)
+    interruption_per_node_hour: float = Field(0.05, ge=0, le=1000)
+    interruption_replace_minutes: float = Field(3, ge=0, le=100_000)
+    scale_to_zero_below_docs_per_minute: float | None = Field(None, ge=0, le=1_000_000_000)
+
+
+class FinopsRequest(SimulationRequest):
+    finops: FinopsConfig = Field(default_factory=FinopsConfig)
 
 
 class SimulationResponse(BaseModel):
@@ -144,5 +162,23 @@ def error_budget_report(request: ErrorBudgetRequest):
     """Error budget, burn rate e custo por minuto preservado; valores estimated sobre dados synthetic."""
     try:
         return budget_report(run(request), Slo(request.slo_target, request.slo_window_minutes))
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+
+
+@app.post('/pareto')
+def pareto(request: ComparisonRequest):
+    """Varredura da grade padrão (48 combinações, sem cache); fronteira custo × ticks fora do SLO. Valores estimated."""
+    try:
+        return sweep(request.scenario, request.seed, Config(**request.config.model_dump()))
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+
+
+@app.post('/finops')
+def finops(request: FinopsRequest):
+    """Custo estendido (nós, ocioso, spot, scale-to-zero) com tabela de preços hipotética."""
+    try:
+        return extended_cost(run(request, request.policy), FinopsModel(**request.finops.model_dump()))
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
