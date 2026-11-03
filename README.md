@@ -71,7 +71,7 @@ flowchart LR
 
 | Interface | Uso |
 | --- | --- |
-| `GET /scenarios` | Quatro cenários sintéticos |
+| `GET /scenarios` | Oito cenários sintéticos: quatro de referência e quatro do calendário fiscal |
 | `POST /simulations` | Uma política; `policy=reactive` ou `anticipatory` |
 | `POST /comparisons` | Duas políticas com entradas e parâmetros iguais |
 | `POST /evidence` | Consulta sem persistência de evidências calculadas |
@@ -82,7 +82,10 @@ O corpo aceita `scenario`, `seed` e `config` opcional. Parâmetros e fórmulas: 
 ```bash
 curl -fsS http://127.0.0.1:8000/explanations -H 'Content-Type: application/json' -d '{"scenario":"predictable_peak","seed":42}'
 python3 -m peakguard compare wrong_forecast --seed 42 --output /tmp/peakguard-comparison.json
+python3 -m peakguard multiseed fiscal_irpf_april --arrivals poisson --seeds 20 --csv /tmp/peakguard-irpf.csv
 ```
+
+`--arrivals poisson|burst` sorteia chegadas de forma reproduzível pela seed (o padrão continua determinístico). `multiseed` resume as métricas com média e IC 95% e checa a Lei de Little nas execuções drenadas. Todos os cenários são sintéticos.
 
 ## Autenticação da API
 
