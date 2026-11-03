@@ -10,10 +10,10 @@ def cli(*args):
     return subprocess.run([sys.executable, "-m", "peakguard", *args], capture_output=True, text=True, env=os.environ.copy())
 
 
-def test_list_exposes_four_offline_scenarios():
+def test_list_exposes_offline_scenarios():
     result = cli("list")
     assert result.returncode == 0, result.stderr
-    assert set(json.loads(result.stdout)) == {"stable", "predictable_peak", "unexpected_peak", "wrong_forecast"}
+    assert {"stable", "predictable_peak", "unexpected_peak", "wrong_forecast", "fiscal_irpf_april"} <= set(json.loads(result.stdout))
 
 
 def test_run_exports_reproducible_json(tmp_path):
@@ -61,3 +61,18 @@ def test_output_failure_is_reported_without_success_json(tmp_path):
     assert result.returncode == 2
     assert "Traceback" not in result.stderr
     assert not result.stdout
+
+
+def test_multiseed_json_and_csv(tmp_path):
+    csv_path = tmp_path / "m.csv"
+    result = cli("multiseed", "fiscal_irpf_april", "--seeds", "4", "--arrivals", "poisson", "--csv", str(csv_path))
+    assert result.returncode == 0, result.stderr
+    data = json.loads(result.stdout)
+    assert data["seeds"] == [0, 1, 2, 3] and "cost_brl" in data["policies"]["reactive"]
+    assert csv_path.read_text().startswith("scenario,arrivals,policy,metric")
+
+
+def test_run_accepts_arrivals_and_new_scenario():
+    a = cli("run", "fiscal_das_day20", "--arrivals", "burst")
+    assert a.returncode == 0, a.stderr
+    assert a.stdout == cli("run", "fiscal_das_day20", "--arrivals", "burst").stdout

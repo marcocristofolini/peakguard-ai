@@ -1,5 +1,5 @@
 # STATUS — handoff
-- Fases P0–P8 concluídas; P9–P14 especificadas em `docs/prompts/` (ver ROADMAP).
+- Fases P0–P9 concluídas; P10–P14 especificadas em `docs/prompts/` (ver ROADMAP).
 - WSL Ubuntu 24.04; FastAPI, Next.js 16.4.3, simulador sintético, LLM opcional e benchmarks.
 - 2026-11-03: dependências atualizadas pelo Dependabot (FastAPI 0.162, Pydantic 2.14, openai 3.42, React 19.3, TypeScript 7); 108 testes Python, 7 do frontend, build e `npm audit` (0 vulnerabilidades) aprovados; benchmarks idênticos.
 - GitHub: repositório público, MIT, CI (`ci-python`, `ci-frontend`), CodeQL, dependency-review, Dependabot mensal, ruleset na `main` exigindo `test` e `build`.
@@ -10,4 +10,6 @@
 - Arquitetura interativa (Archify 3.1): `.archify/architecture-peakguard-ai-20261101-112333/`, `docs/peakguard-archify.png`.
 - Cloud e implantação externa: não executadas; LLM real ainda não foi testado com chave externa (item da P12).
 - P8 (2026-11-03): `Dockerfile.api`, `frontend/Dockerfile`, `compose.yaml` (API em modo token); clone limpo provado com o docker nativo do WSL (integração do Docker Desktop; ver VERIFICATION). Custo da sessão: registrar via `/cost` (não acessível ao agente).
-- Próximo: P9 (`docs/prompts/P9.md`).
+- P9 (2026-11-03): 4 cenários fiscais sintéticos (`FISCAL_SCENARIOS`; `SCENARIOS` e benchmarks inalterados), chegadas `--arrivals poisson|burst` por seed (padrão determinístico), `python -m peakguard multiseed <cenário> [--seeds 20] [--csv f]` com média e IC 95% (t de Student, `peakguard/analysis.py`), `littles_law_check` (L vs λW, tolerância relativa 1e-6, só execuções drenadas). 128 testes Python aprovados; benchmarks idênticos. Custo da sessão: registrar via `/cost` (não acessível ao agente).
+- Ambiente: pytest/fastapi não estavam instalados; instalados com `pip --user --break-system-packages` (`.[dev,llm]`, pacote em modo `-e`).
+- Próximo: P10 (`docs/prompts/P10.md`).

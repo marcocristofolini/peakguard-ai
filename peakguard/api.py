@@ -11,7 +11,7 @@ from fastapi.responses import JSONResponse
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 
-from .scenarios import SCENARIOS, load_scenario
+from .scenarios import ALL_SCENARIOS, load_scenario
 from .simulator import Config, compare, simulate
 from .explanations import explain, evidence
 
@@ -35,7 +35,7 @@ class SimulationConfig(BaseModel):
 
 class ComparisonRequest(BaseModel):
     model_config = ConfigDict(extra='forbid', strict=True)
-    scenario: Literal['stable', 'predictable_peak', 'unexpected_peak', 'wrong_forecast']
+    scenario: Literal[*ALL_SCENARIOS]
     seed: int = Field(42, ge=-(2**63), le=2**63 - 1)
     config: SimulationConfig = Field(default_factory=SimulationConfig)
 
@@ -98,7 +98,7 @@ async def access_control(request: Request, call_next):
 
 @app.get('/scenarios', response_model=list[str])
 def scenarios():
-    return list(SCENARIOS)
+    return list(ALL_SCENARIOS)
 
 
 def run(request: ComparisonRequest, policy: str | None = None):
