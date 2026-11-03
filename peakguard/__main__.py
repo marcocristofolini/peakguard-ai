@@ -15,7 +15,7 @@ def main() -> None:
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("list", help="Lista os cenários sintéticos.")
     helps = {"run": "Executa uma política.", "compare": "Compara as duas políticas.",
-             "multiseed": "Média e IC 95% das métricas em várias seeds."}
+             "multiseed": "Média e IC 95%% das métricas em várias seeds."}  # %% : argparse formata help com %
     for command, text in helps.items():
         sub = commands.add_parser(command, help=text)
         sub.add_argument("scenario", choices=ALL_SCENARIOS)

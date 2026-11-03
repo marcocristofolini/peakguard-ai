@@ -10,6 +10,13 @@ def cli(*args):
     return subprocess.run([sys.executable, "-m", "peakguard", *args], capture_output=True, text=True, env=os.environ.copy())
 
 
+@pytest.mark.parametrize("args", [(), ("run",), ("compare",), ("multiseed",)])
+def test_help_renders_for_every_command(args):
+    result = cli(*args, "--help")
+    assert result.returncode == 0, result.stderr
+    assert "usage" in result.stdout
+
+
 def test_list_exposes_offline_scenarios():
     result = cli("list")
     assert result.returncode == 0, result.stderr
