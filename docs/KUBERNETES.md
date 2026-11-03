@@ -115,4 +115,21 @@ Leitura:
 - Divergências: (1) o cron escala ~33 s antes da carga, contra 0 s no motor. O minuto arredondado para baixo e o polling do KEDA antecipam mais que o horizonte de 30 s. (2) O fim da janela é arredondado para cima, e o HPA do KEDA usa estabilização de redução padrão (300 s). As réplicas ficam além da necessidade; o motor cancela a escala logo após o pico, daí +2,7 réplicas-minuto observadas. (3) A reativa observada tem backlog maior (166 × 142) e mais réplicas-minuto (9,14 × 7,67), porque o HPA decide por CPU média e o motor por demanda, e a fila é por pod. (4) O backlog observado da antecipativa não é zero, pela fila por pod e pela distribuição por conexão.
 - Limites: o calendário conhece exatamente a curva (previsão perfeita); o cenário de previsão errada não foi testado no cluster. 3 repetições, um nó, uma carga.
 
+### Ambiente de medição e ressalvas (P17)
+
+O Kind roda no WSL2 da mesma máquina que o Docker Desktop, o Windows e as demais ferramentas de desenvolvimento. CPU, memória e disco são compartilhados, e qualquer carga externa entra na medição. Os números absolutos descrevem esta máquina e não se transferem para um cluster com nós dedicados. O que esta coleta sustenta é a comparação relativa entre estratégias.
+
+**Interferência identificada.** Builds `docker compose` de outra tarefa rodaram durante parte da coleta, entre 12:05 e 12:17 (horário de Brasília, 03/11). Cruzando os horários de `observed.json` com os artefatos dessas builds:
+
+| Repetição | Janela | Sobreposição |
+| --- | --- | --- |
+| Reativa 0 | 12:12:55–12:16:01 | Build às ~12:13:00–12:14:05, na subida e no pico da carga, e outra às ~12:15:45, na drenagem |
+| Reativa 1 | 12:16:35–12:19:41 | Só os ~15 s iniciais, durante o reset, antes da carga |
+| Reativa 2 | 12:20:15–12:23:21 | Nenhuma |
+| Antecipativas 0–2 | 12:33:43–12:48:15 | Nenhuma |
+
+Impacto estimado: a repetição mais afetada (reativa 0: 171 doc, 1ª escala em 33 s) não ficou pior que a limpa (reativa 2: 182 doc, 29 s). O atraso de 3–4 s na 1ª escala está dentro da variação entre repetições (backlog reativo de 145 a 182 doc). Sem a reativa 0, a média da reativa vai de 166 para ~164 doc. Como a interferência só atingiu a reativa, ela não favoreceu a antecipativa, e a diferença principal (~166 × ~3 doc) é muito maior que o ruído.
+
+**Limite de método mais relevante.** As estratégias rodaram em blocos: as 3 reativas e, ~10 min depois, as 3 antecipativas. Mudanças de carga da máquina entre os blocos se confundem com o efeito da estratégia, e só a interferência acima pôde ser identificada, porque tinha horário conhecido. A coleta não registrou a carga do host. A refação intercalada, com 5 repetições e registro de carga, está especificada em `docs/prompts/P17B.md`.
+
 Evidências: `evidence/p17/observed.json` (séries Prometheus `query_range`, logs do Job, horários de criação dos pods, manifesto aplicado por repetição) e `evidence/p17/results.json`. A 1ª tentativa da antecipativa abortou: o pré-requisito "1 réplica antes da carga", herdado da P13, é incompatível com a pré-escala. O script passou a dispensá-lo só nessa estratégia, e as 3 repetições reativas já coletadas foram mantidas. Cluster apagado ao final (`No kind clusters found`).
