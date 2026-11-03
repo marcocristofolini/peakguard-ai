@@ -7,6 +7,7 @@ from pathlib import Path
 
 from .analysis import multi_seed, to_csv
 from .scenarios import ALL_SCENARIOS, ARRIVALS, load_scenario
+from .sweep import sweep
 from .simulator import POLICIES, Config, compare, simulate
 
 
@@ -15,7 +16,8 @@ def main() -> None:
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("list", help="Lista os cenários sintéticos.")
     helps = {"run": "Executa uma política.", "compare": "Compara as duas políticas.",
-             "multiseed": "Média e IC 95%% das métricas em várias seeds."}  # %% : argparse formata help com %
+             "multiseed": "Média e IC 95%% das métricas em várias seeds.",
+             "sweep": "Varredura de parâmetros e fronteira de Pareto (explícito; fora do CI)."}  # %% : argparse formata help com %
     for command, text in helps.items():
         sub = commands.add_parser(command, help=text)
         sub.add_argument("scenario", choices=ALL_SCENARIOS)
@@ -25,6 +27,8 @@ def main() -> None:
             sub.add_argument("--csv", type=Path, help="Grava também a tabela em CSV.")
         else:
             sub.add_argument("--seed", type=int, default=42)
+        if command == "sweep":
+            sub.add_argument("--cache", type=Path, help="Arquivo JSON de cache dos pontos já calculados.")
         sub.add_argument("--output", type=Path, help="Grava o mesmo JSON emitido em stdout; o diretório deve existir.")
         if command == "run":
             sub.add_argument("--policy", choices=POLICIES, default="reactive")
@@ -41,6 +45,8 @@ def main() -> None:
                 result = multi_seed(args.scenario, config, args.seeds, args.arrivals)
                 if args.csv:
                     args.csv.write_text(to_csv(result), encoding="utf-8")
+            elif args.command == "sweep":
+                result = sweep(args.scenario, args.seed, config, args.arrivals, cache=args.cache)
             else:
                 scenario = load_scenario(args.scenario, args.seed, args.arrivals)
                 result = simulate(scenario, args.policy, config) if args.command == "run" else compare(scenario, config)

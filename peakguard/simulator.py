@@ -124,13 +124,19 @@ def _validate_numerics(scenario: Scenario, config: Config) -> None:
         raise ValueError("Limites numéricos excedidos pela combinação de parâmetros.") from error
 
 
-def simulate(scenario: Scenario, policy: str, config: Config, risk_appetite: float | None = None) -> dict:
-    """risk_appetite: quantil (0,1) dos resíduos de previsão somado ao lookahead antecipativo; None = sem ajuste."""
+def simulate(scenario: Scenario, policy: str, config: Config, risk_appetite: float | None = None,
+             ewma_window: int | None = None) -> dict:
+    """risk_appetite: quantil (0,1) dos resíduos de previsão somado ao lookahead antecipativo; None = sem ajuste.
+    ewma_window: janela (ticks, alpha=2/(w+1)) que suaviza a demanda vista pela política reativa; None/1 = sem suavização."""
     if policy not in POLICIES:
         raise ValueError(f"política desconhecida: {policy}")
     if risk_appetite is not None and (isinstance(risk_appetite, bool) or not isinstance(risk_appetite, (int, float))
                                       or not 0 < risk_appetite < 1):
         raise ValueError("risk_appetite deve estar em (0, 1).")
+    if ewma_window is not None and (isinstance(ewma_window, bool) or not isinstance(ewma_window, int) or ewma_window < 1):
+        raise ValueError("ewma_window deve ser inteiro >= 1.")
+    alpha = 2 / ((ewma_window or 1) + 1)
+    smoothed = 0.0
     _validate_numerics(scenario, config)
     duration = len(scenario.demand_docs_per_minute)
     per_replica_tick = config.price_brl_per_replica_hour * config.tick_minutes / 60
@@ -150,7 +156,7 @@ def simulate(scenario: Scenario, policy: str, config: Config, risk_appetite: flo
             events.append("activation")
         pending = [(ready, count) for ready, count in pending if ready > tick]
         provisioned = active + sum(count for _, count in pending)
-        proposed = _propose(policy, scenario, tick, previous_demand, backlog, provisioned, config, risk_appetite)
+        proposed = _propose(policy, scenario, tick, smoothed, backlog, provisioned, config, risk_appetite)
         target, limits = _safe_target(proposed, previous_demand, backlog, spent, duration - tick, config)
         events.extend(limits)
         if target != provisioned:
@@ -205,6 +211,7 @@ def simulate(scenario: Scenario, policy: str, config: Config, risk_appetite: flo
             "events": events,
         })
         previous_demand = demand
+        smoothed = alpha * demand + (1 - alpha) * smoothed if tick else demand
     processed_total = math.fsum(t["processed_docs"] for t in ticks)
     return {
         "schema_version": 1, "scenario": scenario.name, "seed": scenario.seed, "policy": policy,
