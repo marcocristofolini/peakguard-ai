@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 
+from .budget import Slo, budget_report
 from .scenarios import ALL_SCENARIOS, load_scenario
 from .simulator import Config, compare, simulate
 from .explanations import explain, evidence
@@ -38,6 +39,7 @@ class ComparisonRequest(BaseModel):
     scenario: Literal[*ALL_SCENARIOS]
     seed: int = Field(42, ge=-(2**63), le=2**63 - 1)
     config: SimulationConfig = Field(default_factory=SimulationConfig)
+    risk_appetite: float | None = Field(None, gt=0, lt=1, description='Quantil dos resíduos (ex.: 0.5, 0.8, 0.9); só afeta a política antecipativa.')
 
 
 class SimulationRequest(ComparisonRequest):
@@ -48,11 +50,17 @@ class ExplanationRequest(ComparisonRequest):
     use_llm: bool = False
 
 
+class ErrorBudgetRequest(ComparisonRequest):
+    slo_target: float = Field(0.99, gt=0, lt=1)
+    slo_window_minutes: float | None = Field(None, gt=0, le=1_000_000)
+
+
 class SimulationResponse(BaseModel):
     schema_version: int
     scenario: str
     seed: int
     policy: str
+    risk_appetite: float | None = None
     data_labels: dict[str, str]
     config: SimulationConfig
     input: dict[str, list[float]]
@@ -105,7 +113,7 @@ def run(request: ComparisonRequest, policy: str | None = None):
     try:
         scenario = load_scenario(request.scenario, request.seed)
         config = Config(**request.config.model_dump())
-        return compare(scenario, config) if policy is None else simulate(scenario, policy, config)
+        return compare(scenario, config, request.risk_appetite) if policy is None else simulate(scenario, policy, config, request.risk_appetite)
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
 
@@ -129,3 +137,12 @@ def read_evidence(request: ComparisonRequest):
 @app.post('/explanations')
 def explanations(request: ExplanationRequest):
     return explain(run(request), use_llm=request.use_llm)
+
+
+@app.post('/error-budget')
+def error_budget_report(request: ErrorBudgetRequest):
+    """Error budget, burn rate e custo por minuto preservado; valores estimated sobre dados synthetic."""
+    try:
+        return budget_report(run(request), Slo(request.slo_target, request.slo_window_minutes))
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
