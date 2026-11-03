@@ -1,0 +1,162 @@
+{
+ "labels": {
+  "observed": "observed local Kind cluster (evidence/p13)",
+  "simulation": "estimated",
+  "load": "synthetic",
+  "cost": "hypothetical"
+ },
+ "derivation": {
+  "first_scale_after_load_seconds": [
+   32.750821590423584,
+   21.098294734954834,
+   28.36960768699646
+  ],
+  "low_load_seconds": 20,
+  "decision_after_step_seconds": [
+   12.750821590423584,
+   1.098294734954834,
+   8.36960768699646
+  ],
+  "builtin_tick_seconds": 10,
+  "derived_extra_decision_delay_ticks": 0,
+  "note": "sensitivity_* are NOT derived from data; shown only to bound the effect"
+ },
+ "parameters": {
+  "old": {
+   "capacity_docs_per_minute_per_replica": 300.0,
+   "activation_delay_ticks": 2
+  },
+  "p13": {
+   "capacity_docs_per_minute_per_replica": 294.0,
+   "activation_delay_ticks": 1
+  },
+  "p13_derived_delay": {
+   "capacity_docs_per_minute_per_replica": 294.0,
+   "activation_delay_ticks": 1,
+   "decision_delay_ticks": 0
+  },
+  "sensitivity_delay_1": {
+   "capacity_docs_per_minute_per_replica": 294.0,
+   "activation_delay_ticks": 1,
+   "decision_delay_ticks": 1
+  },
+  "sensitivity_delay_2": {
+   "capacity_docs_per_minute_per_replica": 294.0,
+   "activation_delay_ticks": 1,
+   "decision_delay_ticks": 2
+  }
+ },
+ "mae_per_repetition": [
+  {
+   "repetition": 0,
+   "old": {
+    "backlog_docs": 48.0,
+    "throughput_docs_per_second": 3.868255001366499,
+    "delay_seconds_little": 8.40404334342992
+   },
+   "p13": {
+    "backlog_docs": 54.6875,
+    "throughput_docs_per_second": 4.19394983283652,
+    "delay_seconds_little": 8.897240622341485
+   },
+   "p13_derived_delay": {
+    "backlog_docs": 54.6875,
+    "throughput_docs_per_second": 4.19394983283652,
+    "delay_seconds_little": 8.897240622341485
+   },
+   "sensitivity_delay_1": {
+    "backlog_docs": 47.5,
+    "throughput_docs_per_second": 3.8682550013664994,
+    "delay_seconds_little": 8.557104567919717
+   },
+   "sensitivity_delay_2": {
+    "backlog_docs": 45.125,
+    "throughput_docs_per_second": 3.706426518308299,
+    "delay_seconds_little": 9.869500004199272
+   }
+  },
+  {
+   "repetition": 1,
+   "old": {
+    "backlog_docs": 28.333333333333332,
+    "throughput_docs_per_second": 3.228791295393773,
+    "delay_seconds_little": 5.866505512213977
+   },
+   "p13": {
+    "backlog_docs": 26.533333333333335,
+    "throughput_docs_per_second": 3.198119417013629,
+    "delay_seconds_little": 4.502982309968967
+   },
+   "p13_derived_delay": {
+    "backlog_docs": 26.533333333333335,
+    "throughput_docs_per_second": 3.198119417013629,
+    "delay_seconds_little": 4.502982309968967
+   },
+   "sensitivity_delay_1": {
+    "backlog_docs": 28.6,
+    "throughput_docs_per_second": 3.2421246287271064,
+    "delay_seconds_little": 6.019566736703773
+   },
+   "sensitivity_delay_2": {
+    "backlog_docs": 51.13333333333333,
+    "throughput_docs_per_second": 3.3088286249941463,
+    "delay_seconds_little": 10.38525414713368
+   }
+  },
+  {
+   "repetition": 2,
+   "old": {
+    "backlog_docs": 33.1875,
+    "throughput_docs_per_second": 3.0149443843210717,
+    "delay_seconds_little": 6.331123492371932
+   },
+   "p13": {
+    "backlog_docs": 42.75,
+    "throughput_docs_per_second": 3.502850306913331,
+    "delay_seconds_little": 7.52296022706581
+   },
+   "p13_derived_delay": {
+    "backlog_docs": 42.75,
+    "throughput_docs_per_second": 3.502850306913331,
+    "delay_seconds_little": 7.52296022706581
+   },
+   "sensitivity_delay_1": {
+    "backlog_docs": 33.0625,
+    "throughput_docs_per_second": 3.027444384321072,
+    "delay_seconds_little": 6.484184716861729
+   },
+   "sensitivity_delay_2": {
+    "backlog_docs": 38.0625,
+    "throughput_docs_per_second": 2.9723859872193583,
+    "delay_seconds_little": 8.381583920882164
+   }
+  }
+ ],
+ "mae_mean": {
+  "old": {
+   "backlog_docs": 36.50694444444444,
+   "throughput_docs_per_second": 3.3706635603604482,
+   "delay_seconds_little": 6.867224116005278
+  },
+  "p13": {
+   "backlog_docs": 41.32361111111111,
+   "throughput_docs_per_second": 3.631639852254493,
+   "delay_seconds_little": 6.974394386458754
+  },
+  "p13_derived_delay": {
+   "backlog_docs": 41.32361111111111,
+   "throughput_docs_per_second": 3.631639852254493,
+   "delay_seconds_little": 6.974394386458754
+  },
+  "sensitivity_delay_1": {
+   "backlog_docs": 36.387499999999996,
+   "throughput_docs_per_second": 3.3792746714715594,
+   "delay_seconds_little": 7.0202853404950725
+  },
+  "sensitivity_delay_2": {
+   "backlog_docs": 44.77361111111111,
+   "throughput_docs_per_second": 3.3292137101739345,
+   "delay_seconds_little": 9.545446024071707
+  }
+ }
+}

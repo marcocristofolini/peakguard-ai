@@ -19,6 +19,7 @@ class Config:
     max_replicas: int = 10
     initial_replicas: int = 1
     activation_delay_ticks: int = 2
+    decision_delay_ticks: int = 0  # atraso das métricas vistas pela reativa (HPA); separado do startup
     cooldown_ticks: int = 2
     forecast_horizon_ticks: int = 3
     target_utilization: float = 0.8
@@ -28,13 +29,13 @@ class Config:
 
     def __post_init__(self):
         integer_fields = ("min_replicas", "max_replicas", "initial_replicas",
-                          "activation_delay_ticks", "cooldown_ticks", "forecast_horizon_ticks")
+                          "activation_delay_ticks", "decision_delay_ticks", "cooldown_ticks", "forecast_horizon_ticks")
         for name, value in asdict(self).items():
             if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
                 raise ValueError(f"{name} deve ser um número finito.")
             if name in integer_fields and not isinstance(value, int):
                 raise ValueError(f"{name} deve ser inteiro.")
-            nonnegative = name in ("activation_delay_ticks", "cooldown_ticks", "price_brl_per_replica_hour",
+            nonnegative = name in ("activation_delay_ticks", "decision_delay_ticks", "cooldown_ticks", "price_brl_per_replica_hour",
                                    "budget_brl", "base_latency_minutes")
             if value < 0 or (not nonnegative and value == 0):
                 raise ValueError(f"{name} fora do intervalo permitido.")
@@ -148,6 +149,7 @@ def simulate(scenario: Scenario, policy: str, config: Config, risk_appetite: flo
     backlog, spent, previous_demand = 0.0, 0.0, 0.0
     last_scale = -config.cooldown_ticks
     ticks = []
+    seen = []  # métricas (demanda suavizada, demanda anterior, backlog) no início de cada tick
     for tick, demand in enumerate(scenario.demand_docs_per_minute):
         events = []
         activated = sum(count for ready, count in pending if ready <= tick)
@@ -156,8 +158,11 @@ def simulate(scenario: Scenario, policy: str, config: Config, risk_appetite: flo
             events.append("activation")
         pending = [(ready, count) for ready, count in pending if ready > tick]
         provisioned = active + sum(count for _, count in pending)
-        proposed = _propose(policy, scenario, tick, smoothed, backlog, provisioned, config, risk_appetite)
-        target, limits = _safe_target(proposed, previous_demand, backlog, spent, duration - tick, config)
+        seen.append((smoothed, previous_demand, backlog))
+        delay = config.decision_delay_ticks if policy == "reactive" else 0
+        view_smoothed, view_previous, view_backlog = seen[tick - delay] if tick >= delay else (0.0, 0.0, 0.0)
+        proposed = _propose(policy, scenario, tick, view_smoothed, view_backlog, provisioned, config, risk_appetite)
+        target, limits = _safe_target(proposed, view_previous, view_backlog, spent, duration - tick, config)
         events.extend(limits)
         if target != provisioned:
             if tick - last_scale < config.cooldown_ticks:

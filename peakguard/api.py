@@ -29,6 +29,7 @@ class SimulationConfig(BaseModel):
     max_replicas: int = Field(10, ge=1, le=1000)
     initial_replicas: int = Field(1, ge=1, le=1000)
     activation_delay_ticks: int = Field(2, ge=0, le=1000)
+    decision_delay_ticks: int = Field(0, ge=0, le=1000)
     cooldown_ticks: int = Field(2, ge=0, le=1000)
     forecast_horizon_ticks: int = Field(3, ge=1, le=1000)
     target_utilization: float = Field(0.8, gt=0, le=1)

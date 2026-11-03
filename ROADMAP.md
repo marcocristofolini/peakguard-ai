@@ -108,7 +108,7 @@ P0–P7 estão concluídas. A segunda rodada aprofunda o rigor técnico; a espec
 ## Fases v3 (P15–P19)
 Derivadas dos "Próximos passos" do README, em ordem de valor: primeiro explicar o resultado negativo da calibração, depois levar a antecipativa ao cluster. Especificação em `docs/prompts/`.
 
-- P15 — Atraso de decisão do controlador separado do startup; recalibrar com `evidence/p13/observed.json`, sem subir cluster.
+- P15 (concluída) — Atraso de decisão do controlador separado do startup; recalibrar com `evidence/p13/observed.json`, sem subir cluster.
 - P16 — Paridade da API e do dashboard: chegadas estocásticas, percentil e campos novos do `Config`.
 - P17 — Antecipativa no Kubernetes: KEDA com gatilho `cron` do calendário declarado × HPA reativo no Kind, 3 repetições.
 - P18 — Chamada real à LLM, uma única vez, quando houver chave.
