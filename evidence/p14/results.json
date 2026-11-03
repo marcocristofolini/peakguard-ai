@@ -97,6 +97,7 @@
  "pareto_seed42": {
   "unexpected_peak": {
    "combinations": 56,
+   "front_distinct_points": 2,
    "front_policies": [
     "anticipatory"
    ],
@@ -104,6 +105,7 @@
   },
   "wrong_forecast": {
    "combinations": 56,
+   "front_distinct_points": 1,
    "front_policies": [
     "reactive"
    ],
