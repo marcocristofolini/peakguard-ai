@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { recommend } from "../lib/recommendation.mjs";
+import { niceTicks } from "../lib/axis.mjs";
 import { interpretDecision, type Validation } from "../lib/decision.mjs";
 
 type Tick = {
@@ -55,6 +56,35 @@ const labels: Record<string, string> = {
   tie: "Empate",
 };
 
+// Área útil do gráfico no viewBox 760×190: x 40–740, y 24 (topo) a 164 (zero).
+const yPos = (value: number, max: number) => 164 - (value / max) * 140;
+
+// Rótulos em HTML, fora do SVG: o SVG usa preserveAspectRatio="none" para
+// esticar, o que distorceria texto; aqui o texto mantém tamanho legível.
+function Axes({
+  y,
+  x,
+}: {
+  y: { value: number; label: string; max: number }[];
+  x: [string, string];
+}) {
+  return (
+    <div className="axes" aria-hidden="true">
+      {y.map((t) => (
+        <span
+          key={t.value}
+          className="tick y"
+          style={{ top: `${(yPos(t.value, t.max) / 190) * 100}%` }}
+        >
+          {t.label}
+        </span>
+      ))}
+      <span className="tick x start">{x[0]}</span>
+      <span className="tick x end">{x[1]}</span>
+    </div>
+  );
+}
+
 function Chart({
   title,
   unit,
@@ -67,12 +97,13 @@ function Chart({
   series: { name: string; color: string; values: number[] }[];
 }) {
   const length = Math.max(...series.map((s) => s.values.length), 1),
-    max = Math.max(...series.flatMap((s) => s.values), 1);
+    ticks = niceTicks(Math.max(...series.flatMap((s) => s.values), 0)),
+    max = ticks.at(-1) ?? 1;
   const points = (v: number[]) =>
     v
       .map(
         (y, i) =>
-          `${40 + (i * 700) / Math.max(length - 1, 1)},${164 - (y / max) * 140}`,
+          `${40 + (i * 700) / Math.max(length - 1, 1)},${yPos(y, max)}`,
       )
       .join(" ");
   return (
@@ -91,20 +122,17 @@ function Chart({
           aria-label={`${title}, ${unit}`}
           preserveAspectRatio="none"
         >
-          {[0, 1, 2, 3].map((i) => (
-            <g key={i}>
-              <line
-                x1="40"
-                x2="740"
-                y1={24 + i * 46.7}
-                y2={24 + i * 46.7}
-                stroke="#263645"
-                strokeDasharray="3 5"
-              />
-              <text x="2" y={28 + i * 46.7} fill="#8194a4" fontSize="10">
-                {num(max * (1 - i / 3))}
-              </text>
-            </g>
+          {ticks.map((t) => (
+            <line
+              key={t}
+              x1="40"
+              x2="740"
+              y1={yPos(t, max)}
+              y2={yPos(t, max)}
+              stroke="#263645"
+              strokeDasharray="3 5"
+              vectorEffect="non-scaling-stroke"
+            />
           ))}
           {series.map((s) => (
             <polyline
@@ -116,13 +144,11 @@ function Chart({
               points={points(s.values)}
             />
           ))}
-          <text x="40" y="186" fill="#8194a4" fontSize="10">
-            0 min
-          </text>
-          <text x="694" y="186" fill="#8194a4" fontSize="10">
-            {num(lastTime)} min
-          </text>
         </svg>
+        <Axes
+          y={ticks.map((t) => ({ value: t, label: num(t), max }))}
+          x={["0 min", `${num(lastTime)} min`]}
+        />
       </div>
       <div className="legend">
         {series.map((s) => (
@@ -139,7 +165,8 @@ function ParetoChart({ data }: { data: Pareto }) {
   const xs = data.points.map((p) => p.cost_brl),
     minX = Math.min(...xs),
     spanX = Math.max(Math.max(...xs) - minX, 1e-9),
-    maxY = Math.max(...data.points.map((p) => p.slo_violation_ticks), 1),
+    yTicks = niceTicks(Math.max(...data.points.map((p) => p.slo_violation_ticks), 0)),
+    maxY = yTicks.at(-1) ?? 1,
     color = { reactive: "#6e92ff", anticipatory: "#45d8b4" };
   return (
     <section className="panel chart">
@@ -157,23 +184,23 @@ function ParetoChart({ data }: { data: Pareto }) {
           aria-label="Dispersão de custo estimado por passos fora do SLO; pontos cheios formam a fronteira de Pareto"
           preserveAspectRatio="none"
         >
-          <text x="2" y="28" fill="#8194a4" fontSize="10">
-            {num(maxY)}
-          </text>
-          <text x="2" y="168" fill="#8194a4" fontSize="10">
-            0
-          </text>
-          <text x="40" y="186" fill="#8194a4" fontSize="10">
-            {money(minX)}
-          </text>
-          <text x="660" y="186" fill="#8194a4" fontSize="10">
-            {money(minX + spanX)}
-          </text>
+          {yTicks.map((t) => (
+            <line
+              key={t}
+              x1="40"
+              x2="740"
+              y1={yPos(t, maxY)}
+              y2={yPos(t, maxY)}
+              stroke="#263645"
+              strokeDasharray="3 5"
+              vectorEffect="non-scaling-stroke"
+            />
+          ))}
           {data.points.map((p, i) => (
             <circle
               key={i}
               cx={40 + ((p.cost_brl - minX) / spanX) * 700}
-              cy={164 - (p.slo_violation_ticks / maxY) * 140}
+              cy={yPos(p.slo_violation_ticks, maxY)}
               r={p.pareto ? 5 : 3.5}
               fill={p.pareto ? color[p.policy] : "none"}
               stroke={color[p.policy]}
@@ -184,6 +211,10 @@ function ParetoChart({ data }: { data: Pareto }) {
             </circle>
           ))}
         </svg>
+        <Axes
+          y={yTicks.map((t) => ({ value: t, label: num(t), max: maxY }))}
+          x={[money(minX), money(minX + spanX)]}
+        />
       </div>
       <div className="legend">
         <span>
