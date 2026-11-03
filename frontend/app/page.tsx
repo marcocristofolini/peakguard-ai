@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { recommend } from "../lib/recommendation.mjs";
 import { niceTicks } from "../lib/axis.mjs";
 import { interpretDecision, type Validation } from "../lib/decision.mjs";
+import { investigationLog, clock } from "../lib/investigation.mjs";
 
 type Tick = {
   time_minutes: number;
@@ -30,6 +31,16 @@ type ParetoPoint = {
   target_utilization: number;
 };
 type Pareto = { points: ParetoPoint[]; combinations: number };
+type Tone = "demand" | "reactive" | "anticipatory" | "risk";
+
+// Cores de evidência: cada grandeza tem sempre a mesma cor na página.
+const C = {
+  demand: "#F5B851",
+  reactive: "#5B8CFF",
+  anticipatory: "#2DD4A7",
+  risk: "#FF5C7A",
+};
+
 const names: Record<string, string> = {
   stable: "Carga estável",
   predictable_peak: "Pico previsível",
@@ -39,6 +50,17 @@ const names: Record<string, string> = {
   fiscal_das_day20: "Fiscal: DAS dia 20",
   fiscal_ancillary_obligations: "Fiscal: obrigações acessórias",
   fiscal_irpf_april: "Fiscal: IRPF de abril",
+};
+// Cada cenário vira a pergunta que a investigação responde.
+const questions: Record<string, [string, string]> = {
+  stable: ["Carga estável", ": vale manter réplicas extras?"],
+  predictable_peak: ["Pico previsível", ": antecipar compensa o custo?"],
+  unexpected_peak: ["Pico inesperado", ": quem segura a fila?"],
+  wrong_forecast: ["Previsão incorreta", ": quanto custa antecipar à toa?"],
+  fiscal_month_close: ["Fechamento do mês", ": a fila aguenta o volume?"],
+  fiscal_das_day20: ["DAS dia 20", ": antecipar evita violar o SLO?"],
+  fiscal_ancillary_obligations: ["Obrigações acessórias", ": qual política sai mais barata?"],
+  fiscal_irpf_april: ["IRPF de abril", ": o pico cabe no orçamento?"],
 };
 const money = (x: number | null) =>
   x === null
@@ -54,6 +76,14 @@ const labels: Record<string, string> = {
   reactive: "Reativa",
   anticipatory: "Antecipativa",
   tie: "Empate",
+};
+// A API devolve ids de política em inglês dentro do texto; a tela fala português.
+const ptPolicies = (text: string) =>
+  text.replace(/\banticipatory\b/g, "antecipativa").replace(/\breactive\b/g, "reativa");
+const verdicts: Record<string, string> = {
+  approved: "Aprovada pelo validador",
+  abstained: "Validador se absteve",
+  unavailable: "Validação indisponível",
 };
 
 // Área útil do gráfico no viewBox 760×190: x 40–740, y 24 (topo) a 164 (zero).
@@ -85,14 +115,56 @@ function Axes({
   );
 }
 
+function Evidence({
+  tone,
+  title,
+  unit,
+  children,
+  id,
+}: {
+  tone: Tone;
+  title: string;
+  unit: string;
+  children: React.ReactNode;
+  id?: string;
+}) {
+  return (
+    <figure className={`evidence ${tone}`} id={id}>
+      <figcaption>
+        <span className="etitle">
+          <i aria-hidden="true" />
+          {title}
+        </span>
+        <span className="unit">{unit}</span>
+      </figcaption>
+      {children}
+    </figure>
+  );
+}
+
+function Legend({ items }: { items: { name: string; color: string }[] }) {
+  return (
+    <div className="legend">
+      {items.map((s) => (
+        <span key={s.name}>
+          <i style={{ background: s.color }} />
+          {s.name}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function Chart({
   title,
   unit,
+  tone,
   series,
   lastTime,
 }: {
   title: string;
   unit: string;
+  tone: Tone;
   lastTime: number;
   series: { name: string; color: string; values: number[] }[];
 }) {
@@ -107,14 +179,7 @@ function Chart({
       )
       .join(" ");
   return (
-    <section className="panel chart">
-      <div className="panelhead">
-        <div>
-          <span className="eyebrow">SÉRIE TEMPORAL</span>
-          <h3>{title}</h3>
-        </div>
-        <span className="unit">{unit}</span>
-      </div>
+    <Evidence tone={tone} title={title} unit={unit}>
       <div className="plot">
         <svg
           viewBox="0 0 760 190"
@@ -129,8 +194,7 @@ function Chart({
               x2="740"
               y1={yPos(t, max)}
               y2={yPos(t, max)}
-              stroke="#263645"
-              strokeDasharray="3 5"
+              className="grid"
               vectorEffect="non-scaling-stroke"
             />
           ))}
@@ -139,7 +203,8 @@ function Chart({
               key={s.name}
               fill="none"
               stroke={s.color}
-              strokeWidth="2.5"
+              strokeWidth="2.25"
+              strokeLinejoin="round"
               vectorEffect="non-scaling-stroke"
               points={points(s.values)}
             />
@@ -150,33 +215,23 @@ function Chart({
           x={["0 min", `${num(lastTime)} min`]}
         />
       </div>
-      <div className="legend">
-        {series.map((s) => (
-          <span key={s.name}>
-            <i style={{ background: s.color }} />
-            {s.name}
-          </span>
-        ))}
-      </div>
-    </section>
+      <Legend items={series} />
+    </Evidence>
   );
 }
+
 function ParetoChart({ data }: { data: Pareto }) {
   const xs = data.points.map((p) => p.cost_brl),
     minX = Math.min(...xs),
     spanX = Math.max(Math.max(...xs) - minX, 1e-9),
     yTicks = niceTicks(Math.max(...data.points.map((p) => p.slo_violation_ticks), 0)),
-    maxY = yTicks.at(-1) ?? 1,
-    color = { reactive: "#6e92ff", anticipatory: "#45d8b4" };
+    maxY = yTicks.at(-1) ?? 1;
   return (
-    <section className="panel chart">
-      <div className="panelhead">
-        <div>
-          <span className="eyebrow">FRONTEIRA DE PARETO · {data.combinations} CONFIGURAÇÕES</span>
-          <h3>Custo × passos fora do SLO</h3>
-        </div>
-        <span className="unit">BRL estimado · ticks (menor é melhor)</span>
-      </div>
+    <Evidence
+      tone="risk"
+      title={`Fronteira de Pareto em ${data.combinations} configurações`}
+      unit="custo estimado × ticks fora do SLO, menor é melhor"
+    >
       <div className="plot">
         <svg
           viewBox="0 0 760 190"
@@ -191,26 +246,26 @@ function ParetoChart({ data }: { data: Pareto }) {
               x2="740"
               y1={yPos(t, maxY)}
               y2={yPos(t, maxY)}
-              stroke="#263645"
-              strokeDasharray="3 5"
+              className="grid"
               vectorEffect="non-scaling-stroke"
             />
           ))}
-          {data.points.map((p, i) => (
-            <circle
-              key={i}
-              cx={40 + ((p.cost_brl - minX) / spanX) * 700}
-              cy={yPos(p.slo_violation_ticks, maxY)}
-              r={p.pareto ? 5 : 3.5}
-              fill={p.pareto ? color[p.policy] : "none"}
-              stroke={color[p.policy]}
-              strokeWidth="1.5"
-              opacity={p.pareto ? 1 : 0.6}
-            >
-              <title>{`${labels[p.policy]} · utilização ${p.target_utilization} · ${money(p.cost_brl)} · ${p.slo_violation_ticks} ticks fora do SLO${p.pareto ? " · fronteira" : ""}`}</title>
-            </circle>
-          ))}
         </svg>
+        {/* Pontos em HTML: no SVG esticado um círculo vira elipse. */}
+        <div className="dots">
+          {data.points.map((p, i) => (
+            <span
+              key={i}
+              className={`dot ${p.pareto ? "front" : ""}`}
+              style={{
+                left: `${((40 + ((p.cost_brl - minX) / spanX) * 700) / 760) * 100}%`,
+                top: `${(yPos(p.slo_violation_ticks, maxY) / 190) * 100}%`,
+                color: C[p.policy],
+              }}
+              title={`${labels[p.policy]}, utilização ${p.target_utilization}, ${money(p.cost_brl)}, ${p.slo_violation_ticks} ticks fora do SLO${p.pareto ? ", na fronteira" : ""}`}
+            />
+          ))}
+        </div>
         <Axes
           y={yTicks.map((t) => ({ value: t, label: num(t), max: maxY }))}
           x={[money(minX), money(minX + spanX)]}
@@ -218,16 +273,39 @@ function ParetoChart({ data }: { data: Pareto }) {
       </div>
       <div className="legend">
         <span>
-          <i style={{ background: color.reactive }} />
+          <i style={{ background: C.reactive }} />
           Reativa
         </span>
         <span>
-          <i style={{ background: color.anticipatory }} />
+          <i style={{ background: C.anticipatory }} />
           Antecipativa
         </span>
-        <span>Ponto cheio = fronteira; vazado = dominado</span>
+        <span className="hint">Ponto cheio: na fronteira. Vazado: dominado.</span>
       </div>
-    </section>
+    </Evidence>
+  );
+}
+
+function Mark() {
+  return (
+    <svg viewBox="0 0 32 32" aria-hidden="true">
+      <defs>
+        <linearGradient id="pgmark" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0" stopColor="#6D3BF5" />
+          <stop offset="1" stopColor="#E04BC8" />
+        </linearGradient>
+      </defs>
+      <rect width="32" height="32" rx="8" fill="url(#pgmark)" />
+      <path
+        d="M6 22 L12 15 L16 18 L23 9 L26 12"
+        fill="none"
+        stroke="#fff"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M6 25.5 H26" stroke="#fff" strokeOpacity=".45" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
   );
 }
 
@@ -241,6 +319,7 @@ export default function Home() {
     [arrivals, setArrivals] = useState("deterministic"),
     [risk, setRisk] = useState(""),
     [result, setResult] = useState<Comparison | null>(null),
+    [ran, setRan] = useState<{ scenario: string; seed: number; arrivals: string } | null>(null),
     [validation, setValidation] = useState<Validation | null>(null),
     [pareto, setPareto] = useState<Pareto | null>(null),
     [loading, setLoading] = useState(false),
@@ -250,7 +329,7 @@ export default function Home() {
       .then(async (r) => {
         if (!r.ok)
           throw new Error(
-            "Não foi possível carregar os cenários. Verifique a API.",
+            "Não foi possível carregar os cenários. Verifique se a API está rodando.",
           );
         return r.json();
       })
@@ -289,6 +368,7 @@ export default function Home() {
             : "Parâmetros inválidos. Revise os valores informados.",
         );
       setResult(data);
+      setRan({ scenario, seed, arrivals });
       fetch("/api/pareto", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -308,7 +388,7 @@ export default function Home() {
         setValidation(null);
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Falha ao executar simulação.");
+      setError(e instanceof Error ? e.message : "A simulação falhou. Tente de novo.");
     } finally {
       setLoading(false);
     }
@@ -316,404 +396,267 @@ export default function Home() {
   const a = result?.results.reactive,
     b = result?.results.anticipatory,
     ranking = a && b ? recommend(a, b) : null,
-    rec = a && b ? interpretDecision(validation) : null;
+    rec = a && b ? interpretDecision(validation) : null,
+    log = a && b ? investigationLog(a, b) : [],
+    lastTime = a?.ticks.at(-1)?.time_minutes ?? 0;
   return (
-    <div className="shell">
-      <aside className="side">
-        <div className="brand">
-          <div className="logo">✳</div>
-          <div>
-            <strong>
-              peakguard<span>.ai</span>
-            </strong>
-            <small>CAPACITY INTELLIGENCE</small>
-          </div>
-        </div>
-        <div className="navtitle">WORKSPACE</div>
-        <div className="navactive">
-          <span>◫</span> Visão geral <b>01</b>
-        </div>
-        <div className="sidebottom">
-          <div className="status">
-            <i /> AMBIENTE LOCAL
-          </div>
-          <p>
-            Simulações offline
-            <br />
-            Dados sintéticos
-          </p>
-        </div>
-      </aside>
-      <main>
-        <header className="topbar">
-          <div>
-            <span className="crumb">
-              WORKSPACE <b>/</b> CAPACITY PLANNING
-            </span>
-          </div>
-          <div className="topright">
-            <span className="dot" /> SISTEMA LOCAL{" "}
-            <span className="avatar">PG</span>
-          </div>
-        </header>
-        <div className="content">
-          <div className="heading">
-            <div>
-              <div className="kicker">
-                <span /> SIMULATION WORKSPACE
-              </div>
-              <h1>
-                Inteligência de capacidade<span>.</span>
-              </h1>
-              <p>
-                Antecipe riscos de demanda e compare decisões de escalonamento.
-              </p>
-            </div>
-            <div className="tag">
-              ◈ &nbsp; DADOS SINTÉTICOS <span> / </span> CUSTOS ESTIMADOS
-            </div>
-          </div>
-          <div className="workspace">
-            <section className="panel controls">
-              <div className="panelhead">
-                <div>
-                  <span className="eyebrow">CONFIGURAÇÃO</span>
-                  <h2>Nova simulação</h2>
-                </div>
-                <span className="step">01</span>
-              </div>
-              <p className="muted">
-                Defina o cenário e os limites da comparação.
-              </p>
-              <form onSubmit={execute}>
-                <label>
-                  Cenário
-                  <select
-                    value={scenario}
-                    onChange={(e) => setScenario(e.target.value)}
-                    disabled={!scenarios.length}
-                  >
-                    {scenarios.length === 0 ? (
-                      <option>Carregando cenários...</option>
-                    ) : (
-                      scenarios.map((s) => (
-                        <option key={s} value={s}>
-                          {names[s] || s}
-                        </option>
-                      ))
-                    )}
-                  </select>
-                </label>
-                <div className="fieldrow">
-                  <label>
-                    Seed
-                    <input
-                      type="number"
-                      step="1"
-                      value={seed}
-                      onChange={(e) => setSeed(Number(e.target.value))}
-                      required
-                    />
-                  </label>
-                  <label>
-                    Máx. réplicas
-                    <input
-                      type="number"
-                      min="1"
-                      max="1000"
-                      step="1"
-                      value={maxReplicas}
-                      onChange={(e) => setMaxReplicas(Number(e.target.value))}
-                      required
-                    />
-                  </label>
-                </div>
-                <div className="fieldrow">
-                  <label>
-                    Orçamento <small>BRL</small>
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={budget}
-                      onChange={(e) => setBudget(Number(e.target.value))}
-                      required
-                    />
-                  </label>
-                  <label>
-                    SLO fila <small>min</small>
-                    <input
-                      type="number"
-                      min="0.1"
-                      step="0.1"
-                      value={slo}
-                      onChange={(e) => setSlo(Number(e.target.value))}
-                      required
-                    />
-                  </label>
-                </div>
-                <div className="fieldrow">
-                  <label>
-                    Chegadas
-                    <select
-                      value={arrivals}
-                      onChange={(e) => setArrivals(e.target.value)}
-                    >
-                      <option value="deterministic">Determinísticas</option>
-                      <option value="poisson">Poisson</option>
-                      <option value="burst">Burst</option>
-                    </select>
-                  </label>
-                  <label>
-                    Percentil de risco <small>0–1 (opcional)</small>
-                    <input
-                      type="number"
-                      min="0.01"
-                      max="0.99"
-                      step="0.01"
-                      placeholder="ex.: 0.9"
-                      value={risk}
-                      onChange={(e) => setRisk(e.target.value)}
-                    />
-                  </label>
-                </div>
-                {arrivals !== "deterministic" && (
-                  <p className="muted">
-                    <b>synthetic</b>: chegadas {arrivals} sorteadas pela seed
-                    (reproduzíveis).
-                  </p>
-                )}
-                <button disabled={loading || !scenarios.length}>
-                  {loading ? "Simulando..." : "Executar comparação"}{" "}
-                  <span>↗</span>
-                </button>
-              </form>
-              <div className="controlnote">
-                <span>ⓘ</span> As duas políticas usam a mesma carga e seed.
-                Nenhuma infraestrutura é alterada.
-              </div>
-            </section>
-            <div className="maincol">
-              <div className="sectiontitle">
-                <div>
-                  <span className="eyebrow">ANÁLISE DE CENÁRIO</span>
-                  <h2>Visão de risco</h2>
-                </div>
-                <span className="badge">
-                  {result ? "SIMULAÇÃO CONCLUÍDA" : "AGUARDANDO EXECUÇÃO"}
-                </span>
-              </div>
-              {error && (
-                <div className="error" role="alert">
-                  {error}
-                </div>
-              )}
-              {loading && (
-                <div className="empty" role="status">
-                  <div className="spinner" />
-                  Executando comparação...
-                </div>
-              )}
-              {!result && !loading && !error && (
-                <div className="empty">
-                  <div className="emptyicon">⌁</div>
-                  <strong>Pronto para simular</strong>
-                  <p>
-                    Selecione um cenário e execute a comparação para visualizar
-                    os resultados.
-                  </p>
-                </div>
-              )}
-              {a && b && rec && (
-                <>
-                  <div className="metrics">
-                    <div className="metric">
-                      <span>DEMANDA TOTAL</span>
-                      <strong>{num(a.summary.demand_docs)}</strong>
-                      <small>documentos sintéticos</small>
-                    </div>
-                    <div className="metric">
-                      <span>MAIOR BACKLOG</span>
-                      <strong>
-                        {num(
-                          Math.max(
-                            a.summary.max_backlog_docs,
-                            b.summary.max_backlog_docs,
-                          ),
-                        )}
-                      </strong>
-                      <small>documentos em fila</small>
-                    </div>
-                    <div className="metric">
-                      <span>MENOR CUSTO</span>
-                      <strong>
-                        {money(
-                          Math.min(a.summary.cost_brl, b.summary.cost_brl),
-                        )}
-                      </strong>
-                      <small>estimativa da execução</small>
-                    </div>
-                    <div className="metric">
-                      <span>VIOLAÇÃO DE SLO</span>
-                      <strong>
-                        {num(
-                          Math.min(
-                            a.summary.slo_violation_minutes,
-                            b.summary.slo_violation_minutes,
-                          ),
-                        )}
-                        <em> min</em>
-                      </strong>
-                      <small>melhor resultado</small>
-                    </div>
-                  </div>
-                  <div
-                    className={`recommend ${rec.status === "approved" ? "" : "recommend-warning"}`}
-                  >
-                    <div className="recicon">✳</div>
-                    <div>
-                      <div className="eyebrow">
-                        VALIDAÇÃO DE SEGURANÇA ·{" "}
-                        {rec.status === "approved"
-                          ? "APROVADA"
-                          : rec.status === "abstained"
-                            ? "ABSTENÇÃO"
-                            : "INCOMPLETA"}
-                      </div>
-                      <h3>{rec.title}</h3>
-                      <p>{rec.reason}</p>
-                      <p className="footnote">
-                        Ranking por SLO/custo:{" "}
-                        {ranking?.policy === "tie"
-                          ? "empate"
-                          : labels[ranking?.policy || ""] || "indisponível"}
-                        . Ranking não substitui validação por políticas.
-                      </p>
-                    </div>
-                    <span className="recchip">SEM EXECUÇÃO AUTOMÁTICA</span>
-                  </div>
-                  <Chart
-                    lastTime={a.ticks.at(-1)?.time_minutes ?? 0}
-                    title="Demanda e capacidade"
-                    unit="documentos / minuto"
-                    series={[
-                      {
-                        name: "Demanda sintética",
-                        color: "#f4c66a",
-                        values: a.ticks.map((t) => t.demand_docs_per_minute),
-                      },
-                      {
-                        name: "Capacidade reativa",
-                        color: "#6e92ff",
-                        values: a.ticks.map((t) => t.capacity_docs_per_minute),
-                      },
-                      {
-                        name: "Capacidade antecipativa",
-                        color: "#45d8b4",
-                        values: b.ticks.map((t) => t.capacity_docs_per_minute),
-                      },
-                    ]}
+    <div className="app">
+      <header className="nav">
+        <a className="brand" href="#investigar">
+          <Mark />
+          <span>
+            peakguard<b>.ai</b>
+          </span>
+        </a>
+        <nav aria-label="Seções">
+          <a href="#investigar">Investigar</a>
+          <a href="#evidencias">Evidências</a>
+          <a href="#comparacao">Comparação</a>
+        </nav>
+        <span className="env">
+          <i aria-hidden="true" /> Ambiente local, dados sintéticos
+        </span>
+      </header>
+
+      <section className="hero">
+        <h1>Investigue a capacidade antes do pico</h1>
+        <p>
+          A mesma carga sintética roda nas políticas reativa e antecipativa. O
+          validador decide qual é segura; nenhuma infraestrutura é alterada.
+        </p>
+      </section>
+
+      <section className="case" id="investigar">
+        <form className="ask" onSubmit={execute}>
+          <h2>Qual cenário investigar?</h2>
+          <div className="questions" role="radiogroup" aria-label="Cenário">
+            {scenarios.length === 0 && !error && (
+              <p className="muted">Carregando cenários…</p>
+            )}
+            {scenarios.map((s) => {
+              const [topic, rest] = questions[s] ?? [names[s] ?? s, ""];
+              return (
+                <label key={s} className={`q ${s === scenario ? "on" : ""}`}>
+                  <input
+                    type="radio"
+                    name="scenario"
+                    value={s}
+                    checked={s === scenario}
+                    onChange={() => setScenario(s)}
                   />
-                  <div className="chartgrid">
-                    <Chart
-                      lastTime={a.ticks.at(-1)?.time_minutes ?? 0}
-                      title="Réplicas ativas"
-                      unit="réplicas"
-                      series={[
-                        {
-                          name: "Reativa",
-                          color: "#6e92ff",
-                          values: a.ticks.map((t) => t.active_replicas),
-                        },
-                        {
-                          name: "Antecipativa",
-                          color: "#45d8b4",
-                          values: b.ticks.map((t) => t.active_replicas),
-                        },
-                      ]}
-                    />
-                    <Chart
-                      lastTime={a.ticks.at(-1)?.time_minutes ?? 0}
-                      title="Backlog"
-                      unit="documentos"
-                      series={[
-                        {
-                          name: "Reativa",
-                          color: "#6e92ff",
-                          values: a.ticks.map((t) => t.backlog_docs),
-                        },
-                        {
-                          name: "Antecipativa",
-                          color: "#45d8b4",
-                          values: b.ticks.map((t) => t.backlog_docs),
-                        },
-                      ]}
-                    />
-                  </div>
-                  {pareto && <ParetoChart data={pareto} />}
-                  <section className="panel tablepanel">
-                    <div className="panelhead">
-                      <div>
-                        <span className="eyebrow">ANÁLISE COMPARATIVA</span>
-                        <h3>Políticas lado a lado</h3>
-                      </div>
-                      <span className="unit">VALORES ESTIMADOS</span>
-                    </div>
-                    <div className="tablewrap">
-                      <table>
-                        <thead>
-                          <tr>
-                            <th>POLÍTICA</th>
-                            <th>CUSTO TOTAL</th>
-                            <th>CUSTO / 1.000 DOC.</th>
-                            <th>BACKLOG MÁX.</th>
-                            <th>VIOLAÇÃO SLO</th>
-                            <th>PROCESSADOS</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {(
-                            [
-                              ["Reativa", a],
-                              ["Antecipativa", b],
-                            ] as [string, Run][]
-                          ).map(([name, r]) => (
-                            <tr key={name}>
-                              <td>
-                                <i
-                                  className={
-                                    name === "Reativa" ? "blue" : "green"
-                                  }
-                                />
-                                {name}
-                              </td>
-                              <td>{money(r.summary.cost_brl)}</td>
-                              <td>{money(r.summary.cost_brl_per_1000_docs)}</td>
-                              <td>{num(r.summary.max_backlog_docs)}</td>
-                              <td>
-                                {num(r.summary.slo_violation_minutes)} min
-                              </td>
-                              <td>{num(r.summary.processed_docs)}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    <p className="footnote">
-                      SLO: tempo máximo em fila. Resultados dependem das
-                      premissas do simulador; não são medições de produção.
-                    </p>
-                  </section>
-                </>
-              )}
-            </div>
+                  <span>
+                    <b>{topic}</b>
+                    {rest}
+                  </span>
+                  {s.startsWith("fiscal_") && <em>fiscal</em>}
+                </label>
+              );
+            })}
           </div>
-          <footer>
-            PEAKGUARD AI <span> / </span> CAPACITY PLANNING <span>·</span>{" "}
-            SIMULAÇÃO OFFLINE
-          </footer>
-        </div>
-      </main>
+          <details className="params">
+            <summary>
+              Parâmetros <span>seed {seed}, até {maxReplicas} réplicas, {money(budget)}, SLO de {num(slo)} min</span>
+            </summary>
+            <div className="fields">
+              <label>
+                Seed
+                <input type="number" step="1" value={seed} onChange={(e) => setSeed(Number(e.target.value))} required />
+              </label>
+              <label>
+                Máximo de réplicas
+                <input type="number" min="1" max="1000" step="1" value={maxReplicas} onChange={(e) => setMaxReplicas(Number(e.target.value))} required />
+              </label>
+              <label>
+                Orçamento (BRL)
+                <input type="number" min="0" step="0.01" value={budget} onChange={(e) => setBudget(Number(e.target.value))} required />
+              </label>
+              <label>
+                SLO de fila (min)
+                <input type="number" min="0.1" step="0.1" value={slo} onChange={(e) => setSlo(Number(e.target.value))} required />
+              </label>
+              <label>
+                Chegadas
+                <select value={arrivals} onChange={(e) => setArrivals(e.target.value)}>
+                  <option value="deterministic">Determinísticas</option>
+                  <option value="poisson">Poisson</option>
+                  <option value="burst">Rajadas</option>
+                </select>
+              </label>
+              <label>
+                Percentil de risco (opcional)
+                <input type="number" min="0.01" max="0.99" step="0.01" placeholder="ex.: 0,9" value={risk} onChange={(e) => setRisk(e.target.value)} />
+              </label>
+            </div>
+            {arrivals !== "deterministic" && (
+              <p className="muted">
+                Chegadas {arrivals === "burst" ? "em rajadas" : "Poisson"} sorteadas pela seed: synthetic e reproduzíveis.
+              </p>
+            )}
+          </details>
+          <button className="run" disabled={loading || !scenarios.length}>
+            {loading ? "Investigando…" : "Investigar cenário"}
+          </button>
+        </form>
+
+        <article className="report" aria-live="polite">
+          {error && (
+            <div className="error" role="alert">
+              {error}
+            </div>
+          )}
+          {loading && (
+            <div className="empty" role="status">
+              <div className="spinner" />
+              Rodando as duas políticas sobre a mesma carga…
+            </div>
+          )}
+          {!result && !loading && !error && (
+            <div className="empty">
+              <strong>Nenhuma investigação aberta</strong>
+              <p>Escolha uma pergunta à esquerda e clique em Investigar cenário.</p>
+            </div>
+          )}
+          {a && b && rec && ran && (
+            <>
+              <div className="chips">
+                <span className="chip scenario">{names[ran.scenario] ?? ran.scenario}</span>
+                <span className="chip">synthetic</span>
+                <span className="chip">custo estimated</span>
+                {ran.arrivals !== "deterministic" && <span className="chip">chegadas {ran.arrivals}</span>}
+              </div>
+              <pre className="terminal" key={`${ran.scenario}-${ran.seed}-${ran.arrivals}`}>
+                <span className="cmd">
+                  <span className="prompt">$</span> peakguard compare {ran.scenario} --seed {ran.seed}
+                  {ran.arrivals !== "deterministic" ? ` --arrivals ${ran.arrivals}` : ""}
+                </span>
+                {log.length === 0 && <span className="line">nenhuma violação de SLO nem fila acumulada</span>}
+                {log.map((l, i) => (
+                  <span key={i} className={`line ${l.tone}`} style={{ animationDelay: `${120 + i * 90}ms` }}>
+                    <time>{clock(l.time)}</time>
+                    {l.text}
+                  </span>
+                ))}
+              </pre>
+              <p className="finding">
+                <span className="arrow" aria-hidden="true">→</span>
+                <span>
+                  <strong>{rec.title}.</strong> {ptPolicies(rec.reason)}
+                </span>
+              </p>
+              <p className="verdict">
+                <span className={`vtag ${rec.status}`}>{verdicts[rec.status] ?? rec.status}</span>
+                <span>
+                  Ranking por SLO e custo:{" "}
+                  {ranking?.policy === "tie" ? "empate" : (labels[ranking?.policy || ""] || "indisponível").toLowerCase()}.
+                  O ranking não substitui o validador, e nada é executado automaticamente.
+                </span>
+              </p>
+              <dl className="facts">
+                <div>
+                  <dt>Demanda total</dt>
+                  <dd>{num(a.summary.demand_docs)} <small>doc</small></dd>
+                </div>
+                <div>
+                  <dt>Maior fila</dt>
+                  <dd>{num(Math.max(a.summary.max_backlog_docs, b.summary.max_backlog_docs))} <small>doc</small></dd>
+                </div>
+                <div>
+                  <dt>Menor custo</dt>
+                  <dd>{money(Math.min(a.summary.cost_brl, b.summary.cost_brl))}</dd>
+                </div>
+                <div>
+                  <dt>Menor violação de SLO</dt>
+                  <dd>{num(Math.min(a.summary.slo_violation_minutes, b.summary.slo_violation_minutes))} <small>min</small></dd>
+                </div>
+              </dl>
+            </>
+          )}
+        </article>
+      </section>
+
+      {a && b && (
+        <section className="board" id="evidencias">
+          <h2>Evidências</h2>
+          <Chart
+            tone="demand"
+            title="Demanda e capacidade"
+            unit="documentos por minuto"
+            lastTime={lastTime}
+            series={[
+              { name: "Demanda sintética", color: C.demand, values: a.ticks.map((t) => t.demand_docs_per_minute) },
+              { name: "Capacidade reativa", color: C.reactive, values: a.ticks.map((t) => t.capacity_docs_per_minute) },
+              { name: "Capacidade antecipativa", color: C.anticipatory, values: b.ticks.map((t) => t.capacity_docs_per_minute) },
+            ]}
+          />
+          <div className="pair">
+            <Chart
+              tone="reactive"
+              title="Réplicas ativas"
+              unit="réplicas"
+              lastTime={lastTime}
+              series={[
+                { name: "Reativa", color: C.reactive, values: a.ticks.map((t) => t.active_replicas) },
+                { name: "Antecipativa", color: C.anticipatory, values: b.ticks.map((t) => t.active_replicas) },
+              ]}
+            />
+            <Chart
+              tone="risk"
+              title="Fila"
+              unit="documentos"
+              lastTime={lastTime}
+              series={[
+                { name: "Reativa", color: C.reactive, values: a.ticks.map((t) => t.backlog_docs) },
+                { name: "Antecipativa", color: C.anticipatory, values: b.ticks.map((t) => t.backlog_docs) },
+              ]}
+            />
+          </div>
+          {pareto && <ParetoChart data={pareto} />}
+          <Evidence tone="anticipatory" title="Políticas lado a lado" unit="valores estimated" id="comparacao">
+            <div className="tablewrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Política</th>
+                    <th scope="col">Custo total</th>
+                    <th scope="col">Custo por 1.000 doc</th>
+                    <th scope="col">Maior fila</th>
+                    <th scope="col">Violação de SLO</th>
+                    <th scope="col">Processados</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(
+                    [
+                      ["Reativa", a, C.reactive],
+                      ["Antecipativa", b, C.anticipatory],
+                    ] as [string, Run, string][]
+                  ).map(([name, r, color]) => (
+                    <tr key={name}>
+                      <th scope="row">
+                        <i style={{ background: color }} />
+                        {name}
+                      </th>
+                      <td>{money(r.summary.cost_brl)}</td>
+                      <td>{money(r.summary.cost_brl_per_1000_docs)}</td>
+                      <td>{num(r.summary.max_backlog_docs)} doc</td>
+                      <td>{num(r.summary.slo_violation_minutes)} min</td>
+                      <td>{num(r.summary.processed_docs)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="footnote">
+              SLO é o tempo máximo em fila. Os resultados dependem das premissas
+              do simulador e não são medições de produção.
+            </p>
+          </Evidence>
+        </section>
+      )}
+
+      <footer className="foot">
+        PeakGuard AI. Simulação offline com dados sintéticos e custos estimados.
+      </footer>
     </div>
   );
 }

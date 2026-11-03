@@ -2,6 +2,11 @@
 
 Entregas por fase. O histórico Git não é reescrito; os commits desta rodada (P8–P14) seguem Conventional Commits. Dados são sintéticos e valores estimados, salvo indicação de métricas observadas no Kind local.
 
+## Interface — investigação de capacidade
+- Dashboard redesenhado como investigação: cenários viram perguntas, o relatório mostra o comando, um log de eventos derivado das séries (`frontend/lib/investigation.mjs`, com testes), o achado e o veredito do validador.
+- Base escura com brilho violeta, gradiente violeta→magenta só em ações e destaques, cores fixas por grandeza (demanda, reativa, antecipativa, risco) e tipografia Ubuntu/Ubuntu Mono.
+- Pontos do Pareto e rótulos dos eixos em HTML (o SVG esticado deformava círculos e texto); layout sem rolagem horizontal no celular; foco visível e `prefers-reduced-motion` respeitado.
+
 ## P16 — Paridade da API e do dashboard
 - API: `arrivals` e `ewma_window` nas requisições com `scenario`/`seed`; `decision_delay_ticks` no `config`. Padrão idêntico às respostas anteriores (`tests/test_p16.py`).
 - Dashboard: seletor de chegadas, percentil de risco (`risk_appetite`) e rótulo `synthetic` para chegadas estocásticas.
