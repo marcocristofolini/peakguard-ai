@@ -11,7 +11,7 @@
 
 Demonstrador local de capacidade, confiabilidade e FinOps para processamento de documentos. Compara escalonamento reativo e antecipativo sob a mesma carga, expõe risco de SLO e custo estimado e permite uma seleção assistida por LLM sujeita a validação determinística.
 
-Projeto independente: não usa sistemas ou dados internos de terceiros. Dados de demanda são **sintéticos**; simulações e custos são **estimados**. Há métricas **observadas** de um ensaio Kind local, sem alegação de economia em produção.
+Projeto independente: . Dados de demanda são **sintéticos**; simulações e custos são **estimados**. Há métricas **observadas** de um ensaio Kind local, sem alegação de economia em produção.
 
 ![Dashboard com seleção aprovada pelo validador (Pico previsível, seed 42)](docs/p7-dashboard.png)
 
