@@ -2,6 +2,9 @@
 
 Entregas por fase. O histórico Git não é reescrito; os commits desta rodada (P8–P14) seguem Conventional Commits. Dados são sintéticos e valores estimados, salvo indicação de métricas observadas no Kind local.
 
+## P20D — Estabilização de scale-down zerada
+- `experiment.py collect --stabilization N` (ScaledObject com `behavior.scaleDown.stabilizationWindowSeconds`), `evidence/p20d/`. Com 0, o backlog máx. da antecipativa vai de 2,3 para 223,3 doc (reativa 60,0): a estabilização padrão de 300 s do HPA escondia o erro de calendário da P20C. Gerador de manifesto e API inalterados.
+
 ## P20C — Pico depois da janela cron
 - `experiment.py collect --curve late` (pico nos ticks 16–24, `local/p17/load-late.yaml`), 3+3 intercaladas em `evidence/p20c/`. Antecipativa: backlog máx. 2,3 doc contra 62,3 da reativa, +58% de réplicas-minuto; réplicas mantidas após a janela (provável estabilização de scale-down padrão do HPA). `calibrate.repetition` aceita `wait_seconds`. Tabela e limites em `docs/KUBERNETES.md`.
 
