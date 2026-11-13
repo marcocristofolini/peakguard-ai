@@ -121,3 +121,29 @@ def test_real_sdk_adapter_uses_structured_output_and_only_whitelisted_context(mo
     assert 'tools' not in requests[0]
     assert requests[0]['response_format']['type'] == 'json_schema'
     assert 'test-secret' not in json.dumps(requests)
+
+
+def test_compatible_provider_uses_json_object_with_schema_in_prompt(monkeypatch):
+    import json
+    import httpx
+    openai = pytest.importorskip('openai')
+    from peakguard.llm import generate
+    for k, v in {'PEAKGUARD_LLM_ENABLED': 'true', 'PEAKGUARD_LLM_MODEL': 'test-model', 'OPENAI_API_KEY': 'test-secret',
+                 'PEAKGUARD_LLM_BASE_URL': 'https://compat.example'}.items():
+        monkeypatch.setenv(k, v)
+    requests = []
+    def transport(request):
+        requests.append((str(request.url), json.loads(request.content)))
+        return httpx.Response(200, json={
+            'id': 'test', 'object': 'chat.completion', 'created': 0, 'model': 'test-model',
+            'choices': [{'index': 0, 'finish_reason': 'stop', 'message': {'role': 'assistant', 'content': json.dumps(proposal())}}],
+            'usage': {'prompt_tokens': 7, 'completion_tokens': 3, 'total_tokens': 10}})
+    original = openai.OpenAI
+    monkeypatch.setattr(openai, 'OpenAI', lambda **kw: original(**kw, http_client=httpx.Client(transport=httpx.MockTransport(transport))))
+    usage = {}
+    result = explain(comparison(), provider=lambda ctx: generate(ctx, usage=usage), use_llm=True)
+    url, body = requests[0]
+    assert result['mode'] == 'llm' and url.startswith('https://compat.example')
+    assert body['response_format'] == {'type': 'json_object'} and 'store' not in body and 'tools' not in body
+    assert '"properties"' in body['messages'][0]['content'] and 'test-secret' not in json.dumps(body)
+    assert usage == {'prompt_tokens': 7, 'completion_tokens': 3}

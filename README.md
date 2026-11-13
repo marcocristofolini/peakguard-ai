@@ -144,7 +144,7 @@ Leitura: a antecipativa trocou custo por fila, mas com previsão perfeita (o cal
 
 ## Próximos passos
 
-- **Chamada real à LLM (P18):** nunca executada (sem chave no ambiente); falta registrar tokens, latência e custo em `docs/VERIFICATION.md` (procedimento em `local/p12/real_llm_call.py`).
+- **LLM real (P18):** uma chamada medida em 2026-11-13 (20,8 s, 5.339/169 tokens); o checker de fidelidade rejeitou a resposta (`unsupported_evidence`) e o fallback determinístico assumiu. Amostra única, um modelo; ver `docs/VERIFICATION.md`.
 - **Filas por pod:** é a hipótese pendente da calibração. O atraso de decisão derivado das medições é 0 ticks (P15), então o erro restante vem do FIFO central e das taxas fluidas do motor, contra filas independentes por pod no cluster. Não testada.
 - **Previsão errada no Kubernetes:** a P17 mediu a antecipativa só com o calendário correto; falta o caso `wrong_forecast` no cluster e com mais de uma curva de carga.
 - **Cenários e previsão:** previsões são calendários declarados, não um modelo treinado.

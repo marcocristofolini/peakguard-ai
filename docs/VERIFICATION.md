@@ -87,3 +87,21 @@ Escolha de segurança: modo `local` só aceita loopback, então o compose usa `P
 - `POST /manifest-diff` gera HPA `autoscaling/v2` ou ScaledObject KEDA e diff unificado só a partir de proposta aprovada pelo validador. Nada é aplicado; teste bloqueia `kubernetes`, `subprocess` e `socket`.
 - Fidelidade: número no `rationale` da LLM que não exista nas evidências enviadas (ou URL) rejeita a resposta e aciona o fallback determinístico. Fixtures de prompt injection em `tests/fixtures/prompt_injection.json`. Todos os testes usam mock.
 - **Chamada real à LLM: NÃO executada (bloqueio).** Não há `.env` no repositório nem `OPENAI_API_KEY`/`PEAKGUARD_LLM_MODEL` no ambiente da sessão; o valor da chave nunca foi lido ou impresso. Tokens, latência e custo continuam sem medição. Para executar uma vez: `set -a; . ./.env; set +a; python3 local/p12/real_llm_call.py` (imprime modelo, modo, tokens e latência, nunca a chave) e registrar aqui; custo = tokens × tabela de preços vigente do modelo, a informar pelo operador.
+
+## Chamada real à LLM (P18) — 2026-11-13
+
+Cenário `predictable_peak`, seed 42, `local/p12/real_llm_call.py`. Provedor compatível com a API OpenAI (`PEAKGUARD_LLM_BASE_URL=https://net.beaverai.org/v1`, agregador comunitário), modelo `Cgg507/devstral-small-2507`. Adaptador em modo `json_object` com o schema no prompt (esse provedor não foi testado com `json_schema`).
+
+| Item | Valor |
+| --- | --- |
+| Tokens de entrada / saída | 5.339 / 169 (observed, relatados pelo provedor) |
+| Latência | 20,83 s (observed) |
+| Resultado | `mode=fallback`, `audit.status=rejected`, motivo `unsupported_evidence` |
+| Custo | não estimado: o provedor não publica tabela de preços |
+
+O que isso mostra: a LLM respondeu JSON válido no schema, mas o checker de fidelidade rejeitou o conteúdo (evidência citada que não existe no contexto enviado) e o fallback determinístico assumiu, com `execution_allowed=false`. O guard funcionou; a qualidade do modelo para esta tarefa fica abaixo do necessário nesta amostra única. Não se generaliza: uma chamada, um modelo, um cenário. O texto bruto da resposta não foi guardado.
+
+Histórico da fase (o que aconteceu antes desse resultado):
+- DeepSeek (`deepseek-flash`): a chave autenticou, mas a geração retornou HTTP 402 Insufficient Balance (conta sem saldo), sem tokens cobrados.
+- Provedor atual, 1ª tentativa: timeout em 91 s (limite de 90 s do adaptador); nada recebido. O limite subiu para 180 s e houve uma única nova tentativa (transitório), que gerou a linha acima.
+- Uma chamada extra de diagnóstico, só para ler o 402 da DeepSeek. Chaves passadas por variável de ambiente; nunca gravadas.
