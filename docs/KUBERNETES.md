@@ -162,3 +162,17 @@ Mesma coleta intercalada da P17B (5 repetições por estratégia, R, A, R, A…,
 
 Pontos sem explicação: (1) o backlog da reativa foi 65 doc, bem abaixo dos 185 doc da P17B, e a 1ª escala ocorreu em +40,6 s, antes de o pico deslocado começar (+60 s); não investiguei a causa. (2) O simulador (carga observada, calendário declarado como previsão) estimou 142 doc para a reativa e 0 para a antecipativa: superestima a reativa nesta curva (65 observados) e a subestimava na P17B (185 observados), então não há viés único. Limites: uma curva deslocada, 5 repetições, máquina compartilhada.
 
+### Pico depois da janela cron (P20C)
+
+Terceira coleta intercalada (3 repetições por estratégia, R, A, R, A…, mesmo cluster), agora com o pico real fora da janela `cron`: pico de 12 doc/s nos ticks 16–24 de 26 (`local/p17/load-late.yaml`, carga de 260 s), enquanto o calendário declarado continua nos ticks 2–10 e a janela do ScaledObject termina em ~+140 s após o início da carga. Evidências: `evidence/p20c/`. Observado no Kind local; carga sintética; custo hipotético. `loadavg` de 1 min antes da carga entre 0,23 e 0,89; nenhuma repetição marcada.
+
+| Métrica (média; mín–máx) | P17B (previsão certa) | P20B (pico +4 ticks) | P20C (pico fora da janela) |
+| --- | --- | --- | --- |
+| Reativa: backlog máx. (doc) | 185,4 | 65,4 | 62,3 (37–91) |
+| Antecipativa: backlog máx. (doc) | 2,8 | 3,4 | 2,3 (2–3) |
+| Réplicas-minuto reativa → antecipativa | 10,07 → 13,77 (+37%) | 10,23 → 14,75 (+44%) | 13,75 → 21,67 (+58%) |
+
+**A previsão errada não degradou a antecipativa nesta amostra, mas encareceu: +58% de réplicas-minuto.** O backlog continuou em 2,3 doc (2–3) contra 62,3 doc (37–91) da reativa. Nos dados, a antecipativa tem 4 pods prontos durante toda a carga (de 0 s a +280 s), embora a janela `cron` termine em ~+140 s e o pico só comece em +160 s. A explicação provável, inferida e não medida: o ScaledObject gerado não define `behavior`, então o HPA criado pelo KEDA usa a estabilização de scale-down padrão do Kubernetes (300 s), que segura as 4 réplicas além do fim da janela. O HPA reativo do cluster tem estabilização própria de 180 s (`local/p6/resources.yaml`). Ou seja, o experimento mede a antecipativa com a estabilização padrão, que mascara o erro de calendário; um pico mais de 300 s depois do fim da janela, ou `scaleDown.stabilizationWindowSeconds: 0` no ScaledObject, exporia o erro (não testado).
+
+O simulador estimou 142 doc de backlog para a antecipativa (e para a reativa) nesta curva, contra 2,3 e 62,3 observados: ele modela cooldown de 2 ticks e não a estabilização de scale-down do HPA, então subestima o efeito de manter réplicas após a janela. Limites: uma curva, 3 repetições, máquina compartilhada.
+

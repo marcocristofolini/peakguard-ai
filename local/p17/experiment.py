@@ -104,7 +104,9 @@ def node_stats():
     return {'cpu_percent': float(s['CPUPerc'].rstrip('%')), 'memory': s['MemUsage']}
 
 
-CURVES = {'nominal': 'local/p6/load.yaml', 'shifted': 'local/p17/load-shifted.yaml'}  # shifted: pico real nos ticks 6–14, calendário declarado 2–10
+CURVES = {'nominal': 'local/p6/load.yaml', 'shifted': 'local/p17/load-shifted.yaml', 'late': 'local/p17/load-late.yaml'}
+# shifted: pico real nos ticks 6–14; late: ticks 16–24 (depois da janela cron); calendário declarado 2–10
+WAIT_SECONDS = {'late': 320}  # carga de 260 s; as demais cabem nos 220 s padrão
 
 
 def run(strategy, index, curve='nominal'):
@@ -123,7 +125,7 @@ def run(strategy, index, curve='nominal'):
         time.sleep(max(0, anchor.timestamp() - time.time()))
     check_single(strategy)
     host = {'loadavg_before': loadavg()}
-    rep = c.repetition(index, require_one_replica=strategy == 'reactive', load_file=CURVES[curve],
+    rep = c.repetition(index, require_one_replica=strategy == 'reactive', load_file=CURVES[curve], wait_seconds=WAIT_SECONDS.get(curve, 220),
                        at_peak=lambda: host.update(node_at_peak=node_stats()))
     host['loadavg_after'] = loadavg()
     check_single(strategy)
@@ -237,7 +239,7 @@ if __name__ == '__main__':
     collect_parser.add_argument('--only', choices=STRATEGIES)
     collect_parser.add_argument('--order', choices=('blocks', 'interleaved'), default='blocks')
     collect_parser.add_argument('--curve', choices=tuple(CURVES), default='nominal',
-                                help='shifted = previsão errada: pico real atrasado em 4 ticks em relação ao calendário')
+                                help='shifted = pico atrasado em 4 ticks; late = 14 ticks (fora da janela cron)')
     analyze_parser = sub.add_parser('analyze')
     for sp in (collect_parser, analyze_parser):
         sp.add_argument('--output', type=Path, default=OUT, help='diretório das evidências (padrão evidence/p17)')

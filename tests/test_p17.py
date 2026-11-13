@@ -100,9 +100,23 @@ def test_shifted_curve_manifest_is_valid_and_distinct_from_nominal():
     from pathlib import Path
     root = Path(__file__).resolve().parents[1]
     e = _experiment()
-    assert set(e.CURVES) == {"nominal", "shifted"}
+    assert set(e.CURVES) == {"nominal", "shifted", "late"}
     nominal = yaml.safe_load((root / e.CURVES["nominal"]).read_text())
     shifted = yaml.safe_load((root / e.CURVES["shifted"]).read_text())
     env = shifted["spec"]["template"]["spec"]["containers"][0]["env"]
     assert {x["name"]: x["value"] for x in env} == {"PEAK_START": "6", "INTERVALS": "16"}
     assert "env" not in nominal["spec"]["template"]["spec"]["containers"][0]
+
+
+def test_late_curve_peak_starts_after_cron_window_and_fits_the_job_deadline():
+    import yaml
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    e = _experiment()
+    job = yaml.safe_load((root / e.CURVES["late"]).read_text())
+    env = {x["name"]: int(x["value"]) for x in job["spec"]["template"]["spec"]["containers"][0]["env"]}
+    assert env == {"PEAK_START": 16, "INTERVALS": 26}
+    assert env["INTERVALS"] * 10 < job["spec"]["activeDeadlineSeconds"] < e.WAIT_SECONDS["late"]  # 260 s < 300 s < 320 s
+    # O pico real (tick 16) começa depois do fim da janela cron derivada do calendário declarado.
+    window = e.scaled_object(START)["schedule"]["windows"][0]
+    assert env["PEAK_START"] > window["end_tick"]

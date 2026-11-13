@@ -2,6 +2,9 @@
 
 Entregas por fase. O histórico Git não é reescrito; os commits desta rodada (P8–P14) seguem Conventional Commits. Dados são sintéticos e valores estimados, salvo indicação de métricas observadas no Kind local.
 
+## P20C — Pico depois da janela cron
+- `experiment.py collect --curve late` (pico nos ticks 16–24, `local/p17/load-late.yaml`), 3+3 intercaladas em `evidence/p20c/`. Antecipativa: backlog máx. 2,3 doc contra 62,3 da reativa, +58% de réplicas-minuto; réplicas mantidas após a janela (provável estabilização de scale-down padrão do HPA). `calibrate.repetition` aceita `wait_seconds`. Tabela e limites em `docs/KUBERNETES.md`.
+
 ## P20B — Previsão errada no Kind
 - `experiment.py collect --curve shifted` (pico real nos ticks 6–14, calendário declarado 2–10), 5+5 repetições intercaladas em `evidence/p20b/`. Antecipativa: backlog máx. 3,4 doc contra 65,4 da reativa, +44% de réplicas-minuto; a janela cron ainda cobria o pico. Tabela em `docs/KUBERNETES.md`.
 
