@@ -133,3 +133,17 @@ Impacto estimado: a repetição mais afetada (reativa 0: 171 doc, 1ª escala em 
 **Limite de método mais relevante.** As estratégias rodaram em blocos: as 3 reativas e, ~10 min depois, as 3 antecipativas. Mudanças de carga da máquina entre os blocos se confundem com o efeito da estratégia, e só a interferência acima pôde ser identificada, porque tinha horário conhecido. A coleta não registrou a carga do host. A refação intercalada, com 5 repetições e registro de carga, está especificada em `docs/prompts/P17B.md`.
 
 Evidências: `evidence/p17/observed.json` (séries Prometheus `query_range`, logs do Job, horários de criação dos pods, manifesto aplicado por repetição) e `evidence/p17/results.json`. A 1ª tentativa da antecipativa abortou: o pré-requisito "1 réplica antes da carga", herdado da P13, é incompatível com a pré-escala. O script passou a dispensá-lo só nessa estratégia, e as 3 repetições reativas já coletadas foram mantidas. Cluster apagado ao final (`No kind clusters found`).
+
+### Coleta intercalada (P17B)
+
+Refação da P17 com 5 repetições por estratégia, alternando reativa e antecipativa (R, A, R, A…), mesmo cluster Kind v1.36.4 + KEDA 2.21, mesmo gerador de manifesto. Registra `loadavg` do WSL antes e depois de cada carga e `docker stats` do nó do Kind no pico (amostras pontuais). Repetições com `loadavg` de 1 min antes da carga acima de 2,0 são marcadas. Evidências: `evidence/p17b/observed.json` e `results.json` (a P17 em `evidence/p17/` não foi alterada). Métricas observadas no Kind local; carga sintética; custo hipotético.
+
+| Métrica (média; mín–máx) | P17 reativa (3, em bloco) | P17B reativa (5) | P17 antecipativa (3, em bloco) | P17B antecipativa (5) |
+| --- | --- | --- | --- | --- |
+| Backlog máximo (doc) | 166 | 185,4 (143–267) | 3,3 | 2,8 (1–5) |
+| 1ª escala vs. início da carga (s) | +30,7 | +49,2 (+39 a +63) | −32,7 | −44,4 (−51 a −37) |
+| Réplicas-minuto | 9,14 | 10,07 (8,5–10,9) | 12,08 | 13,77 (13,2–14,4) |
+
+Sem as repetições marcadas (reativa 0, `loadavg` 2,66; antecipativa 3, `loadavg` 3,14): reativa 188,3 doc, 51,8 s e 10,46 réplicas-minuto; antecipativa 2,75 doc, −42,8 s e 13,6 réplicas-minuto. Os demais `loadavg` de 1 min antes da carga ficaram entre 0,76 e 1,77. No pico, o nó do Kind usou 244–268% de CPU na reativa e 166–200% na antecipativa, com ~1 GiB de memória.
+
+**A conclusão não mudou.** A antecipativa continua eliminando o backlog (≈185 → ≈3 doc, mais de 60× menor nos dois conjuntos de dados) ao custo de mais réplicas-minuto (+37% contra +32% na P17). Os intervalos não se sobrepõem: o pior caso da antecipativa (5 doc) é muito menor que o melhor da reativa (143 doc). Excluir as repetições carregadas muda as médias em menos de 4%. O que mudou foi o tamanho absoluto: a reativa ficou pior (166 → 185 doc; 1ª escala de +30,7 → +49,2 s), ainda dentro da faixa da P17B (143–267 doc); os valores absolutos descrevem esta máquina, não um cluster dedicado. Limites herdados: calendário declarado igual à carga (previsão perfeita) e uma única curva.

@@ -1,0 +1,460 @@
+{
+ "labels": {
+  "observed": "observed local Kind cluster",
+  "simulation": "estimated",
+  "load": "synthetic",
+  "cost": "hypothetical (BRL 1.2/replica-hour \u00d7 ready-pod minutes)"
+ },
+ "kubernetes_server_version": "v1.36.4",
+ "config": {
+  "tick_minutes": 0.16666666666666666,
+  "capacity_docs_per_minute_per_replica": 294,
+  "price_brl_per_replica_hour": 1.2,
+  "min_replicas": 1,
+  "max_replicas": 4,
+  "initial_replicas": 1,
+  "activation_delay_ticks": 1,
+  "decision_delay_ticks": 0,
+  "cooldown_ticks": 2,
+  "forecast_horizon_ticks": 3,
+  "target_utilization": 0.7,
+  "budget_brl": 10,
+  "slo_queue_minutes": 2,
+  "base_latency_minutes": 0.1
+ },
+ "cron_windows": [
+  [
+   {
+    "start": "2026-11-09T17:33:00+00:00",
+    "end": "2026-11-09T17:36:00+00:00",
+    "desired_replicas": 4,
+    "first_tick": 2,
+    "end_tick": 11
+   }
+  ],
+  [
+   {
+    "start": "2026-11-09T17:43:00+00:00",
+    "end": "2026-11-09T17:46:00+00:00",
+    "desired_replicas": 4,
+    "first_tick": 2,
+    "end_tick": 11
+   }
+  ],
+  [
+   {
+    "start": "2026-11-09T17:53:00+00:00",
+    "end": "2026-11-09T17:56:00+00:00",
+    "desired_replicas": 4,
+    "first_tick": 2,
+    "end_tick": 11
+   }
+  ],
+  [
+   {
+    "start": "2026-11-09T18:04:00+00:00",
+    "end": "2026-11-09T18:07:00+00:00",
+    "desired_replicas": 4,
+    "first_tick": 2,
+    "end_tick": 11
+   }
+  ],
+  [
+   {
+    "start": "2026-11-09T18:14:00+00:00",
+    "end": "2026-11-09T18:17:00+00:00",
+    "desired_replicas": 4,
+    "first_tick": 2,
+    "end_tick": 11
+   }
+  ]
+ ],
+ "order": "interleaved",
+ "load_limit_loadavg_1m": 2.0,
+ "loaded_repetitions": [
+  {
+   "strategy": "reactive",
+   "repetition": 0,
+   "loadavg_1m_before": 2.66
+  },
+  {
+   "strategy": "anticipatory",
+   "repetition": 3,
+   "loadavg_1m_before": 3.14
+  }
+ ],
+ "per_repetition": [
+  {
+   "strategy": "reactive",
+   "repetition": 0,
+   "observed": {
+    "max_backlog_docs": 174.0,
+    "first_scale_after_load_seconds": 39.0,
+    "replica_minutes": 8.5,
+    "cost_brl_hypothetical": 0.16999999999999998,
+    "window_seconds": 229.8447825908661
+   },
+   "simulated": {
+    "reactive": {
+     "max_backlog_docs": 142.0,
+     "first_scale_after_load_seconds": 30,
+     "replica_minutes": 7.833333333333333,
+     "cost_brl_hypothetical": 0.15666666666666668
+    },
+    "anticipatory": {
+     "max_backlog_docs": 0.0,
+     "first_scale_after_load_seconds": 0,
+     "replica_minutes": 9.5,
+     "cost_brl_hypothetical": 0.18999999999999997
+    }
+   }
+  },
+  {
+   "strategy": "anticipatory",
+   "repetition": 0,
+   "observed": {
+    "max_backlog_docs": 1.0,
+    "first_scale_after_load_seconds": -41.0,
+    "replica_minutes": 13.25,
+    "cost_brl_hypothetical": 0.26499999999999996,
+    "window_seconds": 234.19021821022034
+   },
+   "simulated": {
+    "reactive": {
+     "max_backlog_docs": 142.0,
+     "first_scale_after_load_seconds": 30,
+     "replica_minutes": 7.833333333333333,
+     "cost_brl_hypothetical": 0.15666666666666668
+    },
+    "anticipatory": {
+     "max_backlog_docs": 0.0,
+     "first_scale_after_load_seconds": 0,
+     "replica_minutes": 9.5,
+     "cost_brl_hypothetical": 0.18999999999999997
+    }
+   }
+  },
+  {
+   "strategy": "reactive",
+   "repetition": 1,
+   "observed": {
+    "max_backlog_docs": 189.0,
+    "first_scale_after_load_seconds": 46.0,
+    "replica_minutes": 10.0,
+    "cost_brl_hypothetical": 0.19999999999999998,
+    "window_seconds": 234.45535802841187
+   },
+   "simulated": {
+    "reactive": {
+     "max_backlog_docs": 142.0,
+     "first_scale_after_load_seconds": 30,
+     "replica_minutes": 7.833333333333333,
+     "cost_brl_hypothetical": 0.15666666666666668
+    },
+    "anticipatory": {
+     "max_backlog_docs": 0.0,
+     "first_scale_after_load_seconds": 0,
+     "replica_minutes": 9.5,
+     "cost_brl_hypothetical": 0.18999999999999997
+    }
+   }
+  },
+  {
+   "strategy": "anticipatory",
+   "repetition": 1,
+   "observed": {
+    "max_backlog_docs": 2.0,
+    "first_scale_after_load_seconds": -50.0,
+    "replica_minutes": 13.583333333333334,
+    "cost_brl_hypothetical": 0.27166666666666667,
+    "window_seconds": 231.38551139831543
+   },
+   "simulated": {
+    "reactive": {
+     "max_backlog_docs": 142.0,
+     "first_scale_after_load_seconds": 30,
+     "replica_minutes": 7.833333333333333,
+     "cost_brl_hypothetical": 0.15666666666666668
+    },
+    "anticipatory": {
+     "max_backlog_docs": 0.0,
+     "first_scale_after_load_seconds": 0,
+     "replica_minutes": 9.5,
+     "cost_brl_hypothetical": 0.18999999999999997
+    }
+   }
+  },
+  {
+   "strategy": "reactive",
+   "repetition": 2,
+   "observed": {
+    "max_backlog_docs": 143.0,
+    "first_scale_after_load_seconds": 48.0,
+    "replica_minutes": 10.5,
+    "cost_brl_hypothetical": 0.21,
+    "window_seconds": 240.49992084503174
+   },
+   "simulated": {
+    "reactive": {
+     "max_backlog_docs": 142.0,
+     "first_scale_after_load_seconds": 30,
+     "replica_minutes": 8.0,
+     "cost_brl_hypothetical": 0.16
+    },
+    "anticipatory": {
+     "max_backlog_docs": 0.0,
+     "first_scale_after_load_seconds": 0,
+     "replica_minutes": 9.666666666666666,
+     "cost_brl_hypothetical": 0.1933333333333333
+    }
+   }
+  },
+  {
+   "strategy": "anticipatory",
+   "repetition": 2,
+   "observed": {
+    "max_backlog_docs": 5.0,
+    "first_scale_after_load_seconds": -43.0,
+    "replica_minutes": 13.916666666666666,
+    "cost_brl_hypothetical": 0.2783333333333333,
+    "window_seconds": 239.2208707332611
+   },
+   "simulated": {
+    "reactive": {
+     "max_backlog_docs": 142.0,
+     "first_scale_after_load_seconds": 30,
+     "replica_minutes": 8.0,
+     "cost_brl_hypothetical": 0.16
+    },
+    "anticipatory": {
+     "max_backlog_docs": 0.0,
+     "first_scale_after_load_seconds": 0,
+     "replica_minutes": 9.666666666666666,
+     "cost_brl_hypothetical": 0.1933333333333333
+    }
+   }
+  },
+  {
+   "strategy": "reactive",
+   "repetition": 3,
+   "observed": {
+    "max_backlog_docs": 267.0,
+    "first_scale_after_load_seconds": 63.0,
+    "replica_minutes": 10.916666666666666,
+    "cost_brl_hypothetical": 0.21833333333333332,
+    "window_seconds": 263.66192507743835
+   },
+   "simulated": {
+    "reactive": {
+     "max_backlog_docs": 142.0,
+     "first_scale_after_load_seconds": 30,
+     "replica_minutes": 8.333333333333332,
+     "cost_brl_hypothetical": 0.16666666666666663
+    },
+    "anticipatory": {
+     "max_backlog_docs": 0.0,
+     "first_scale_after_load_seconds": 0,
+     "replica_minutes": 10.0,
+     "cost_brl_hypothetical": 0.19999999999999998
+    }
+   }
+  },
+  {
+   "strategy": "anticipatory",
+   "repetition": 3,
+   "observed": {
+    "max_backlog_docs": 3.0,
+    "first_scale_after_load_seconds": -51.0,
+    "replica_minutes": 14.416666666666666,
+    "cost_brl_hypothetical": 0.2883333333333333,
+    "window_seconds": 240.43179368972778
+   },
+   "simulated": {
+    "reactive": {
+     "max_backlog_docs": 142.0,
+     "first_scale_after_load_seconds": 30,
+     "replica_minutes": 8.0,
+     "cost_brl_hypothetical": 0.16
+    },
+    "anticipatory": {
+     "max_backlog_docs": 0.0,
+     "first_scale_after_load_seconds": 0,
+     "replica_minutes": 9.666666666666666,
+     "cost_brl_hypothetical": 0.1933333333333333
+    }
+   }
+  },
+  {
+   "strategy": "reactive",
+   "repetition": 4,
+   "observed": {
+    "max_backlog_docs": 154.0,
+    "first_scale_after_load_seconds": 50.0,
+    "replica_minutes": 10.416666666666666,
+    "cost_brl_hypothetical": 0.20833333333333331,
+    "window_seconds": 242.4836323261261
+   },
+   "simulated": {
+    "reactive": {
+     "max_backlog_docs": 142.0,
+     "first_scale_after_load_seconds": 30,
+     "replica_minutes": 8.0,
+     "cost_brl_hypothetical": 0.16
+    },
+    "anticipatory": {
+     "max_backlog_docs": 0.0,
+     "first_scale_after_load_seconds": 0,
+     "replica_minutes": 9.666666666666666,
+     "cost_brl_hypothetical": 0.1933333333333333
+    }
+   }
+  },
+  {
+   "strategy": "anticipatory",
+   "repetition": 4,
+   "observed": {
+    "max_backlog_docs": 3.0,
+    "first_scale_after_load_seconds": -37.0,
+    "replica_minutes": 13.666666666666666,
+    "cost_brl_hypothetical": 0.2733333333333333,
+    "window_seconds": 241.95096683502197
+   },
+   "simulated": {
+    "reactive": {
+     "max_backlog_docs": 142.0,
+     "first_scale_after_load_seconds": 30,
+     "replica_minutes": 8.0,
+     "cost_brl_hypothetical": 0.16
+    },
+    "anticipatory": {
+     "max_backlog_docs": 0.0,
+     "first_scale_after_load_seconds": 0,
+     "replica_minutes": 9.666666666666666,
+     "cost_brl_hypothetical": 0.1933333333333333
+    }
+   }
+  }
+ ],
+ "mean": {
+  "reactive": {
+   "observed": {
+    "max_backlog_docs": 185.4,
+    "first_scale_after_load_seconds": 49.2,
+    "replica_minutes": 10.066666666666666,
+    "cost_brl_hypothetical": 0.2013333333333333
+   },
+   "simulated": {
+    "max_backlog_docs": 142.0,
+    "first_scale_after_load_seconds": 30.0,
+    "replica_minutes": 8.0,
+    "cost_brl_hypothetical": 0.16
+   }
+  },
+  "anticipatory": {
+   "observed": {
+    "max_backlog_docs": 2.8,
+    "first_scale_after_load_seconds": -44.4,
+    "replica_minutes": 13.766666666666666,
+    "cost_brl_hypothetical": 0.2753333333333333
+   },
+   "simulated": {
+    "max_backlog_docs": 0.0,
+    "first_scale_after_load_seconds": 0.0,
+    "replica_minutes": 9.6,
+    "cost_brl_hypothetical": 0.19199999999999998
+   }
+  }
+ },
+ "spread": {
+  "min": {
+   "reactive": {
+    "observed": {
+     "max_backlog_docs": 143.0,
+     "first_scale_after_load_seconds": 39.0,
+     "replica_minutes": 8.5,
+     "cost_brl_hypothetical": 0.16999999999999998
+    },
+    "simulated": {
+     "max_backlog_docs": 142.0,
+     "first_scale_after_load_seconds": 30,
+     "replica_minutes": 7.833333333333333,
+     "cost_brl_hypothetical": 0.15666666666666668
+    }
+   },
+   "anticipatory": {
+    "observed": {
+     "max_backlog_docs": 1.0,
+     "first_scale_after_load_seconds": -51.0,
+     "replica_minutes": 13.25,
+     "cost_brl_hypothetical": 0.26499999999999996
+    },
+    "simulated": {
+     "max_backlog_docs": 0.0,
+     "first_scale_after_load_seconds": 0,
+     "replica_minutes": 9.5,
+     "cost_brl_hypothetical": 0.18999999999999997
+    }
+   }
+  },
+  "max": {
+   "reactive": {
+    "observed": {
+     "max_backlog_docs": 267.0,
+     "first_scale_after_load_seconds": 63.0,
+     "replica_minutes": 10.916666666666666,
+     "cost_brl_hypothetical": 0.21833333333333332
+    },
+    "simulated": {
+     "max_backlog_docs": 142.0,
+     "first_scale_after_load_seconds": 30,
+     "replica_minutes": 8.333333333333332,
+     "cost_brl_hypothetical": 0.16666666666666663
+    }
+   },
+   "anticipatory": {
+    "observed": {
+     "max_backlog_docs": 5.0,
+     "first_scale_after_load_seconds": -37.0,
+     "replica_minutes": 14.416666666666666,
+     "cost_brl_hypothetical": 0.2883333333333333
+    },
+    "simulated": {
+     "max_backlog_docs": 0.0,
+     "first_scale_after_load_seconds": 0,
+     "replica_minutes": 9.666666666666666,
+     "cost_brl_hypothetical": 0.1933333333333333
+    }
+   }
+  }
+ },
+ "mean_excluding_loaded": {
+  "reactive": {
+   "observed": {
+    "max_backlog_docs": 188.25,
+    "first_scale_after_load_seconds": 51.75,
+    "replica_minutes": 10.458333333333332,
+    "cost_brl_hypothetical": 0.20916666666666667
+   },
+   "simulated": {
+    "max_backlog_docs": 142.0,
+    "first_scale_after_load_seconds": 30.0,
+    "replica_minutes": 8.041666666666666,
+    "cost_brl_hypothetical": 0.16083333333333333
+   }
+  },
+  "anticipatory": {
+   "observed": {
+    "max_backlog_docs": 2.75,
+    "first_scale_after_load_seconds": -42.75,
+    "replica_minutes": 13.604166666666666,
+    "cost_brl_hypothetical": 0.27208333333333334
+   },
+   "simulated": {
+    "max_backlog_docs": 0.0,
+    "first_scale_after_load_seconds": 0.0,
+    "replica_minutes": 9.583333333333332,
+    "cost_brl_hypothetical": 0.19166666666666665
+   }
+  }
+ }
+}

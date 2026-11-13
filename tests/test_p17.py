@@ -70,3 +70,26 @@ def test_committed_p17_results_are_reproducible():
     runs = json.loads((root / "evidence/p17/observed.json").read_text())["runs"]
     assert [experiment.observed_metrics(r) for r in runs] == [r["observed"] for r in committed["per_repetition"]]
     assert [experiment.simulated_metrics(r) for r in runs] == [r["simulated"] for r in committed["per_repetition"]]
+
+
+def _experiment():
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "local" / "p17"))
+    import experiment
+    return experiment
+
+
+def test_interleaved_order_alternates_and_blocks_keep_p17_order():
+    e = _experiment()
+    assert e.schedule(3, "interleaved") == [("reactive", 0), ("anticipatory", 0), ("reactive", 1),
+                                            ("anticipatory", 1), ("reactive", 2), ("anticipatory", 2)]
+    assert e.schedule(2, "blocks") == [("reactive", 0), ("reactive", 1), ("anticipatory", 0), ("anticipatory", 1)]
+    assert e.schedule(2, "interleaved", ("reactive",)) == [("reactive", 0), ("reactive", 1)]
+
+
+def test_loaded_flags_only_above_limit_and_ignores_runs_without_host_record():
+    e = _experiment()
+    mark = lambda one: {"host": {"loadavg_before": {"1m": one, "5m": 0.0}}}
+    assert e.loaded(mark(2.1)) and not e.loaded(mark(2.0)) and not e.loaded(mark(0.3))
+    assert not e.loaded({})  # P17 não registrou loadavg

@@ -3,6 +3,7 @@
 Uso (na raiz, após `bash local/p6/up.sh` e `bash local/p17/install-keda.sh`):
     python3 local/p17/experiment.py collect --repetitions 3   # aplica HPA/ScaledObject no cluster de demonstração
     python3 local/p17/experiment.py analyze                   # grava evidence/p17/results.json
+P17B (intercalada, com carga do host): collect --order interleaved --repetitions 5 --output evidence/p17b
 Nunca deixa HPA `documents` e ScaledObject `documents` ao mesmo tempo; ao final restaura o HPA original.
 """
 import argparse
@@ -25,7 +26,9 @@ from peakguard.manifest import manifest_diff  # noqa: E402
 from peakguard.scenarios import Scenario  # noqa: E402
 from peakguard.simulator import Config, compare  # noqa: E402
 
-OUT = ROOT / 'evidence/p17'
+OUT = ROOT / 'evidence/p17'  # sobrescrito por --output
+STRATEGIES = ('reactive', 'anticipatory')
+LOAD_LIMIT = 2.0  # loadavg de 1 min antes da carga acima disso marca a repetição como carregada
 # Calendário declarado = curva nominal da carga P6 (13 ticks de 10 s; pico de 12 doc/s nos ticks 2–10).
 RATES = tuple((12 if 2 <= i < 11 else 1) * 60 for i in range(13))
 # Config P13 (294 doc/min, startup 1 tick) com alvo de 70% igual ao HPA do cluster.
@@ -76,6 +79,31 @@ def scaled_object(anchor):
                          namespace='peakguard-p6', schedule_start=anchor)
 
 
+def schedule(repetitions, order, strategies=STRATEGIES):
+    """Ordem das execuções: em blocos (R,R,R,A,A,A) ou intercalada (R,A,R,A,...)."""
+    if order == 'interleaved':
+        return [(s, i) for i in range(repetitions) for s in strategies]
+    return [(s, i) for s in strategies for i in range(repetitions)]
+
+
+def loaded(run, limit=LOAD_LIMIT):
+    """Repetição com loadavg de 1 min antes da carga acima do limite. Sem registro (P17): não marcada."""
+    return run.get('host', {}).get('loadavg_before', {}).get('1m', 0) > limit
+
+
+def loadavg():
+    one, five = Path('/proc/loadavg').read_text().split()[:2]
+    return {'1m': float(one), '5m': float(five)}
+
+
+def node_stats():
+    """Amostra pontual do nó do Kind (sem processo em segundo plano)."""
+    out = subprocess.check_output(['docker', 'stats', '--no-stream', '--format', '{{json .}}',
+                                   'peakguard-p6-control-plane'], text=True, timeout=60)
+    s = json.loads(out)
+    return {'cpu_percent': float(s['CPUPerc'].rstrip('%')), 'memory': s['MemUsage']}
+
+
 def run(strategy, index):
     reset_to_one()
     reset_time = time.time()
@@ -91,19 +119,23 @@ def run(strategy, index):
         apply(yaml.safe_load(manifest['proposed_manifest']))
         time.sleep(max(0, anchor.timestamp() - time.time()))
     check_single(strategy)
-    rep = c.repetition(index, require_one_replica=strategy == 'reactive')
+    host = {'loadavg_before': loadavg()}
+    rep = c.repetition(index, require_one_replica=strategy == 'reactive',
+                       at_peak=lambda: host.update(node_at_peak=node_stats()))
+    host['loadavg_after'] = loadavg()
     check_single(strategy)
     pods = json.loads(c.kube('get', 'pods', '-l', 'app=documents', '-o', 'json'))['items']
     created = sorted(c.parse_time(p['metadata']['creationTimestamp']) for p in pods)
     ready = c.prom('query_range', query='count(up{job="documents"} == 1)',
                    start=rep['load_start_time'] - 60, end=rep['end_time'], step='5s')
-    rep.update({'strategy': strategy, 'reset_time': reset_time, 'manifest': manifest,
+    rep.update({'strategy': strategy, 'host': host, 'reset_time': reset_time, 'manifest': manifest,
                 'pod_created_times': [t for t in created if t > reset_time], 'ready_pods_wide': ready})
     print(json.dumps({'strategy': strategy, 'repetition': index, 'new_pods': len(rep['pod_created_times'])}), flush=True)
     return rep
 
 
-def collect(repetitions, strategies=('reactive', 'anticipatory')):
+def collect(repetitions, strategies=STRATEGIES, order='blocks'):
+    OUT.mkdir(parents=True, exist_ok=True)
     if 'keda' not in {n['metadata']['name'] for n in json.loads(subprocess.check_output(
             c.CMD[:5] + ['get', 'namespaces', '-o', 'json'], text=True, timeout=30))['items']}:
         raise RuntimeError('KEDA não instalado: rode local/p17/install-keda.sh.')
@@ -112,10 +144,9 @@ def collect(repetitions, strategies=('reactive', 'anticipatory')):
     previous = json.loads((OUT / 'observed.json').read_text())['runs'] if (OUT / 'observed.json').exists() else []
     runs = [r for r in previous if r['strategy'] not in strategies]  # mantém estratégias já coletadas
     try:
-        for strategy in strategies:
-            for i in range(repetitions):
-                runs.append(run(strategy, i))
-                (OUT / 'observed.json').write_text(json.dumps({'runs': runs}, indent=1) + '\n')
+        for strategy, i in schedule(repetitions, order, strategies):
+            runs.append(run(strategy, i))
+            (OUT / 'observed.json').write_text(json.dumps({'runs': runs}, indent=1) + '\n')
     finally:
         # Restaura o estado original: só o HPA no Deployment.
         c.wait_until(c.backlog_zero, 300, step=5)
@@ -124,7 +155,7 @@ def collect(repetitions, strategies=('reactive', 'anticipatory')):
     version = json.loads(subprocess.check_output(c.CMD[:5] + ['version', '-o', 'json'], text=True, timeout=30))
     report = {'labels': {'metrics': 'observed (local Kind cluster)', 'load': 'synthetic', 'cost': 'hypothetical'},
               'kubernetes_server_version': version['serverVersion']['gitVersion'],
-              'collected_at': datetime.now(timezone.utc).isoformat(timespec='seconds'), 'runs': runs}
+              'collected_at': datetime.now(timezone.utc).isoformat(timespec='seconds'), 'order': order, 'runs': runs}
     (OUT / 'observed.json').write_text(json.dumps(report, indent=1) + '\n')
 
 
@@ -167,20 +198,28 @@ def analyze():
     rows = [{'strategy': r['strategy'], 'repetition': r['index'], 'observed': observed_metrics(r),
              'simulated': simulated_metrics(r)} for r in report['runs']]
     mean = lambda xs: sum(xs) / len(xs) if xs else None
-    summary = {}
-    for strategy, policy in (('reactive', 'reactive'), ('anticipatory', 'anticipatory')):
-        group = [r for r in rows if r['strategy'] == strategy]
-        summary[strategy] = {side: {m: mean([r[side][m] if side == 'observed' else r[side][policy][m] for r in group
-                                             if (r[side][m] if side == 'observed' else r[side][policy][m]) is not None])
-                                    for m in ('max_backlog_docs', 'first_scale_after_load_seconds', 'replica_minutes',
-                                              'cost_brl_hypothetical')}
-                             for side in ('observed', 'simulated')}
+    metrics = ('max_backlog_docs', 'first_scale_after_load_seconds', 'replica_minutes', 'cost_brl_hypothetical')
+
+    def values(group, side, policy, m):
+        return [v for r in group if (v := r[side][m] if side == 'observed' else r[side][policy][m]) is not None]
+
+    def table(group, fn):
+        return {strategy: {side: {m: fn(values([r for r in group if r['strategy'] == strategy], side, strategy, m))
+                                  for m in metrics} for side in ('observed', 'simulated')} for strategy in STRATEGIES}
+    flagged = [{'strategy': r['strategy'], 'repetition': r['index'], 'loadavg_1m_before': r['host']['loadavg_before']['1m']}
+               for r in report['runs'] if loaded(r)]
+    clean = [row for row, r in zip(rows, report['runs']) if not loaded(r)]
+    summary = table(rows, mean)
+    spread = {'min': table(rows, lambda xs: min(xs, default=None)), 'max': table(rows, lambda xs: max(xs, default=None))}
+    without_loaded = table(clean, mean)
     windows = [r['manifest']['schedule']['windows'] for r in report['runs'] if r.get('manifest')]
     result = {'labels': {'observed': 'observed local Kind cluster', 'simulation': 'estimated', 'load': 'synthetic',
                          'cost': f'hypothetical (BRL {PRICE}/replica-hour × ready-pod minutes)'},
               'kubernetes_server_version': report.get('kubernetes_server_version'),
               'config': {k: v for k, v in CONFIG.__dict__.items()}, 'cron_windows': windows,
-              'per_repetition': rows, 'mean': summary}
+              'order': report.get('order', 'blocks'), 'load_limit_loadavg_1m': LOAD_LIMIT,
+              'loaded_repetitions': flagged, 'per_repetition': rows, 'mean': summary, 'spread': spread,
+              'mean_excluding_loaded': without_loaded}
     (OUT / 'results.json').write_text(json.dumps(result, indent=1) + '\n')
     print(json.dumps(summary, indent=1))
 
@@ -192,10 +231,14 @@ if __name__ == '__main__':
     sub = parser.add_subparsers(dest='command', required=True)
     collect_parser = sub.add_parser('collect')
     collect_parser.add_argument('--repetitions', type=int, default=3)
-    collect_parser.add_argument('--only', choices=('reactive', 'anticipatory'))
-    sub.add_parser('analyze')
+    collect_parser.add_argument('--only', choices=STRATEGIES)
+    collect_parser.add_argument('--order', choices=('blocks', 'interleaved'), default='blocks')
+    analyze_parser = sub.add_parser('analyze')
+    for sp in (collect_parser, analyze_parser):
+        sp.add_argument('--output', type=Path, default=OUT, help='diretório das evidências (padrão evidence/p17)')
     args = parser.parse_args()
+    OUT = args.output
     if args.command == 'collect':
-        collect(args.repetitions, (args.only,) if args.only else ('reactive', 'anticipatory'))
+        collect(args.repetitions, (args.only,) if args.only else STRATEGIES, args.order)
     else:
         analyze()

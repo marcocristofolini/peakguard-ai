@@ -2,6 +2,9 @@
 
 Entregas por fase. O histórico Git não é reescrito; os commits desta rodada (P8–P14) seguem Conventional Commits. Dados são sintéticos e valores estimados, salvo indicação de métricas observadas no Kind local.
 
+## P17B — Coleta intercalada da antecipativa
+- `local/p17/experiment.py collect --order interleaved --output evidence/p17b`, com `loadavg` e `docker stats` por repetição e análise com/sem repetições carregadas. Conclusão da P17 mantida (backlog máx. 185 → 2,8 doc, +37% de réplicas-minuto); tabela em `docs/KUBERNETES.md`.
+
 ## P19 — Apresentação v3
 - README e `docs/DEMO.md` com os resultados de P15–P17 (cada claim cita o artefato), roteiro "hipótese → medição → nova hipótese" e "Próximos passos" revisados; o resultado negativo da P15 e o limite da P17 (previsão perfeita, uma curva) ficam visíveis. P18 (chamada real à LLM) não foi executada: sem chave.
 - Capturas `docs/p7-dashboard.png` e `docs/p7-abstention.png` refeitas do build de produção (`docker compose up --build`); as de `docs/p14-*.png` já eram do visual atual.

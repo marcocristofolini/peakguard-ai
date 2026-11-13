@@ -60,7 +60,7 @@ def backlog_zero():
     return bool(result) and float(result[0]['value'][1]) == 0
 
 
-def repetition(index, require_one_replica=True):
+def repetition(index, require_one_replica=True, at_peak=None):
     """Uma execução da carga P6; métricas coletadas em lote (query_range) após a drenagem.
     require_one_replica=False: P17, em que o cron já pré-escalou antes da carga."""
     if require_one_replica and not wait_until(lambda: replicas() == 1, 420):
@@ -69,6 +69,9 @@ def repetition(index, require_one_replica=True):
     before = {p['metadata']['name'] for p in json.loads(kube('get', 'pods', '-l', 'app=documents', '-o', 'json'))['items']}
     start = time.time()
     kube('apply', '-f', str(ROOT / 'local/p6/load.yaml'))
+    if at_peak:  # P17B: amostra pontual no pico (ticks 2–10 de 10 s; ~60 s após o início)
+        time.sleep(60)
+        at_peak()
     kube('wait', '--for=condition=complete', 'job/load', '--timeout=220s', timeout=240)
     if not wait_until(backlog_zero, 180, step=5):
         raise RuntimeError('Backlog não drenou.')
