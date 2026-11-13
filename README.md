@@ -111,6 +111,17 @@ O adaptador também aceita provedores compatíveis com a API OpenAI: defina `PEA
 
 Com `cohere/command-a-plus` (2026-11-13, seed 42), 6 de 8 respostas passaram no checker. `unexpected_peak` (a política escolhida viola o SLO) e `wrong_forecast` (valores sem suporte nas evidências) caíram no fallback, como projetado. São 8 chamadas, um modelo e uma execução por cenário: não é medida de qualidade do texto. Detalhes em [`docs/VERIFICATION.md`](docs/VERIFICATION.md).
 
+Comparação com outros três modelos gratuitos do mesmo gateway (uma execução por cenário):
+
+| Modelo (plano gratuito) | Aceitas | Latência média | Tokens ent./saí. | Rejeitadas |
+| --- | --- | --- | --- | --- |
+| `cohere/command-a-plus` | 6/8 | 7.9 s | 33.840 / 8.582 | `unexpected_peak` (slo) e `wrong_forecast` (evidência sem suporte) |
+| `mistralai/mistral-large-2512` | 7/8 | 2.3 s | 42.705 / 1.013 | `unexpected_peak` (slo) |
+| `mistralai/mistral-medium-3.5` | 7/8 | 1.9 s | 42.705 / 1.045 | `unexpected_peak` (slo) |
+| `cohere/command-a-reasoning` | 2/8 | 6.0 s | 41.089 / 4.238 | 6 de 8: evidência sem suporte (4, incluindo `unexpected_peak`, também por slo) e resposta fora do schema (2) |
+
+Os dois Mistral coincidem com o validador determinístico nos 8 cenários (em `unexpected_peak` nenhuma política é segura, então rejeitar ali é o correto). Detalhes em `docs/VERIFICATION.md`.
+
 O dashboard tem a opção "Explicar com LLM (opcional; o validador decide)" nos parâmetros e mostra a origem da explicação (`llm`, `fallback` com o motivo ou `offline`). Pico previsível, resposta da LLM aceita pelo checker:
 
 ![Dashboard com a explicação da LLM aceita pelo checker (Pico previsível, seed 42)](docs/p18-dashboard-llm-aceita.png)
@@ -161,8 +172,8 @@ Leitura: a antecipativa trocou custo por fila, mas com previsão perfeita (o cal
 ## Próximos passos
 
 - **LLM real (P18):** varredura de 8 cenários com Command A+ (2026-11-13): 6/8 respostas aceitas pelo checker; `unexpected_peak` (viola SLO) e `wrong_forecast` (evidência não sustentada) caíram no fallback determinístico, como projetado. Um modelo, uma execução por cenário; ver `docs/VERIFICATION.md` e `evidence/p18/`.
-- **Filas por pod:** é a hipótese pendente da calibração. O atraso de decisão derivado das medições é 0 ticks (P15), então o erro restante vem do FIFO central e das taxas fluidas do motor, contra filas independentes por pod no cluster. Não testada.
-- **Previsão errada no Kubernetes:** a P17 mediu a antecipativa só com o calendário correto; falta o caso `wrong_forecast` no cluster e com mais de uma curva de carga.
+- **Filas por pod (P20):** testada sem cluster sobre as medições da P13: uma fila por pod com chegadas iguais reduz o MAE de backlog de 41,3 para 24,1 doc; no pico observado 93–97% do backlog fica num só pod, então o cluster está entre esse modelo e o pior caso. Não adotada no motor (mudaria os benchmarks). Ver `docs/CALIBRATION.md`.
+- **Previsão errada no Kubernetes:** a P17B mediu a antecipativa só com o calendário correto. O código para o caso `wrong_forecast` está pronto (`experiment.py collect --curve shifted`: pico real nos ticks 6–14 contra o calendário declarado 2–10), mas a coleta no Kind ainda não foi feita.
 - **Cenários e previsão:** previsões são calendários declarados, não um modelo treinado.
 - **OpenCost:** não reinstalado no cluster v1.36.4 (a P17 instalou só o KEDA 2.21).
 - **Produção:** revisão independente, autenticação de usuários no dashboard e durabilidade de filas.

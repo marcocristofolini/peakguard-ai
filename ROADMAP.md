@@ -114,6 +114,8 @@ Derivadas dos "Próximos passos" do README, em ordem de valor: primeiro explicar
 - P17B (concluída) — Refazer a coleta da P17 intercalando as estratégias, com 5 repetições e carga do host registrada (ressalvas em docs/KUBERNETES.md).
 - P18 (concluída) — Chamada real à LLM, uma única vez, quando houver chave.
 - P19 (concluída) — Apresentação v3 com os resultados de P15–P18.
+- P20 (concluída) — Hipótese das filas por pod testada sem cluster sobre `evidence/p13` (MAE de backlog 41,3 → 24,1 doc); motor inalterado.
+- P20B — `wrong_forecast` no Kind: código pronto (`--curve shifted`, `local/p17/load-shifted.yaml`); falta a coleta intercalada no cluster (Docker Desktop iniciado, máquina quieta, ~30 min).
 
 ## Contrato de trabalho
 Cada execução implementa só uma fase pedida, testa mudanças relacionadas e atualiza docs/STATUS.md (até 20 linhas). Não fazer push nem deploy automaticamente. Não refatorar áreas não relacionadas. Se o simulador mudar, regenerar `benchmarks/results`: o CI (`ci-python`) compara os resultados commitados. Ao encerrar, responder em até oito linhas com entrega, arquivos, comandos de teste e bloqueios.

@@ -93,3 +93,16 @@ def test_loaded_flags_only_above_limit_and_ignores_runs_without_host_record():
     mark = lambda one: {"host": {"loadavg_before": {"1m": one, "5m": 0.0}}}
     assert e.loaded(mark(2.1)) and not e.loaded(mark(2.0)) and not e.loaded(mark(0.3))
     assert not e.loaded({})  # P17 não registrou loadavg
+
+
+def test_shifted_curve_manifest_is_valid_and_distinct_from_nominal():
+    import yaml
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    e = _experiment()
+    assert set(e.CURVES) == {"nominal", "shifted"}
+    nominal = yaml.safe_load((root / e.CURVES["nominal"]).read_text())
+    shifted = yaml.safe_load((root / e.CURVES["shifted"]).read_text())
+    env = shifted["spec"]["template"]["spec"]["containers"][0]["env"]
+    assert {x["name"]: x["value"] for x in env} == {"PEAK_START": "6", "INTERVALS": "16"}
+    assert "env" not in nominal["spec"]["template"]["spec"]["containers"][0]

@@ -1,0 +1,66 @@
+{
+ "labels": {
+  "observed": "observed local Kind cluster (evidence/p13)",
+  "simulation": "estimated",
+  "load": "synthetic"
+ },
+ "parameters": {
+  "capacity_docs_per_minute_per_replica": 294.0,
+  "activation_delay_ticks": 1,
+  "tick_seconds": 10,
+  "policy": "reactive",
+  "max_replicas": 4
+ },
+ "mae_backlog_docs_mean": {
+  "central": 41.32361111111111,
+  "even": 24.1375,
+  "sticky": 319.6847222222222
+ },
+ "per_repetition": [
+  {
+   "repetition": 0,
+   "central": 54.6875,
+   "observed_peak_backlog_docs": 149.0,
+   "observed_pods": {
+    "peak_tick": 6,
+    "pods_with_queue": 2,
+    "busiest_pod_share": 0.9328859060402684
+   },
+   "even": 32.8125,
+   "even_peak_backlog_docs": 142.0,
+   "sticky": 309.9375,
+   "sticky_peak_backlog_docs": 639.0,
+   "central_peak_backlog_docs": 142.0
+  },
+  {
+   "repetition": 1,
+   "central": 26.533333333333335,
+   "observed_peak_backlog_docs": 83.0,
+   "observed_pods": {
+    "peak_tick": 5,
+    "pods_with_queue": 2,
+    "busiest_pod_share": 0.9397590361445783
+   },
+   "even": 21.6,
+   "even_peak_backlog_docs": 142.0,
+   "sticky": 331.8666666666667,
+   "sticky_peak_backlog_docs": 639.0,
+   "central_peak_backlog_docs": 142.0
+  },
+  {
+   "repetition": 2,
+   "central": 42.75,
+   "observed_peak_backlog_docs": 132.0,
+   "observed_pods": {
+    "peak_tick": 5,
+    "pods_with_queue": 2,
+    "busiest_pod_share": 0.9696969696969697
+   },
+   "even": 18.0,
+   "even_peak_backlog_docs": 142.0,
+   "sticky": 317.25,
+   "sticky_peak_backlog_docs": 639.0,
+   "central_peak_backlog_docs": 142.0
+  }
+ ]
+}

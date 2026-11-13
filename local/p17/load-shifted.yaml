@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata: {name: load, namespace: peakguard-p6}
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 180
+  template:
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      containers:
+      - name: load
+        image: peakguard-p6:local
+        imagePullPolicy: Never
+        command: [python, /app/load.py]
+        env: [{name: PEAK_START, value: "6"}, {name: INTERVALS, value: "16"}]
+        resources:
+          requests: {cpu: 50m, memory: 32Mi}
+          limits: {cpu: 200m, memory: 64Mi}
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities: {drop: [ALL]}

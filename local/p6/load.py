@@ -1,11 +1,16 @@
 """Carga sintética controlada: 20s a 1 doc/s, 90s a 12 doc/s, 20s a 1 doc/s."""
 import json
+import os
 import time
 import urllib.request
 
+# Padrão: pico nos intervalos 2–10 de 13. P20: PEAK_START/INTERVALS deslocam o pico (previsão errada).
+PEAK_START = int(os.environ.get("PEAK_START", 2))
+INTERVALS = int(os.environ.get("INTERVALS", 13))
+
 start = time.monotonic()
-for index in range(13):
-    rate = 12 if 2 <= index < 11 else 1
+for index in range(INTERVALS):
+    rate = 12 if PEAK_START <= index < PEAK_START + 9 else 1
     accepted = rejected = errors = 0
     for n in range(rate * 10):
         deadline = start + index * 10 + n / rate

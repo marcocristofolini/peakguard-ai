@@ -1,0 +1,245 @@
+{
+ "labels": {
+  "metrics": "observed",
+  "load": "synthetic"
+ },
+ "model": "cohere/command-a-reasoning",
+ "base_url": "https://api.xkiro.com/v1",
+ "accepted": 2,
+ "calls": 8,
+ "rows": [
+  {
+   "scenario": "stable",
+   "mode": "fallback",
+   "audit": {
+    "source": "llm",
+    "status": "rejected",
+    "accepted": false,
+    "reasons": [
+     "provider_unavailable"
+    ]
+   },
+   "error": "ValidationError",
+   "latency_s": 5.16,
+   "prompt_tokens": 5107,
+   "completion_tokens": 411
+  },
+  {
+   "scenario": "predictable_peak",
+   "mode": "fallback",
+   "audit": {
+    "source": "llm",
+    "status": "rejected",
+    "accepted": false,
+    "reasons": [
+     "unsupported_evidence"
+    ]
+   },
+   "proposal": {
+    "policy": "anticipatory",
+    "claims": [
+     {
+      "id": "anticipatory.slo_violation_minutes",
+      "value": 0.0
+     },
+     {
+      "id": "anticipatory.cost_brl",
+      "value": 1.08
+     },
+     {
+      "id": "anticipatory.max_backlog_docs",
+      "value": 0.0
+     }
+    ],
+    "hypotheses": [
+     "forecast_may_be_wrong"
+    ],
+    "rationale": "0<2 e 0<661 e 1,08<1,32"
+   },
+   "latency_s": 5.38,
+   "prompt_tokens": 5149,
+   "completion_tokens": 472
+  },
+  {
+   "scenario": "unexpected_peak",
+   "mode": "fallback",
+   "audit": {
+    "source": "llm",
+    "status": "rejected",
+    "accepted": false,
+    "reasons": [
+     "slo",
+     "unsupported_evidence"
+    ]
+   },
+   "proposal": {
+    "policy": "anticipatory",
+    "claims": [
+     {
+      "id": "anticipatory.cost_brl",
+      "value": 1.16
+     },
+     {
+      "id": "anticipatory.slo_violation_minutes",
+      "value": 2.0
+     }
+    ],
+    "hypotheses": [
+     "forecast_may_be_wrong"
+    ],
+    "rationale": null
+   },
+   "latency_s": 5.51,
+   "prompt_tokens": 5145,
+   "completion_tokens": 532
+  },
+  {
+   "scenario": "wrong_forecast",
+   "mode": "fallback",
+   "audit": {
+    "source": "llm",
+    "status": "rejected",
+    "accepted": false,
+    "reasons": [
+     "provider_unavailable"
+    ]
+   },
+   "error": "ValidationError",
+   "latency_s": 3.28,
+   "prompt_tokens": 5104,
+   "completion_tokens": 235
+  },
+  {
+   "scenario": "fiscal_month_close",
+   "mode": "fallback",
+   "audit": {
+    "source": "llm",
+    "status": "rejected",
+    "accepted": false,
+    "reasons": [
+     "unsupported_evidence"
+    ]
+   },
+   "proposal": {
+    "policy": "anticipatory",
+    "claims": [
+     {
+      "id": "anticipatory.slo_violation_minutes",
+      "value": 0.0
+     },
+     {
+      "id": "anticipatory.cost_brl",
+      "value": 0.96
+     }
+    ],
+    "hypotheses": [
+     "forecast_may_be_wrong"
+    ],
+    "rationale": null
+   },
+   "latency_s": 5.86,
+   "prompt_tokens": 5156,
+   "completion_tokens": 540
+  },
+  {
+   "scenario": "fiscal_das_day20",
+   "mode": "llm",
+   "audit": {
+    "source": "llm",
+    "status": "accepted",
+    "accepted": true,
+    "reasons": []
+   },
+   "proposal": {
+    "policy": "anticipatory",
+    "claims": [
+     {
+      "id": "anticipatory.slo_violation_minutes",
+      "value": 0.0
+     },
+     {
+      "id": "anticipatory.cost_brl",
+      "value": 1.1
+     }
+    ],
+    "hypotheses": [
+     "forecast_may_be_wrong"
+    ],
+    "rationale": null
+   },
+   "latency_s": 8.13,
+   "prompt_tokens": 5120,
+   "completion_tokens": 816
+  },
+  {
+   "scenario": "fiscal_ancillary_obligations",
+   "mode": "fallback",
+   "audit": {
+    "source": "llm",
+    "status": "rejected",
+    "accepted": false,
+    "reasons": [
+     "unsupported_evidence"
+    ]
+   },
+   "proposal": {
+    "policy": "anticipatory",
+    "claims": [
+     {
+      "id": "anticipatory.cost_brl",
+      "value": 0.98
+     },
+     {
+      "id": "anticipatory.max_backlog_docs",
+      "value": 111.0
+     },
+     {
+      "id": "anticipatory.slo_violation_minutes",
+      "value": 0.0
+     }
+    ],
+    "hypotheses": [
+     "forecast_may_be_wrong"
+    ],
+    "rationale": null
+   },
+   "latency_s": 7.4,
+   "prompt_tokens": 5123,
+   "completion_tokens": 540
+  },
+  {
+   "scenario": "fiscal_irpf_april",
+   "mode": "llm",
+   "audit": {
+    "source": "llm",
+    "status": "accepted",
+    "accepted": true,
+    "reasons": []
+   },
+   "proposal": {
+    "policy": "anticipatory",
+    "claims": [
+     {
+      "id": "anticipatory.cost_brl",
+      "value": 1.6400000000000003
+     },
+     {
+      "id": "anticipatory.slo_violation_minutes",
+      "value": 0.0
+     },
+     {
+      "id": "anticipatory.max_backlog_docs",
+      "value": 0.0
+     }
+    ],
+    "hypotheses": [
+     "forecast_may_be_wrong"
+    ],
+    "rationale": "Selecionada pela ausência de violações de SLO (0 minutos) e backlog (0 documentos), dentro do orçamento (custo 1,64 BRL < 10 BRL)."
+   },
+   "latency_s": 6.91,
+   "prompt_tokens": 5185,
+   "completion_tokens": 692
+  }
+ ]
+}

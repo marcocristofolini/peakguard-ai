@@ -104,7 +104,10 @@ def node_stats():
     return {'cpu_percent': float(s['CPUPerc'].rstrip('%')), 'memory': s['MemUsage']}
 
 
-def run(strategy, index):
+CURVES = {'nominal': 'local/p6/load.yaml', 'shifted': 'local/p17/load-shifted.yaml'}  # shifted: pico real nos ticks 6–14, calendário declarado 2–10
+
+
+def run(strategy, index, curve='nominal'):
     reset_to_one()
     reset_time = time.time()
     manifest = None
@@ -120,7 +123,7 @@ def run(strategy, index):
         time.sleep(max(0, anchor.timestamp() - time.time()))
     check_single(strategy)
     host = {'loadavg_before': loadavg()}
-    rep = c.repetition(index, require_one_replica=strategy == 'reactive',
+    rep = c.repetition(index, require_one_replica=strategy == 'reactive', load_file=CURVES[curve],
                        at_peak=lambda: host.update(node_at_peak=node_stats()))
     host['loadavg_after'] = loadavg()
     check_single(strategy)
@@ -128,13 +131,13 @@ def run(strategy, index):
     created = sorted(c.parse_time(p['metadata']['creationTimestamp']) for p in pods)
     ready = c.prom('query_range', query='count(up{job="documents"} == 1)',
                    start=rep['load_start_time'] - 60, end=rep['end_time'], step='5s')
-    rep.update({'strategy': strategy, 'host': host, 'reset_time': reset_time, 'manifest': manifest,
+    rep.update({'strategy': strategy, 'curve': curve, 'host': host, 'reset_time': reset_time, 'manifest': manifest,
                 'pod_created_times': [t for t in created if t > reset_time], 'ready_pods_wide': ready})
     print(json.dumps({'strategy': strategy, 'repetition': index, 'new_pods': len(rep['pod_created_times'])}), flush=True)
     return rep
 
 
-def collect(repetitions, strategies=STRATEGIES, order='blocks'):
+def collect(repetitions, strategies=STRATEGIES, order='blocks', curve='nominal'):
     OUT.mkdir(parents=True, exist_ok=True)
     if 'keda' not in {n['metadata']['name'] for n in json.loads(subprocess.check_output(
             c.CMD[:5] + ['get', 'namespaces', '-o', 'json'], text=True, timeout=30))['items']}:
@@ -145,7 +148,7 @@ def collect(repetitions, strategies=STRATEGIES, order='blocks'):
     runs = [r for r in previous if r['strategy'] not in strategies]  # mantém estratégias já coletadas
     try:
         for strategy, i in schedule(repetitions, order, strategies):
-            runs.append(run(strategy, i))
+            runs.append(run(strategy, i, curve))
             (OUT / 'observed.json').write_text(json.dumps({'runs': runs}, indent=1) + '\n')
     finally:
         # Restaura o estado original: só o HPA no Deployment.
@@ -155,7 +158,7 @@ def collect(repetitions, strategies=STRATEGIES, order='blocks'):
     version = json.loads(subprocess.check_output(c.CMD[:5] + ['version', '-o', 'json'], text=True, timeout=30))
     report = {'labels': {'metrics': 'observed (local Kind cluster)', 'load': 'synthetic', 'cost': 'hypothetical'},
               'kubernetes_server_version': version['serverVersion']['gitVersion'],
-              'collected_at': datetime.now(timezone.utc).isoformat(timespec='seconds'), 'order': order, 'runs': runs}
+              'collected_at': datetime.now(timezone.utc).isoformat(timespec='seconds'), 'order': order, 'curve': curve, 'runs': runs}
     (OUT / 'observed.json').write_text(json.dumps(report, indent=1) + '\n')
 
 
@@ -217,7 +220,7 @@ def analyze():
                          'cost': f'hypothetical (BRL {PRICE}/replica-hour × ready-pod minutes)'},
               'kubernetes_server_version': report.get('kubernetes_server_version'),
               'config': {k: v for k, v in CONFIG.__dict__.items()}, 'cron_windows': windows,
-              'order': report.get('order', 'blocks'), 'load_limit_loadavg_1m': LOAD_LIMIT,
+              'order': report.get('order', 'blocks'), 'curve': report.get('curve', 'nominal'), 'load_limit_loadavg_1m': LOAD_LIMIT,
               'loaded_repetitions': flagged, 'per_repetition': rows, 'mean': summary, 'spread': spread,
               'mean_excluding_loaded': without_loaded}
     (OUT / 'results.json').write_text(json.dumps(result, indent=1) + '\n')
@@ -233,12 +236,14 @@ if __name__ == '__main__':
     collect_parser.add_argument('--repetitions', type=int, default=3)
     collect_parser.add_argument('--only', choices=STRATEGIES)
     collect_parser.add_argument('--order', choices=('blocks', 'interleaved'), default='blocks')
+    collect_parser.add_argument('--curve', choices=tuple(CURVES), default='nominal',
+                                help='shifted = previsão errada: pico real atrasado em 4 ticks em relação ao calendário')
     analyze_parser = sub.add_parser('analyze')
     for sp in (collect_parser, analyze_parser):
         sp.add_argument('--output', type=Path, default=OUT, help='diretório das evidências (padrão evidence/p17)')
     args = parser.parse_args()
     OUT = args.output
     if args.command == 'collect':
-        collect(args.repetitions, (args.only,) if args.only else STRATEGIES, args.order)
+        collect(args.repetitions, (args.only,) if args.only else STRATEGIES, args.order, args.curve)
     else:
         analyze()

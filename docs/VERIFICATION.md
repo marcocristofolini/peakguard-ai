@@ -121,3 +121,14 @@ Totais observados: 33.840 tokens de entrada e 8.582 de saída em 8 chamadas; lat
 
 Diagrama refeito com o Archify 3.2.0 em `.archify/architecture-peakguard-ai-20261113-152327/`, a partir de evidências do commit `d56b599` (cada componente cita arquivo e linhas). Gates `validate`, `deliver`, `check` e `browser-check` aprovados com o Chromium headless do Playwright (bibliotecas de sistema extraídas localmente, sem instalar no sistema); a captura `docs/peakguard-archify.png` foi inspecionada visualmente. O Viewer do Archify não tem catálogo em português: o diagrama está em português, mas os controles do Viewer ficam em inglês.
 
+### P18 — comparação entre modelos (2026-11-13)
+
+Mesma varredura (`local/p12/llm_sweep.py`, 8 cenários, seed 42) com quatro modelos gratuitos do gateway, em 2026-11-13. Em `unexpected_peak` nenhuma política é segura, então a rejeição ali é o resultado correto: os dois Mistral coincidem com o validador determinístico nos 8 cenários. Preço listado US$ 0/1M tokens (estimado pela listagem do provedor). O `command-a-reasoning` errou o schema em 2 cenários e foi o pior. Uma execução por cenário e modelo: não é benchmark de qualidade.
+
+| Modelo (plano gratuito) | Aceitas | Latência média | Tokens ent./saí. | Rejeitadas |
+| --- | --- | --- | --- | --- |
+| `cohere/command-a-plus` | 6/8 | 7.9 s | 33.840 / 8.582 | `unexpected_peak` (slo) e `wrong_forecast` (evidência sem suporte) |
+| `mistralai/mistral-large-2512` | 7/8 | 2.3 s | 42.705 / 1.013 | `unexpected_peak` (slo) |
+| `mistralai/mistral-medium-3.5` | 7/8 | 1.9 s | 42.705 / 1.045 | `unexpected_peak` (slo) |
+| `cohere/command-a-reasoning` | 2/8 | 6.0 s | 41.089 / 4.238 | 6 de 8: evidência sem suporte (4, incluindo `unexpected_peak`, também por slo) e resposta fora do schema (2) |
+

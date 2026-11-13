@@ -2,6 +2,9 @@
 
 Entregas por fase. O histórico Git não é reescrito; os commits desta rodada (P8–P14) seguem Conventional Commits. Dados são sintéticos e valores estimados, salvo indicação de métricas observadas no Kind local.
 
+## P20 — Filas por pod (hipótese da calibração)
+- `local/p20/perpod.py` reanalisa `evidence/p13/observed.json` sem cluster → `evidence/p20/results.json`. MAE do backlog 41,3 (fila central) → 24,1 doc (uma fila por pod, chegadas iguais); o extremo `sticky` dá 319,7. Motor e benchmarks inalterados; leitura e limites em `docs/CALIBRATION.md`.
+
 ## P18 — Chamada real à LLM
 - Dashboard: opção "Explicar com LLM" (`use_llm`) e selo da origem da explicação (`llm`/`fallback`/`offline`, com o motivo da rejeição), com teste; capturas `docs/p18-dashboard-llm-*.png` do build de produção com a API real.
 - Diagrama de arquitetura refeito com o Archify 3.2.0 (estado P0–P19, evidências do commit `d56b599`); `docs/peakguard-archify.png` atualizado.

@@ -50,3 +50,17 @@ Sem cluster: `python3 local/p15/recalibrate.py` relê `evidence/p13/observed.jso
 \* Não derivados dos dados; só delimitam o efeito. Não escolhidos pelo erro.
 
 Leitura: o atraso derivado é 0, então a configuração P13 não muda e o MAE segue 41,3 (sem melhora). Atraso de 1 tick aproxima o backlog do valor antigo (36,4 vs 36,5), mas piora o atraso estimado, e 2 ticks piora backlog e atraso; com 3 repetições e diferenças menores que a variação entre repetições, isso não demonstra ganho e não foi adotado (sem ajuste até o número melhorar). Próxima hipótese: filas por pod (o cluster balanceia por pod; o motor usa FIFO central e taxa fluida), a testar numa fase própria.
+
+## Filas por pod (P20, 2026-11-13)
+
+Hipótese deixada pela P15: o erro restante vem do FIFO central do motor, contra uma fila por pod no cluster. Teste sem cluster, com `local/p20/perpod.py` sobre `evidence/p13/observed.json` (3 repetições): o mesmo calendário de réplicas do motor (reativa, 294 doc/min, ativação de 1 tick) alimenta três modelos de fila. `even`: chegadas divididas igualmente entre os pods ativos, pods novos com fila vazia. `sticky`: chegadas só nos pods originais (limite superior de pods novos ociosos). Resultado em `evidence/p20/results.json` (backlog observado × estimado, MAE em doc):
+
+| Repetição | Fila central (motor) | Por pod, `even` | Por pod, `sticky` |
+| --- | --- | --- | --- |
+| 0 | 54,7 | 32,8 | 309,9 |
+| 1 | 26,5 | 21,6 | 331,9 |
+| 2 | 42,8 | 18,0 | 317,2 |
+| Média | 41,3 | 24,1 | 319,7 |
+
+Leitura: dividir a carga entre filas por pod reduz o MAE médio de 41,3 para 24,1 doc (−42%, nas 3 repetições); o extremo `sticky` é bem pior. No pico observado, 93–97% do backlog ficou no pod mais carregado e só 2 pods tinham fila, então o cluster fica entre os dois modelos: pods novos recebem parte da carga, não a divisão igual. A hipótese se sustenta em parte, mas a melhora não prova o mecanismo (pode vir do timing das ativações). Limites: 3 repetições, uma curva de carga, nenhum parâmetro novo ajustado pelo erro. O motor e `benchmarks/results` não foram alterados: adotar filas por pod no motor mudaria os benchmarks e é decisão separada.
+
