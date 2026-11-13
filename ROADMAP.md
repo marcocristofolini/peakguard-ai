@@ -116,7 +116,8 @@ Derivadas dos "Próximos passos" do README, em ordem de valor: primeiro explicar
 - P19 (concluída) — Apresentação v3 com os resultados de P15–P18.
 - P20 (concluída) — Hipótese das filas por pod testada sem cluster sobre `evidence/p13` (MAE de backlog 41,3 → 24,1 doc); motor inalterado.
 - P20B (concluída) — `wrong_forecast` no Kind (pico real deslocado em 4 ticks, 5 repetições intercaladas): a antecipativa manteve o backlog em 3,4 doc (reativa 65,4) com +44% de réplicas-minuto. Deslocamento maior testado na P20C.
-- P20C (concluída) — pico depois do fim da janela cron (ticks 16–24), 3+3 repetições: a antecipativa manteve o backlog em 2,3 doc (reativa 62,3) com +58% de réplicas-minuto; a estabilização de scale-down do HPA provavelmente segurou as réplicas além da janela.
+- P20C (concluída) — pico depois do fim da janela cron (ticks 16–24), 3+3 repetições: a antecipativa manteve o backlog em 2,3 doc (reativa 62,3) com +58% de réplicas-minuto; a estabilização de scale-down do HPA segurou as réplicas além da janela (confirmado na P20D).
+- P20D (concluída) — mesma curva com `scaleDown.stabilizationWindowSeconds: 0` no ScaledObject: o backlog da antecipativa sobe de 2,3 para 223,3 doc (reativa 60,0) e o custo extra fica em +50%; a estabilização padrão de 300 s era o que escondia o erro de calendário.
 
 ## Contrato de trabalho
 Cada execução implementa só uma fase pedida, testa mudanças relacionadas e atualiza docs/STATUS.md (até 20 linhas). Não fazer push nem deploy automaticamente. Não refatorar áreas não relacionadas. Se o simulador mudar, regenerar `benchmarks/results`: o CI (`ci-python`) compara os resultados commitados. Ao encerrar, responder em até oito linhas com entrega, arquivos, comandos de teste e bloqueios.

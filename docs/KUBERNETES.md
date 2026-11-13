@@ -176,3 +176,18 @@ Terceira coleta intercalada (3 repetições por estratégia, R, A, R, A…, mesm
 
 O simulador estimou 142 doc de backlog para a antecipativa (e para a reativa) nesta curva, contra 2,3 e 62,3 observados: ele modela cooldown de 2 ticks e não a estabilização de scale-down do HPA, então subestima o efeito de manter réplicas após a janela. Limites: uma curva, 3 repetições, máquina compartilhada.
 
+### Estabilização de scale-down zerada (P20D)
+
+Teste da explicação da P20C. Mesma curva (pico nos ticks 16–24, fora da janela `cron`), mesma coleta intercalada (3 repetições por estratégia), mas o ScaledObject aplicado no experimento ganha `advanced.horizontalPodAutoscalerConfig.behavior.scaleDown.stabilizationWindowSeconds: 0` (`collect --stabilization 0`; o gerador de manifesto e a API não mudaram). A reativa não muda (HPA do cluster, estabilização de 180 s). Evidências: `evidence/p20d/`. Observado no Kind local; carga sintética; custo hipotético; `loadavg` de 1 min antes da carga entre 0,15 e 1,11, nenhuma repetição marcada.
+
+| Métrica (média; mín–máx) | P20C: estabilização padrão (300 s) | P20D: estabilização 0 |
+| --- | --- | --- |
+| Reativa: backlog máx. (doc) | 62,3 (37–91) | 60,0 (35–79) |
+| Antecipativa: backlog máx. (doc) | 2,3 (2–3) | 223,3 (171–287) |
+| Antecipativa: 1ª escala vs. início da carga (s) | −37,3 | +196,3 (186–213) |
+| Réplicas-minuto reativa → antecipativa | 13,75 → 21,67 (+58%) | 13,94 → 20,89 (+50%) |
+
+**A explicação se confirma: foi a estabilização de scale-down que escondeu o erro de calendário.** Com ela zerada, a antecipativa passa de 2,3 para 223,3 doc de backlog máximo, 3,7 vezes o da reativa (60,0), e continua mais cara (+50% de réplicas-minuto). Nos pods prontos das 3 repetições antecipativas: 4 réplicas até +160 s, queda para 1–2 em +180–200 s (a janela `cron` acaba em ~+140 s e o pico já começou em +160 s) e volta a 4 só em ~+220–240 s, já no meio do pico. A reativa reproduziu o resultado da P20C (60,0 contra 62,3 doc), o que indica que a mudança vem do lado antecipativo.
+
+Leitura: com um calendário errado, a antecipativa só se sai bem quando a estabilização padrão de 300 s segura as réplicas, e isso tem preço (+58% de réplicas-minuto). O `manifest_diff` não define `behavior`; trocar esse padrão é decisão de segurança contra custo e fica fora desta fase. Limites: uma curva, 3 repetições, máquina compartilhada, reativa com estabilização própria de 180 s.
+

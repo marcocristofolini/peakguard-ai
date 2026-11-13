@@ -120,3 +120,12 @@ def test_late_curve_peak_starts_after_cron_window_and_fits_the_job_deadline():
     # O pico real (tick 16) começa depois do fim da janela cron derivada do calendário declarado.
     window = e.scaled_object(START)["schedule"]["windows"][0]
     assert env["PEAK_START"] > window["end_tick"]
+
+
+def test_scale_down_stabilization_is_applied_only_when_requested():
+    e = _experiment()
+    base = {"spec": {"minReplicaCount": 1}}
+    assert e.with_scale_down_stabilization({"spec": {"minReplicaCount": 1}}, None) == base
+    out = e.with_scale_down_stabilization({"spec": {"minReplicaCount": 1}}, 0)
+    assert out["spec"]["advanced"]["horizontalPodAutoscalerConfig"]["behavior"]["scaleDown"] == {"stabilizationWindowSeconds": 0}
+    assert out["spec"]["minReplicaCount"] == 1
