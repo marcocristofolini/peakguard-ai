@@ -117,3 +117,7 @@ Histórico da fase (o que aconteceu antes desse resultado):
 
 Totais observados: 33.840 tokens de entrada e 8.582 de saída em 8 chamadas; latência média 7,9 s (máx. 11,6 s). Nenhuma falha de API. As duas rejeições são o validador determinístico e o checker de fidelidade fazendo o trabalho: o fallback assumiu com `execution_allowed=false`. Limites: um modelo, uma execução por cenário, sem repetição por seed (o contexto é determinístico), sem avaliar a qualidade do texto aceito. As tentativas anteriores com outros modelos (Haiku 5.5 e demais "premium": 403, plano sem saldo) estão no registro acima.
 
+## Arquitetura Archify atualizada (2026-11-13)
+
+Diagrama refeito com o Archify 3.2.0 em `.archify/architecture-peakguard-ai-20261113-152327/`, a partir de evidências do commit `d56b599` (cada componente cita arquivo e linhas). Gates `validate`, `deliver`, `check` e `browser-check` aprovados com o Chromium headless do Playwright (bibliotecas de sistema extraídas localmente, sem instalar no sistema); a captura `docs/peakguard-archify.png` foi inspecionada visualmente. O Viewer do Archify não tem catálogo em português: o diagrama está em português, mas os controles do Viewer ficam em inglês.
+

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { recommend } from "../lib/recommendation.mjs";
 import { niceTicks } from "../lib/axis.mjs";
-import { interpretDecision, type Validation } from "../lib/decision.mjs";
+import { explanationSource, interpretDecision, type Validation } from "../lib/decision.mjs";
 import { investigationLog, clock } from "../lib/investigation.mjs";
 
 type Tick = {
@@ -318,6 +318,7 @@ export default function Home() {
     [slo, setSlo] = useState(2),
     [arrivals, setArrivals] = useState("deterministic"),
     [risk, setRisk] = useState(""),
+    [useLlm, setUseLlm] = useState(false),
     [result, setResult] = useState<Comparison | null>(null),
     [ran, setRan] = useState<{ scenario: string; seed: number; arrivals: string } | null>(null),
     [validation, setValidation] = useState<Validation | null>(null),
@@ -381,7 +382,7 @@ export default function Home() {
         const v = await fetch("/api/explanations", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: payload,
+          body: useLlm ? JSON.stringify({ ...JSON.parse(payload), use_llm: true }) : payload,
         });
         if (v.ok) setValidation(await v.json());
       } catch {
@@ -397,6 +398,7 @@ export default function Home() {
     b = result?.results.anticipatory,
     ranking = a && b ? recommend(a, b) : null,
     rec = a && b ? interpretDecision(validation) : null,
+    source = explanationSource(validation),
     log = a && b ? investigationLog(a, b) : [],
     lastTime = a?.ticks.at(-1)?.time_minutes ?? 0;
   return (
@@ -482,6 +484,10 @@ export default function Home() {
                   <option value="burst">Rajadas</option>
                 </select>
               </label>
+              <label className="check">
+                <input type="checkbox" checked={useLlm} onChange={(e) => setUseLlm(e.target.checked)} />
+                Explicar com LLM (opcional; o validador decide)
+              </label>
               <label>
                 Percentil de risco (opcional)
                 <input type="number" min="0.01" max="0.99" step="0.01" placeholder="ex.: 0,9" value={risk} onChange={(e) => setRisk(e.target.value)} />
@@ -551,6 +557,12 @@ export default function Home() {
                   O ranking não substitui o validador, e nada é executado automaticamente.
                 </span>
               </p>
+              {source && (
+                <p className="verdict">
+                  <span className={`vtag ${source.tone}`}>{validation?.mode}</span>
+                  <span>{source.text}</span>
+                </p>
+              )}
               <dl className="facts">
                 <div>
                   <dt>Demanda total</dt>

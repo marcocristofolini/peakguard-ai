@@ -1,0 +1,367 @@
+{
+ "schema_version": 1,
+ "diagram_type": "architecture",
+ "meta": {
+  "title": "PeakGuard AI: arquitetura atual (P0–P19)",
+  "output": ".archify/architecture-peakguard-ai-20261113-152327/peakguard-architecture.html",
+  "quality_profile": "showcase",
+  "locale": "pt-BR",
+  "repository": {
+   "url": "git@github.com:marcocristofolini/peakguard-ai.git",
+   "link_mode": "local-only",
+   "revision": "d56b599b45b1216223785caf70d9e6c06970f561"
+  }
+ },
+ "components": [
+  {
+   "id": "operator",
+   "type": "external",
+   "label": "Operador",
+   "sublabel": "navegador local",
+   "pos": [
+    40,
+    40
+   ],
+   "size": [
+    150,
+    64
+   ],
+   "sources": [
+    {
+     "path": "README.md",
+     "line": 22
+    }
+   ]
+  },
+  {
+   "id": "dash",
+   "type": "frontend",
+   "label": "Dashboard",
+   "sublabel": "Next.js 16 · React 19",
+   "pos": [
+    300,
+    40
+   ],
+   "size": [
+    150,
+    64
+   ],
+   "sources": [
+    {
+     "path": "frontend/app/page.tsx",
+     "line": 358
+    },
+    {
+     "path": "frontend/app/page.tsx",
+     "line": 381
+    }
+   ]
+  },
+  {
+   "id": "api",
+   "type": "backend",
+   "label": "API FastAPI",
+   "sublabel": "peakguard/api.py",
+   "pos": [
+    560,
+    40
+   ],
+   "size": [
+    150,
+    64
+   ],
+   "sources": [
+    {
+     "path": "peakguard/api.py",
+     "line": 130,
+     "end_line": 165
+    }
+   ]
+  },
+  {
+   "id": "sim",
+   "type": "backend",
+   "label": "Simulador",
+   "sublabel": "determinístico · ticks",
+   "pos": [
+    820,
+    40
+   ],
+   "size": [
+    150,
+    64
+   ],
+   "sources": [
+    {
+     "path": "peakguard/simulator.py",
+     "line": 128
+    },
+    {
+     "path": "peakguard/simulator.py",
+     "line": 246
+    }
+   ]
+  },
+  {
+   "id": "bench",
+   "type": "database",
+   "label": "Benchmarks",
+   "sublabel": "benchmarks/ · evidence/",
+   "pos": [
+    1080,
+    40
+   ],
+   "size": [
+    150,
+    64
+   ],
+   "sources": [
+    {
+     "path": "peakguard/benchmarks.py",
+     "line": 23
+    }
+   ]
+  },
+  {
+   "id": "rules",
+   "type": "security",
+   "label": "Validador",
+   "sublabel": "rules.yaml · SLO/budget",
+   "pos": [
+    300,
+    200
+   ],
+   "size": [
+    150,
+    64
+   ],
+   "sources": [
+    {
+     "path": "peakguard/rules.py",
+     "line": 41
+    },
+    {
+     "path": "peakguard/rules.yaml",
+     "line": 1
+    }
+   ]
+  },
+  {
+   "id": "explain",
+   "type": "backend",
+   "label": "Explicações",
+   "sublabel": "checker de fidelidade",
+   "pos": [
+    560,
+    200
+   ],
+   "size": [
+    150,
+    64
+   ],
+   "sources": [
+    {
+     "path": "peakguard/explanations.py",
+     "line": 99
+    },
+    {
+     "path": "peakguard/explanations.py",
+     "line": 126
+    }
+   ]
+  },
+  {
+   "id": "manifest",
+   "type": "backend",
+   "label": "manifest_diff",
+   "sublabel": "HPA · ScaledObject cron",
+   "pos": [
+    820,
+    200
+   ],
+   "size": [
+    150,
+    64
+   ],
+   "sources": [
+    {
+     "path": "peakguard/manifest.py",
+     "line": 61
+    }
+   ]
+  },
+  {
+   "id": "exp",
+   "type": "backend",
+   "label": "Experimento P17",
+   "sublabel": "local/p17 · kubectl",
+   "pos": [
+    1080,
+    200
+   ],
+   "size": [
+    150,
+    64
+   ],
+   "sources": [
+    {
+     "path": "local/p17/experiment.py",
+     "line": 107
+    }
+   ]
+  },
+  {
+   "id": "llm",
+   "type": "external",
+   "label": "LLM (opcional)",
+   "sublabel": "API compatível OpenAI",
+   "pos": [
+    560,
+    360
+   ],
+   "size": [
+    150,
+    64
+   ],
+   "sources": [
+    {
+     "path": "peakguard/llm.py",
+     "line": 11
+    }
+   ]
+  },
+  {
+   "id": "kind",
+   "type": "cloud",
+   "label": "Kind local",
+   "sublabel": "HPA · KEDA · Prometheus",
+   "pos": [
+    1080,
+    360
+   ],
+   "size": [
+    150,
+    64
+   ],
+   "sources": [
+    {
+     "path": "local/p6/resources.yaml",
+     "line": 45
+    },
+    {
+     "path": "local/p6/resources.yaml",
+     "line": 103
+    }
+   ]
+  }
+ ],
+ "boundaries": [
+  {
+   "kind": "security-group",
+   "label": "Decisão determinística",
+   "wraps": [
+    "rules",
+    "explain"
+   ]
+  }
+ ],
+ "connections": [
+  {
+   "id": "op-dash",
+   "from": "operator",
+   "to": "dash",
+   "label": "HTTP"
+  },
+  {
+   "id": "dash-api",
+   "from": "dash",
+   "to": "api",
+   "label": "/api/*"
+  },
+  {
+   "id": "api-sim",
+   "from": "api",
+   "to": "sim",
+   "label": "simula"
+  },
+  {
+   "id": "sim-bench",
+   "from": "sim",
+   "to": "bench",
+   "label": "benchmarks",
+   "variant": "dashed"
+  },
+  {
+   "id": "api-explain",
+   "from": "api",
+   "to": "explain",
+   "label": "/explanations"
+  },
+  {
+   "id": "explain-rules",
+   "from": "explain",
+   "to": "rules",
+   "label": "valida",
+   "variant": "security"
+  },
+  {
+   "id": "explain-llm",
+   "from": "explain",
+   "to": "llm",
+   "label": "opcional",
+   "variant": "dashed"
+  },
+  {
+   "id": "explain-manifest",
+   "from": "explain",
+   "to": "manifest",
+   "label": "aprovada"
+  },
+  {
+   "id": "manifest-exp",
+   "from": "manifest",
+   "to": "exp",
+   "label": "manifesto"
+  },
+  {
+   "id": "exp-kind",
+   "from": "exp",
+   "to": "kind",
+   "label": "kubectl apply",
+   "variant": "emphasis"
+  },
+  {
+   "id": "exp-bench",
+   "from": "exp",
+   "to": "bench",
+   "label": "evidence/p17",
+   "variant": "dashed"
+  }
+ ],
+ "cards": [
+  {
+   "dot": "cyan",
+   "title": "Fluxo principal",
+   "items": [
+    "O dashboard chama /api/* e a API FastAPI roda o simulador (reativa × antecipativa)",
+    "Resultados e benchmarks são JSON versionado, reproduzível pelo CI"
+   ]
+  },
+  {
+   "dot": "rose",
+   "title": "IA sem autoridade",
+   "items": [
+    "A LLM é opcional e só explica; o validador e o checker de fidelidade decidem",
+    "Rejeição aciona o fallback determinístico; nada é aplicado pela API"
+   ]
+  },
+  {
+   "dot": "emerald",
+   "title": "Kubernetes local",
+   "items": [
+    "O manifesto (HPA ou ScaledObject KEDA cron) é gerado, não aplicado pela API",
+    "O experimento P17 aplica no Kind e grava as medições em evidence/"
+   ]
+  }
+ ]
+}

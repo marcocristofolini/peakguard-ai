@@ -714,3 +714,15 @@ tbody th i {
     animation: none;
   }
 }
+
+.check input {
+  width: auto;
+  height: auto;
+}
+.check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 13.5px;
+}

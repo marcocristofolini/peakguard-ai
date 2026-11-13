@@ -5,9 +5,9 @@
 [![codeql](https://github.com/marcocristofolini/peakguard-ai/actions/workflows/codeql.yml/badge.svg)](https://github.com/marcocristofolini/peakguard-ai/actions/workflows/codeql.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-[![Arquitetura Archify — visão geral](docs/peakguard-archify.png)](.archify/architecture-peakguard-ai-20261101-112333/peakguard-architecture.html)
+[![Arquitetura Archify — estado atual P0–P19](docs/peakguard-archify.png)](.archify/architecture-peakguard-ai-20261113-152327/peakguard-architecture.html)
 
-[Explorar a arquitetura interativa (HTML Archify)](.archify/architecture-peakguard-ai-20261101-112333/peakguard-architecture.html) · [Diagrama explicado](docs/ARCHITECTURE.md) · [Segurança e autenticação](docs/SECURITY.md)
+[Explorar a arquitetura interativa (HTML Archify)](.archify/architecture-peakguard-ai-20261113-152327/peakguard-architecture.html) · [Diagrama explicado](docs/ARCHITECTURE.md) · [Segurança e autenticação](docs/SECURITY.md)
 
 Demonstrador local de capacidade, confiabilidade e FinOps para processamento de documentos. Compara escalonamento reativo e antecipativo sob a mesma carga, expõe risco de SLO e custo estimado e permite uma seleção assistida por LLM sujeita a validação determinística.
 
@@ -110,6 +110,14 @@ O adaptador também aceita provedores compatíveis com a API OpenAI: defina `PEA
 ![Execução com LLM em 8 cenários sintéticos: 6 respostas aceitas e 2 caídas no fallback determinístico](docs/p18-llm.svg)
 
 Com `cohere/command-a-plus` (2026-11-13, seed 42), 6 de 8 respostas passaram no checker. `unexpected_peak` (a política escolhida viola o SLO) e `wrong_forecast` (valores sem suporte nas evidências) caíram no fallback, como projetado. São 8 chamadas, um modelo e uma execução por cenário: não é medida de qualidade do texto. Detalhes em [`docs/VERIFICATION.md`](docs/VERIFICATION.md).
+
+O dashboard tem a opção "Explicar com LLM (opcional; o validador decide)" nos parâmetros e mostra a origem da explicação (`llm`, `fallback` com o motivo ou `offline`). Pico previsível, resposta da LLM aceita pelo checker:
+
+![Dashboard com a explicação da LLM aceita pelo checker (Pico previsível, seed 42)](docs/p18-dashboard-llm-aceita.png)
+
+Pico inesperado: a LLM escolheu uma política que viola o SLO, o checker a rejeitou e o fallback determinístico assumiu:
+
+![Dashboard com a LLM rejeitada (slo) e fallback determinístico (Pico inesperado, seed 42)](docs/p18-dashboard-llm-fallback.png)
 
 ## Benchmark reproduzível
 

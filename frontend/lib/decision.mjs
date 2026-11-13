@@ -41,3 +41,18 @@ export function interpretDecision(validation) {
       "Alternativa validada pelas regras determinísticas.",
   };
 }
+
+// Origem da explicação: a LLM só explica; o checker de fidelidade e o validador decidem.
+export function explanationSource(validation) {
+  if (!validation) return null;
+  if (validation.mode === "llm")
+    return { tone: "approved", text: "Explicação da LLM aceita pelo checker de fidelidade." };
+  if (validation.mode === "fallback") {
+    const reasons = validation.audit?.[0]?.reasons?.join(", ");
+    return {
+      tone: "abstained",
+      text: `LLM rejeitada${reasons ? ` (${reasons})` : ""}; explicação determinística usada.`,
+    };
+  }
+  return { tone: "approved", text: "Explicação determinística (offline), sem LLM." };
+}

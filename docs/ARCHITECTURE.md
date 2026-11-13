@@ -1,6 +1,6 @@
 # Arquitetura implementada
 
-**Diagrama Archify validado:** [abrir versão interativa](../.archify/architecture-peakguard-ai-20261101-112333/peakguard-architecture.html) — [prévia PNG](peakguard-archify.png). A visão separa o fluxo de simulação/autorização do experimento Kind, sem ligação de execução automática. Referências de código estão incorporadas nos nós.
+**Diagrama Archify validado:** [abrir versão interativa](../.archify/architecture-peakguard-ai-20261113-152327/peakguard-architecture.html) — [prévia PNG](peakguard-archify.png). A visão separa o fluxo de simulação/autorização do experimento Kind, sem ligação de execução automática. Referências de código estão incorporadas nos nós.
 
 ```mermaid
 flowchart LR

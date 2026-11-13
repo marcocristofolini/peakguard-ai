@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { interpretDecision } from '../lib/decision.mjs';
+import { explanationSource, interpretDecision } from '../lib/decision.mjs';
 
 test('apresenta aprovação determinística sem sugerir execução automática', () => {
   const decision = interpretDecision({
@@ -42,4 +42,13 @@ test('nunca apresenta autorização para execução quando backend indica permis
   });
   assert.equal(decision.status, 'unavailable');
   assert.equal(decision.policy, null);
+});
+
+test('explica a origem do texto: LLM aceita, fallback com motivo ou offline', () => {
+  assert.equal(explanationSource(null), null);
+  assert.match(explanationSource({ mode: 'llm' }).text, /LLM aceita/);
+  const fb = explanationSource({ mode: 'fallback', audit: [{ source: 'llm', status: 'rejected', reasons: ['slo'] }] });
+  assert.equal(fb.tone, 'abstained');
+  assert.match(fb.text, /rejeitada \(slo\)/);
+  assert.match(explanationSource({ mode: 'offline' }).text, /offline/);
 });

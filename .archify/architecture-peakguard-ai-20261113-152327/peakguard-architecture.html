@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="generator" content="archify 3.1.0">
+  <meta name="generator" content="archify 3.2.0">
   <meta name="archify-reader-contract" content="declared-wide-v1">
-  <title>PeakGuard AI — arquitetura implementada Diagram</title>
+  <title>PeakGuard AI: arquitetura atual (P0–P19) Diagram</title>
   <script>
     // Resolve the theme before first paint so light-preference users don't
     // see a dark flash. The toolbar script below re-applies with UI state.
@@ -2736,19 +2736,31 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     }
     html[data-reader-rail="bottom"] .node-outline-head { padding: 1rem 2.5rem 0.375rem 0.25rem; }
     html[data-reader-rail="bottom"] .node-outline-list {
-      columns: 15rem;
-      column-gap: 1.75rem;
+      display: grid;
+      gap: 0.5rem;
       padding: 0;
       overflow: visible;
       -webkit-mask-image: none;
       mask-image: none;
     }
-    /* Named groups stay whole; a single unnamed group may split across columns,
-       where a continuous spine would read as a broken line. */
     html[data-reader-rail="bottom"] .node-outline-group + .node-outline-group { margin-top: 0; }
-    html[data-reader-rail="bottom"] .node-outline-group:has(> .node-outline-heading) { break-inside: avoid; padding-bottom: 0.25rem; }
-    html[data-reader-rail="bottom"] .node-outline-group:not(:has(> .node-outline-heading)) > ul::before { display: none; }
-    html[data-reader-rail="bottom"] .node-outline-group li { break-inside: avoid; }
+    html[data-reader-rail="bottom"] .node-outline-group:has(> .node-outline-heading) { padding-bottom: 0.25rem; }
+    html[data-reader-rail="bottom"] .node-outline-group > ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem 0.5rem;
+    }
+    html[data-reader-rail="bottom"] .node-outline-group > ul::before { display: none; }
+    html[data-reader-rail="bottom"] .node-outline-group li {
+      flex: 0 1 auto;
+      min-width: min(100%, 12rem);
+      max-width: min(100%, 32rem);
+    }
+    html[data-reader-rail="bottom"] .node-outline-heading {
+      justify-content: flex-start;
+      gap: 0.5rem;
+    }
+    html[data-reader-rail="bottom"] .node-outline-heading > span { overflow-wrap: anywhere; }
     .rail-controls { display: none; }
     html:is([data-reader-rail="true"], [data-reader-rail="overlay"], [data-reader-rail="bottom"]) .rail-controls {
       display: flex;
@@ -2964,6 +2976,37 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     .node-outline-item:hover small,
     .node-outline-item[data-previewing] small,
     .node-outline-item[aria-current="true"] small { color: var(--text-muted); }
+
+    /* The desktop bottom rail is an index: compact rows keep related nodes
+       together while allowing full names and descriptions to wrap naturally. */
+    html[data-reader-rail="bottom"] .node-outline-item {
+      grid-template-columns: 0.625rem minmax(0, 1fr) 0.75rem;
+      align-items: first baseline;
+      column-gap: 0.375rem;
+      min-height: 0;
+      padding-block: 0.375rem;
+    }
+    html[data-reader-rail="bottom"] .node-outline-item strong,
+    html[data-reader-rail="bottom"] .node-outline-item small {
+      overflow: visible;
+      text-overflow: clip;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+    html[data-reader-rail="bottom"] .node-outline-item strong {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    html[data-reader-rail="bottom"] .node-outline-item small {
+      grid-column: 2;
+      grid-row: 2;
+      text-align: left;
+    }
+    html[data-reader-rail="bottom"] .node-outline-item::after {
+      grid-column: 3;
+      grid-row: 1;
+      align-self: center;
+    }
 
     .card-header {
       display: flex;
@@ -5040,6 +5083,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       svg [data-node-id], svg [data-edge-from], svg [data-detail], svg [data-detail-anchor], svg [data-legend-hit], svg { transition: none !important; }
     }
   </style>
+<script type="application/json" id="archify-software-notices">"NOTICE\nArchify\nCopyright (c) 2026 tt-a1i (Archify)\nCopyright (c) 2025 Cocoon AI\n\nArchify is distributed under the Apache License, Version 2.0 (LICENSE),\nexcept where a file, package manifest, or third-party notice specifies otherwise.\nThe separately versioned DeepSeek Harness adapter remains MIT; its bundled\nSkill retains the license of the immutable source selected in release.json.\n\nCode and contributions received under the MIT License through pre-transition\ncommit 25cf37080fc8b1dbe758a4efc3935b55f3327083 remain available under their\noriginal terms. Previously published releases keep their existing licenses. The complete historical MIT\ncopyright and permission notice is preserved in LICENSE-MIT. This transition\ndoes not revoke existing MIT grants or assert a new patent grant on behalf\nof historical contributors.\n\nArchify originated from Cocoon-AI/architecture-diagram-generator:\nhttps://github.com/Cocoon-AI/architecture-diagram-generator\n\nThird-party components retain their own licenses; see THIRD_PARTY_NOTICES.md\nand the license files beside those components. Names and logos do not imply\nofficial endorsement, and the software license grants no general trademark\npermission.\n\nThese software licenses cover Archify's embedded runtime and templates, not\nownership of a user's authored content, business data, or source repository.\n\nLICENSE\n\n                                 Apache License\n                           Version 2.0, January 2004\n                        http://www.apache.org/licenses/\n\n   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n   1. Definitions.\n\n      \"License\" shall mean the terms and conditions for use, reproduction,\n      and distribution as defined by Sections 1 through 9 of this document.\n\n      \"Licensor\" shall mean the copyright owner or entity authorized by\n      the copyright owner that is granting the License.\n\n      \"Legal Entity\" shall mean the union of the acting entity and all\n      other entities that control, are controlled by, or are under common\n      control with that entity. For the purposes of this definition,\n      \"control\" means (i) the power, direct or indirect, to cause the\n      direction or management of such entity, whether by contract or\n      otherwise, or (ii) ownership of fifty percent (50%) or more of the\n      outstanding shares, or (iii) beneficial ownership of such entity.\n\n      \"You\" (or \"Your\") shall mean an individual or Legal Entity\n      exercising permissions granted by this License.\n\n      \"Source\" form shall mean the preferred form for making modifications,\n      including but not limited to software source code, documentation\n      source, and configuration files.\n\n      \"Object\" form shall mean any form resulting from mechanical\n      transformation or translation of a Source form, including but\n      not limited to compiled object code, generated documentation,\n      and conversions to other media types.\n\n      \"Work\" shall mean the work of authorship, whether in Source or\n      Object form, made available under the License, as indicated by a\n      copyright notice that is included in or attached to the work\n      (an example is provided in the Appendix below).\n\n      \"Derivative Works\" shall mean any work, whether in Source or Object\n      form, that is based on (or derived from) the Work and for which the\n      editorial revisions, annotations, elaborations, or other modifications\n      represent, as a whole, an original work of authorship. For the purposes\n      of this License, Derivative Works shall not include works that remain\n      separable from, or merely link (or bind by name) to the interfaces of,\n      the Work and Derivative Works thereof.\n\n      \"Contribution\" shall mean any work of authorship, including\n      the original version of the Work and any modifications or additions\n      to that Work or Derivative Works thereof, that is intentionally\n      submitted to Licensor for inclusion in the Work by the copyright owner\n      or by an individual or Legal Entity authorized to submit on behalf of\n      the copyright owner. For the purposes of this definition, \"submitted\"\n      means any form of electronic, verbal, or written communication sent\n      to the Licensor or its representatives, including but not limited to\n      communication on electronic mailing lists, source code control systems,\n      and issue tracking systems that are managed by, or on behalf of, the\n      Licensor for the purpose of discussing and improving the Work, but\n      excluding communication that is conspicuously marked or otherwise\n      designated in writing by the copyright owner as \"Not a Contribution.\"\n\n      \"Contributor\" shall mean Licensor and any individual or Legal Entity\n      on behalf of whom a Contribution has been received by Licensor and\n      subsequently incorporated within the Work.\n\n   2. Grant of Copyright License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      copyright license to reproduce, prepare Derivative Works of,\n      publicly display, publicly perform, sublicense, and distribute the\n      Work and such Derivative Works in Source or Object form.\n\n   3. Grant of Patent License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      (except as stated in this section) patent license to make, have made,\n      use, offer to sell, sell, import, and otherwise transfer the Work,\n      where such license applies only to those patent claims licensable\n      by such Contributor that are necessarily infringed by their\n      Contribution(s) alone or by combination of their Contribution(s)\n      with the Work to which such Contribution(s) was submitted. If You\n      institute patent litigation against any entity (including a\n      cross-claim or counterclaim in a lawsuit) alleging that the Work\n      or a Contribution incorporated within the Work constitutes direct\n      or contributory patent infringement, then any patent licenses\n      granted to You under this License for that Work shall terminate\n      as of the date such litigation is filed.\n\n   4. Redistribution. You may reproduce and distribute copies of the\n      Work or Derivative Works thereof in any medium, with or without\n      modifications, and in Source or Object form, provided that You\n      meet the following conditions:\n\n      (a) You must give any other recipients of the Work or\n          Derivative Works a copy of this License; and\n\n      (b) You must cause any modified files to carry prominent notices\n          stating that You changed the files; and\n\n      (c) You must retain, in the Source form of any Derivative Works\n          that You distribute, all copyright, patent, trademark, and\n          attribution notices from the Source form of the Work,\n          excluding those notices that do not pertain to any part of\n          the Derivative Works; and\n\n      (d) If the Work includes a \"NOTICE\" text file as part of its\n          distribution, then any Derivative Works that You distribute must\n          include a readable copy of the attribution notices contained\n          within such NOTICE file, excluding those notices that do not\n          pertain to any part of the Derivative Works, in at least one\n          of the following places: within a NOTICE text file distributed\n          as part of the Derivative Works; within the Source form or\n          documentation, if provided along with the Derivative Works; or,\n          within a display generated by the Derivative Works, if and\n          wherever such third-party notices normally appear. The contents\n          of the NOTICE file are for informational purposes only and\n          do not modify the License. You may add Your own attribution\n          notices within Derivative Works that You distribute, alongside\n          or as an addendum to the NOTICE text from the Work, provided\n          that such additional attribution notices cannot be construed\n          as modifying the License.\n\n      You may add Your own copyright statement to Your modifications and\n      may provide additional or different license terms and conditions\n      for use, reproduction, or distribution of Your modifications, or\n      for any such Derivative Works as a whole, provided Your use,\n      reproduction, and distribution of the Work otherwise complies with\n      the conditions stated in this License.\n\n   5. Submission of Contributions. Unless You explicitly state otherwise,\n      any Contribution intentionally submitted for inclusion in the Work\n      by You to the Licensor shall be under the terms and conditions of\n      this License, without any additional terms or conditions.\n      Notwithstanding the above, nothing herein shall supersede or modify\n      the terms of any separate license agreement you may have executed\n      with Licensor regarding such Contributions.\n\n   6. Trademarks. This License does not grant permission to use the trade\n      names, trademarks, service marks, or product names of the Licensor,\n      except as required for reasonable and customary use in describing the\n      origin of the Work and reproducing the content of the NOTICE file.\n\n   7. Disclaimer of Warranty. Unless required by applicable law or\n      agreed to in writing, Licensor provides the Work (and each\n      Contributor provides its Contributions) on an \"AS IS\" BASIS,\n      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or\n      implied, including, without limitation, any warranties or conditions\n      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A\n      PARTICULAR PURPOSE. You are solely responsible for determining the\n      appropriateness of using or redistributing the Work and assume any\n      risks associated with Your exercise of permissions under this License.\n\n   8. Limitation of Liability. In no event and under no legal theory,\n      whether in tort (including negligence), contract, or otherwise,\n      unless required by applicable law (such as deliberate and grossly\n      negligent acts) or agreed to in writing, shall any Contributor be\n      liable to You for damages, including any direct, indirect, special,\n      incidental, or consequential damages of any character arising as a\n      result of this License or out of the use or inability to use the\n      Work (including but not limited to damages for loss of goodwill,\n      work stoppage, computer failure or malfunction, or any and all\n      other commercial damages or losses), even if such Contributor\n      has been advised of the possibility of such damages.\n\n   9. Accepting Warranty or Additional Liability. While redistributing\n      the Work or Derivative Works thereof, You may choose to offer,\n      and charge a fee for, acceptance of support, warranty, indemnity,\n      or other liability obligations and/or rights consistent with this\n      License. However, in accepting such obligations, You may act only\n      on Your own behalf and on Your sole responsibility, not on behalf\n      of any other Contributor, and only if You agree to indemnify,\n      defend, and hold each Contributor harmless for any liability\n      incurred by, or claims asserted against, such Contributor by reason\n      of your accepting any such warranty or additional liability.\n\n   END OF TERMS AND CONDITIONS\n\n   APPENDIX: How to apply the Apache License to your work.\n\n      To apply the Apache License to your work, attach the following\n      boilerplate notice, with the fields enclosed by brackets \"[]\"\n      replaced with your own identifying information. (Don't include\n      the brackets!)  The text should be enclosed in the appropriate\n      comment syntax for the file format. We also recommend that a\n      file or class name and description of purpose be included on the\n      same \"printed page\" as the copyright notice for easier\n      identification within third-party archives.\n\n   Copyright [yyyy] [name of copyright owner]\n\n   Licensed under the Apache License, Version 2.0 (the \"License\");\n   you may not use this file except in compliance with the License.\n   You may obtain a copy of the License at\n\n       http://www.apache.org/licenses/LICENSE-2.0\n\n   Unless required by applicable law or agreed to in writing, software\n   distributed under the License is distributed on an \"AS IS\" BASIS,\n   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n   See the License for the specific language governing permissions and\n   limitations under the License.\n\nLICENSE-MIT\nMIT License\n\nCopyright (c) 2026 tt-a1i (Archify)\nCopyright (c) 2025 Cocoon AI\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n\nTHIRD_PARTY_NOTICES.md\n# Third-party notices\n\nArchify includes optional vector data for third-party brand marks. These marks\nare provided only to identify technologies and services in user-authored\ndiagrams. Their inclusion does not imply sponsorship, endorsement, partnership,\nor affiliation with Archify.\n\nArchify's license and historical MIT grants are described in LICENSE, NOTICE,\nand LICENSE-MIT. The software license does not\nreplace the copyright licenses, trademark policies, or brand guidelines that\napply to third-party marks. Users are responsible for confirming that their\nparticular use is permitted.\n\n## Simple Icons\n\nMost of the built-in vector paths and their metadata were generated from\n[Simple Icons 16.28.0](https://github.com/simple-icons/simple-icons/tree/16.28.0).\nSimple Icons makes its collection work available under\n[CC0 1.0 Universal](https://github.com/simple-icons/simple-icons/blob/16.28.0/LICENSE.md).\n\nAs Simple Icons explains in its\n[disclaimer](https://github.com/simple-icons/simple-icons/blob/16.28.0/DISCLAIMER.md),\nCC0 for the collection does not mean that every underlying icon is CC0. License\nand brand-guideline metadata may be incomplete or change over time. The absence\nof an individual license entry is not a grant of permission.\n\nArchify embeds the selected icons as vector-path data and may render them in a\nuser-selected color. The following individual licenses were recorded in the\npinned Simple Icons 16.28.0 metadata:\n\n| Mark | Recorded source | Recorded license | Archify treatment |\n|---|---|---|---|\n| Angular | [Angular press kit](https://angular.dev/press-kit) | [`CC-BY-4.0`](https://creativecommons.org/licenses/by/4.0/) | Embedded as vector-path data; color may be changed by the authored diagram. |\n| Apache Airflow | [Apache logos](https://apache.org/logos) | [`Apache-2.0`](https://www.apache.org/licenses/LICENSE-2.0) | Embedded as vector-path data; Apache trademarks remain subject to the [ASF trademark policy](https://www.apache.org/foundation/marks/). |\n| Apache Kafka | [Apache logos](https://apache.org/logos) | [`Apache-2.0`](https://www.apache.org/licenses/LICENSE-2.0) | Embedded as vector-path data; Apache trademarks remain subject to the [ASF trademark policy](https://www.apache.org/foundation/marks/). |\n| .NET | [.NET brand repository](https://github.com/dotnet/brand/blob/c7d0f51b8ec59531332d05fb27a5b758a7a3d689/logo/dotnet-logo.svg) | [`CC0-1.0`](https://creativecommons.org/publicdomain/zero/1.0/) | Embedded as vector-path data; color may be changed by the authored diagram. |\n| JavaScript | [JS community logo](https://github.com/voodootikigod/logo.js/blob/1544bdeed6d618a6cfe4f0650d04ab8d9cfa76d9/js.svg) | [`MIT`](https://github.com/voodootikigod/logo.js/blob/1544bdeed6d618a6cfe4f0650d04ab8d9cfa76d9/LICENSE) | Embedded as vector-path data; color may be changed by the authored diagram. |\n| Jenkins | [Jenkins artwork source](https://get.jenkins.io/art/) | [`CC-BY-SA-3.0`](https://creativecommons.org/licenses/by-sa/3.0/) | Embedded as vector-path data; color may be changed by the authored diagram. Jenkins retains its trademark rights. |\n| Rust | [Rust project](https://www.rust-lang.org) | [`CC-BY-SA-4.0`](https://creativecommons.org/licenses/by-sa/4.0/) | Embedded as vector-path data; color may be changed by the authored diagram. See the [Rust media guide](https://www.rust-lang.org/policies/media-guide). |\n| Vue.js | [Vue logo source](https://github.com/vuejs/art/blob/a1c78b74569b70a25300925b4eacfefcc143b8f6/logo.svg) | [`CC-BY-NC-SA-4.0`](https://creativecommons.org/licenses/by-nc-sa/4.0/) | Embedded as vector-path data; color may be changed by the authored diagram. The non-commercial and share-alike conditions remain applicable; see the [Vue artwork terms](https://github.com/vuejs/art/blob/a1c78b74569b70a25300925b4eacfefcc143b8f6/README.md). |\n\nThe source, guideline, and known license fields for every packaged mark are\npreserved in `renderers/shared/generated-brand-marks.mjs`.\n\n## OpenAI mark\n\nThe OpenAI vector path is recorded from the\n[OpenAI brand guidelines](https://openai.com/brand/), not from Simple Icons.\nUse remains subject to those current guidelines and any applicable trademark\nrights. Its inclusion does not state or imply endorsement by OpenAI.\n\n## JetBrains Mono\n\nDelivered Archify viewer artifacts embed the JetBrains Mono variable font\nsubsets served by Google Fonts. For characters covered by these subsets, font\nselection does not depend on a network request or a locally installed copy.\nUncovered characters (including CJK) still use the system fallback stack;\nbrowser and operating-system rasterization can differ.\nJetBrains Mono is maintained at\n[github.com/JetBrains/JetBrainsMono](https://github.com/JetBrains/JetBrainsMono)\nand is distributed under the SIL Open Font License 1.1. The complete license\ntext is preserved in `assets/JetBrainsMono-OFL.txt` in the packaged Skill and\nin the font CSS carried by standalone HTML and SVG exports.\n\n## Pele\n\nThe explainer renders Mermaid chart fences with an unmodified subset of\n[Pele 1.3.0](https://github.com/obsidianmd/pele), copyright (c) 2026 kepano,\ndistributed under the MIT License. The subset and its license text are in\n`explainer/vendor/pele/` in the packaged Skill. Charts are rendered to static\nSVG when a page is built; delivered pages contain no Pele code.\n\n## No additional rights granted\n\nBrand names, logos, and trademarks remain the property of their respective\nowners. This notice records provenance and known terms; it does not grant rights\nthat Archify does not hold, and it does not state that every packaged mark has\nbeen cleared for every commercial, promotional, or redistributive use."</script>
 </head>
 <body>
   <!-- Toolbar: theme, live visual style, trace motion, presentation stage, and export.
@@ -5150,19 +5194,18 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
            data-preset-badge-blueprint="BLUEPRINT / REV 01"
            data-preset-badge-editorial="EDITORIAL / FIELD NOTE">
         <div class="pulse-dot"></div>
-        <h1>PeakGuard AI — arquitetura implementada</h1>
+        <h1>PeakGuard AI: arquitetura atual (P0–P19)</h1>
       </div>
-      <p class="subtitle">Simulação, governança e experimento Kubernetes local independente</p>
     </div>
 
-    <script id="archify-source-evidence-data" type="application/json">{"schemaVersion":1,"verified":true,"repository":{"url":"git@github.com:marcocristofolini/peakguard-ai","revision":"e8f76f65105f7a79a898b56412decf4b85b7aa08","shortRevision":"e8f76f6","label":"marcocristofolini/peakguard-ai","linkMode":"local-only"},"referenceCount":12,"nodes":{"browser":[{"path":"frontend/app/page.tsx","line":1,"endLine":25}],"next":[{"path":"frontend/app/api/comparisons/route.ts","line":1,"endLine":19}],"auth":[{"path":"peakguard/api.py","line":71,"endLine":95}],"api":[{"path":"peakguard/api.py","line":99,"endLine":126}],"engine":[{"path":"peakguard/simulator.py","line":117,"endLine":162}],"fixtures":[{"path":"peakguard/scenarios.py","line":23,"endLine":42}],"validator":[{"path":"peakguard/explanations.py","line":49,"endLine":106}],"llm":[{"path":"peakguard/llm.py","line":10,"endLine":30}],"kind":[{"path":"local/p6/up.sh","line":1,"endLine":15}],"keda":[{"path":"local/p6/keda-demo.yaml","line":41,"endLine":54}],"prom":[{"path":"local/p6/resources.yaml","line":90,"endLine":110}],"opencost":[{"path":"local/p6/opencost-values.yaml","line":1,"endLine":12}]}}</script>
+    <script id="archify-source-evidence-data" type="application/json">{"schemaVersion":1,"verified":true,"repository":{"url":"git@github.com:marcocristofolini/peakguard-ai","revision":"d56b599b45b1216223785caf70d9e6c06970f561","shortRevision":"d56b599","label":"marcocristofolini/peakguard-ai","linkMode":"local-only"},"referenceCount":16,"nodes":{"operator":[{"path":"README.md","line":22}],"dash":[{"path":"frontend/app/page.tsx","line":358},{"path":"frontend/app/page.tsx","line":381}],"api":[{"path":"peakguard/api.py","line":130,"endLine":165}],"sim":[{"path":"peakguard/simulator.py","line":128},{"path":"peakguard/simulator.py","line":246}],"bench":[{"path":"peakguard/benchmarks.py","line":23}],"rules":[{"path":"peakguard/rules.py","line":41},{"path":"peakguard/rules.yaml","line":1}],"explain":[{"path":"peakguard/explanations.py","line":99},{"path":"peakguard/explanations.py","line":126}],"manifest":[{"path":"peakguard/manifest.py","line":61}],"exp":[{"path":"local/p17/experiment.py","line":107}],"llm":[{"path":"peakguard/llm.py","line":11}],"kind":[{"path":"local/p6/resources.yaml","line":45},{"path":"local/p6/resources.yaml","line":103}]}}</script>
     <script id="archify-i18n-data" type="application/json">{"locale":"en","messages":{"viewer.kind.frontend":"Frontend","viewer.kind.backend":"Backend","viewer.kind.database":"Database","viewer.kind.cloud":"Cloud","viewer.kind.security":"Security","viewer.kind.messagebus":"Message bus","viewer.kind.external":"External","viewer.kind.neutral":"Neutral","viewer.kind.node":"Node","viewer.kind.start":"Start","viewer.kind.active":"Active","viewer.kind.waiting":"Waiting","viewer.kind.decision":"Decision","viewer.kind.success":"Success","viewer.kind.failure":"Failure","viewer.toolbar.actions":"Diagram actions","viewer.theme.toggle.title":"Toggle theme (T)","viewer.theme.toggle":"Toggle color theme","viewer.theme.dark":"Dark","viewer.theme.light":"Light","viewer.preset.choose.title":"Choose visual style (S cycles)","viewer.preset.choose":"Choose visual style","viewer.preset.style":"Style","viewer.preset.menu":"Visual style","viewer.preset.identity":"Visual identity","viewer.preset.cycles":"to cycle","viewer.preset.classic":"Classic","viewer.preset.classic.short":"Classic","viewer.preset.classic.hint":"Stable technical default","viewer.preset.flow":"Signal Flow","viewer.preset.flow.short":"Flow","viewer.preset.flow.hint":"Motion-forward presentation","viewer.preset.blueprint":"Blueprint","viewer.preset.blueprint.hint":"Engineering review","viewer.preset.editorial":"Editorial","viewer.preset.editorial.hint":"Publication and launch notes","viewer.preset.badge.signalFlow":"SIGNAL FLOW","viewer.preset.badge.blueprint":"BLUEPRINT / REV 01","viewer.preset.badge.editorial":"EDITORIAL / FIELD NOTE","viewer.preset.badge.editorialPlate":"ARCHIFY / PLATE 04","viewer.preset.current":"Visual style: {style}. Choose visual style","viewer.motion.live":"Live","viewer.motion.still":"Still","viewer.motion.pause":"Pause motion","viewer.motion.resume":"Resume motion","viewer.motion.reduced":"Motion paused by reduced-motion preference","viewer.motion.hidden":"Motion paused while this page is hidden","viewer.motion.yielding":"Pause motion; currently yielding to {owner}","viewer.motion.yielding.title":"Live preview enabled · yielding to {owner}","viewer.owner.route":"Route Probe","viewer.owner.lens":"Semantic Lens","viewer.owner.relationship":"Relationship Preview","viewer.owner.intent":"Intent Trace","viewer.owner.focus":"semantic focus","viewer.owner.legend":"legend preview","viewer.owner.reader":"reader interaction","viewer.present.enter":"Enter presentation stage","viewer.present.enter.title":"Presentation stage (F)","viewer.present.exit":"Exit presentation stage","viewer.present.exit.title":"Exit presentation stage (F or Escape)","viewer.present.present":"Present","viewer.present.exit.label":"Exit","viewer.export.button":"Export","viewer.export.button.title":"Export diagram (E)","viewer.export.diagram":"Export diagram","viewer.export.menu":"Export","viewer.export.subtitle":"Portable, clean outputs","viewer.export.share":"Share","viewer.export.shareCard":"Share Card","viewer.export.routeShareCard":"Route Share Card","viewer.export.reachShareCard":"Reach Share Card","viewer.export.copyDiagram":"Copy diagram","viewer.export.clipboardPng":"PNG to clipboard","viewer.export.raster":"Raster images","viewer.export.image":"Image","viewer.export.lossless":"Lossless image","viewer.export.compact":"Compact image","viewer.export.modern":"Modern image","viewer.export.vectorMotion":"Vector and motion","viewer.export.vectorMotion.heading":"Vector \u0026 motion","viewer.export.editable":"Editable vector","viewer.export.svg.auto":"SVG · Auto","viewer.export.svg.auto.hint":"Matches host theme","viewer.export.svg.light":"SVG · Light","viewer.export.svg.light.hint":"Always light","viewer.export.svg.dark":"SVG · Dark","viewer.export.svg.dark.hint":"Always dark","viewer.export.motion6s":"6s motion","viewer.export.unsupported":"Not supported by this browser","viewer.export.clipboardUnsupported":"Clipboard image write not supported by this browser","viewer.export.clipboardUnsupported.short":"Clipboard image write not supported in this browser.","viewer.export.motionUnavailable":"Motion capture unavailable in this browser","viewer.export.webmUnavailable":"WebM unavailable in this browser","viewer.export.failed":"Export failed: {message}","viewer.export.unknownVariant":"Unknown Share Card variant: {variant}","viewer.export.routeRequired":"Trace a route before exporting a Route Share Card","viewer.export.reachRequired":"Trace authored reach before exporting a Reach Share Card","viewer.export.unknown":"unknown","viewer.export.routeFailed":"Route Share Card export failed: {message}","viewer.export.reachFailed":"Reach Share Card export failed: {message}","viewer.export.copyFailed":"Copy failed: {message}","viewer.export.copiedPng":"Copied PNG to clipboard","viewer.export.downloadedRoute":"Downloaded Route Share Card","viewer.export.downloadedReach":"Downloaded Reach Share Card","viewer.export.downloadedWebm":"Downloaded WebM","viewer.export.recording":"Recording 6 seconds of motion…","viewer.export.card.routeSummary.one":"Path: {source} → {target} · {count} step","viewer.export.card.routeSummary.other":"Path: {source} → {target} · {count} steps","viewer.export.card.reachSummary":"Authored {direction} from {origin} · {nodes} · {links} · max {hops}","viewer.export.card.node.one":"{count} node","viewer.export.card.node.other":"{count} nodes","viewer.export.card.link.one":"{count} link","viewer.export.card.link.other":"{count} links","viewer.export.card.hop.one":"{count} hop","viewer.export.card.hop.other":"{count} hops","viewer.export.card.routeBadge":"ARCHIFY · ROUTE · {hops}","viewer.export.card.reachBadge":"ARCHIFY · {direction} REACH","viewer.export.direction.upstream":"Upstream","viewer.export.direction.downstream":"Downstream","viewer.export.error.canvasUnavailable":"Canvas unavailable for {label}","viewer.export.error.contextUnavailable":"2D canvas context unavailable for {label}","viewer.export.error.toBlobUnavailable":"canvas.toBlob unavailable for {label}","viewer.export.error.toBlobNull":"canvas.toBlob returned no data for {label}","viewer.export.error.variantsCombined":"Share Card variants cannot be combined","viewer.export.error.viewerState":"Share Card export could not remove temporary viewer state","viewer.export.error.routeState":"Route Card export could not preserve the resolved route safely","viewer.export.error.reachState":"Reach Card export could not preserve authored reach safely","viewer.export.error.webmRequirements":"WebM motion export requires a trace animation and browser MediaRecorder support","viewer.export.error.mediaRecorder":"MediaRecorder failed","viewer.export.error.emptyWebm":"MediaRecorder produced an empty WebM","viewer.export.error.webmBackground":"SVG background could not be loaded for WebM export","viewer.guide.title":"Explore this system","viewer.focus.selectedNodes":"{count} selected nodes","viewer.guide.eyebrow":"Diagram guide","viewer.guide.close":"Close diagram guide","viewer.guide.inspecting":"Inspecting compiled semantics","viewer.guide.actions":"Diagram exploration actions","viewer.guide.find":"Find any node","viewer.guide.find.hint":"Search labels, responsibilities, kinds, and stable IDs.","viewer.guide.route":"Trace a route","viewer.guide.route.aria":"Trace a directed route","viewer.guide.route.hint":"Ask how two semantic nodes connect in authored direction.","viewer.guide.map":"See the whole system","viewer.guide.map.hint":"Open Semantic Radar with a live viewport and stable nodes.","viewer.guide.lens":"Compare semantic kinds","viewer.guide.lens.hint":"Count roles, reveal their traffic, and compare direct authored links.","viewer.guide.present":"Enter Presentation Stage","viewer.guide.present.hint":"Give the live diagram the viewport without changing export.","viewer.guide.shortcuts":"Additional keyboard shortcuts","viewer.guide.shortcut.export":"Export","viewer.guide.shortcut.theme":"Theme","viewer.guide.shortcut.style":"Style","viewer.guide.shortcut.reset":"Reset","viewer.guide.shortcut.zoomIn":"Zoom in","viewer.guide.shortcut.zoomOut":"Zoom out","viewer.guide.shortcut.close":"Close","viewer.guide.credit":"Find Archify useful? A star on GitHub helps","viewer.guide.star":"Star","viewer.guide.facts":"{nodes} · {relationships}","viewer.guide.fact.node.one":"{count} semantic node","viewer.guide.fact.node.other":"{count} semantic nodes","viewer.guide.fact.relationship.one":"{count} relationship","viewer.guide.fact.relationship.other":"{count} relationships","viewer.guide.open":"Open diagram guide","viewer.finder.title":"Find a node","viewer.finder.close":"Close node finder","viewer.finder.placeholder":"Search labels or IDs","viewer.finder.search":"Search diagram nodes","viewer.finder.results":"Diagram nodes","viewer.finder.empty":"No matching nodes","viewer.finder.result.focus":"Focus {label}","viewer.finder.result.routeStart":"Choose {label} as route start","viewer.finder.result.routeTarget":"Choose {label} as route destination, {links}","viewer.finder.status.empty":"No matching nodes","viewer.finder.status.count.one":"{count} matching node","viewer.finder.status.count.other":"{count} matching nodes","viewer.finder.noun.nodes":"nodes","viewer.finder.link.one":"{count} link","viewer.finder.link.other":"{count} links","viewer.finder.result.focus.one":"Focus {label}, {count} related connection","viewer.finder.result.focus.other":"Focus {label}, {count} related connections","viewer.finder.status.filtered":"{visible} of {available} {noun}","viewer.finder.status.all":"{available} {noun}","viewer.passport.eyebrow":"Semantic passport","viewer.passport.metadata":"Node metadata","viewer.passport.evidence":"Verified source evidence","viewer.passport.verified":"Verified source","viewer.passport.verificationScope":"Verified against local Git at the pinned revision. Remote access has not been checked.","viewer.passport.reach":"Authored reach","viewer.passport.reach.trace":"Trace authored reachability","viewer.passport.upstream":"Upstream","viewer.passport.downstream":"Downstream","viewer.passport.upstream.trace":"Trace upstream authored reachability","viewer.passport.downstream.trace":"Trace downstream authored reachability","viewer.passport.close":"Close semantic passport","viewer.passport.move":"Move semantic passport. Drag, use arrow keys, or press Home to reset.","viewer.passport.copy":"Copy link","viewer.passport.copy.focus":"Copy link to focused node","viewer.passport.relations":"Relations","viewer.passport.relations.show":"Show connected relationships","viewer.passport.relations.hide":"Hide connected relationships","viewer.passport.relations.list":"Connected relationships","viewer.passport.copyRelation":"Copy relation","viewer.passport.copyNode":"Copy node","viewer.passport.copyPinned":"Copy link to pinned relationship","viewer.passport.copySource":"Copy link to source node","viewer.passport.copy.focused.success":"Focused node link copied","viewer.passport.copy.pinned.success":"Pinned relationship link copied","viewer.passport.copy.focused.failed":"Could not copy focused node link","viewer.passport.copy.pinned.failed":"Could not copy pinned relationship link","viewer.passport.relationship.none":"No connected relationships","viewer.passport.relationship.count.one":"{count} relation","viewer.passport.relationship.count.other":"{count} relations","viewer.passport.relationship.show.one":"Show {count} connected relationship","viewer.passport.relationship.show.other":"Show {count} connected relationships","viewer.passport.relationship.summary":"{out} outgoing · {in} incoming{loops}","viewer.passport.relationship.loops":" · {count} loop","viewer.passport.relationship.explorer":"Direct relationship explorer","viewer.passport.relationship.help":"Use arrow keys to explore relationships. Press Enter or Space to pin details; Escape clears.","viewer.passport.relationship.loopsBack":"loops back","viewer.passport.relationship.connectsTo":"connects to","viewer.passport.relationship.connectsFrom":"connects from","viewer.passport.relationship.pinned":"Pinned relationship · {from} → {to} · {label}","viewer.passport.relationship.inspect":"Inspect relationship {index} of {total}: {from} to {to}, {label}. Press Enter for details.","viewer.passport.relationship.group.out":"Outgoing","viewer.passport.relationship.group.in":"Incoming","viewer.passport.relationship.group.loop":"Self loops","viewer.passport.relationship.row":"{group}: {relationship}, {neighbor}","viewer.passport.relationship.direction.out":"OUT →","viewer.passport.relationship.direction.in":"← IN","viewer.passport.relationship.direction.loop":"LOOP","viewer.passport.sourceCount.one":"{count} verified source reference","viewer.passport.sourceCount.other":"{count} verified source references","viewer.passport.repository.open":"Open verified repository revision {revision}","viewer.passport.source.open":"Open verified source {path} at revision {revision}","viewer.passport.source.openLink":"Open ↗","viewer.passport.reach.upstream.one":"Trace {count} upstream authored node","viewer.passport.reach.upstream.other":"Trace {count} upstream authored nodes","viewer.passport.reach.downstream.one":"Trace {count} downstream authored node","viewer.passport.reach.downstream.other":"Trace {count} downstream authored nodes","viewer.passport.reach.noUpstream":"No upstream authored nodes","viewer.passport.reach.noDownstream":"No downstream authored nodes","viewer.passport.reach.status":"{direction} · {nodes} nodes · {links} links · max {hops} hops","viewer.route.eyebrow":"Path","viewer.route.start":"Click where the path starts","viewer.route.start.find":"Find start","viewer.route.start.find.aria":"Find a route start","viewer.route.copy":"Copy link","viewer.route.copy.aria":"Copy link to traced route","viewer.route.clear":"Clear","viewer.route.clear.aria":"Clear route probe","viewer.route.traced":"Path","viewer.route.pickTwo":"Click two nodes on the diagram","viewer.route.pickOne":"Click a node on the diagram","viewer.route.controls":"Route journey controls","viewer.route.previous":"Previous route position","viewer.route.play":"Play route journey","viewer.route.pause":"Pause route journey","viewer.route.replay":"Replay route journey","viewer.route.next":"Next route position","viewer.route.journey":"Journey","viewer.route.pause.label":"Pause","viewer.route.replay.label":"Replay","viewer.route.overview":"Overview","viewer.route.overview.aria":"Show complete route overview","viewer.route.instructions":"Click a start, then an end. Paths follow the arrows.","viewer.route.destination":"Where does the path from {label} end?","viewer.route.destination.find":"Find target","viewer.route.destination.find.aria":"Find a reachable route destination","viewer.route.differentDestination":"Choose a different destination","viewer.route.distinct":"Pick two different nodes.","viewer.route.unreachable":"Cannot reach {label} from here","viewer.route.unreachable.detail":"{target} cannot be reached from {source} along the arrows. Pick a highlighted node.","viewer.route.start.instructions":"Next, pick the end. Only nodes you can reach will light up.","viewer.route.copy.success":"Traced route link copied","viewer.route.copy.failed":"Could not copy traced route link","viewer.route.position":"Route position {index} of {total}: {label}","viewer.route.step":"Step {index} of {total} · {phase} · {label}","viewer.route.motionRequired":"Automatic journey requires Live motion","viewer.route.trigger.clear":"Clear traced route","viewer.route.overview.status":"{nodes} · {hops} · shortest path","viewer.route.overview.node.one":"{count} node","viewer.route.overview.node.other":"{count} nodes","viewer.route.overview.hop.one":"{count} step","viewer.route.overview.hop.other":"{count} steps","viewer.route.phase.playing":"Playing","viewer.route.phase.complete":"Complete","viewer.route.phase.inspecting":"Inspecting","viewer.route.destination.count.one":"{count} reachable node is highlighted. Click it.","viewer.route.destination.count.other":"{count} reachable nodes are highlighted. Click one.","viewer.route.noOutgoing":"No arrows lead out of this node. Clear it and pick another start.","viewer.route.result.title":"{source} to {target}","viewer.route.finder.source.title":"Choose route start","viewer.route.finder.source.placeholder":"Search route sources","viewer.route.finder.source.empty":"No matching route sources","viewer.route.finder.source.results":"Nodes that can start a route","viewer.route.finder.source.noun":"route sources","viewer.route.finder.source.badge":"start","viewer.route.finder.target.title":"Destination from {label}","viewer.route.finder.target.placeholder":"Search reachable destinations","viewer.route.finder.target.empty":"No matching reachable destinations","viewer.route.finder.target.results":"Reachable route destinations","viewer.route.finder.target.noun":"reachable destinations","viewer.route.hop.one":"{count} hop","viewer.route.hop.other":"{count} hops","viewer.lens.eyebrow":"Semantic lens","viewer.lens.title":"Compare system roles","viewer.lens.close":"Close semantic lens","viewer.lens.instruction":"Choose up to two semantic kinds. One reveals its real traffic; two compare only direct authored relationships.","viewer.lens.kinds":"Semantic kinds","viewer.lens.choose":"Choose a kind to inspect its nodes and touching relationships.","viewer.lens.copy":"Copy link to semantic lens","viewer.lens.clear":"Clear semantic lens","viewer.lens.open":"Open semantic lens","viewer.lens.openActive":"Open active semantic lens","viewer.lens.legend":"Semantic legend","viewer.lens.legend.inspect.one":"Inspect {label}, {count} node","viewer.lens.legend.inspect.other":"Inspect {label}, {count} nodes","viewer.lens.kind.count.one":"{label}, {count} node","viewer.lens.kind.count.other":"{label}, {count} nodes","viewer.lens.compare.one":"{first} → {second}: {forward} · {second} → {first}: {reverse} · {count} direct relationship","viewer.lens.compare.other":"{first} → {second}: {forward} · {second} → {first}: {reverse} · {count} direct relationships","viewer.lens.single":"{nodes} · {relationships} · connected peers remain visible","viewer.lens.node.one":"{count} {label} node","viewer.lens.node.other":"{count} {label} nodes","viewer.lens.relationship.one":"{count} touching relationship","viewer.lens.relationship.other":"{count} touching relationships","viewer.radar.title":"Semantic radar","viewer.radar.building":"Building overview","viewer.radar.openFull":"Open full semantic radar","viewer.radar.open":"Open radar","viewer.radar.close":"Close semantic radar","viewer.radar.surface":"Diagram overview. Click a node to focus it, or use arrow keys to pan.","viewer.radar.click":"Click node","viewer.radar.drag":"Drag to pan","viewer.radar.space":"Semantic radar needs more MAP space.","viewer.radar.nodes":"Semantic diagram radar nodes","viewer.radar.focus":"Focus {label} from Semantic Radar","viewer.radar.status":"{count} nodes · {viewport}","viewer.radar.fullMap":"{count} nodes · full map","viewer.radar.compacted":"Radar compacted to avoid covering the Semantic Passport or MAP controls.","viewer.radar.cancelWaiting":"Cancel semantic radar waiting for more MAP space","viewer.radar.needsSpace":"Semantic radar needs more visible MAP space","viewer.radar.viewport.full":"full map","viewer.radar.viewport.width":"{percent}% width","viewer.radar.viewport.scale":"{percent}% viewport","viewer.nav.controls":"Diagram view controls","viewer.nav.route":"Trace a directed route","viewer.nav.route.title":"Trace route (R)","viewer.nav.route.short":"ROUTE","viewer.nav.radar":"Open semantic radar","viewer.nav.radar.title":"Semantic radar (M)","viewer.nav.radar.short":"MAP","viewer.nav.lens":"Open semantic lens","viewer.nav.lens.title":"Semantic lens (L)","viewer.nav.lens.short":"LENS","viewer.nav.find":"Find a node","viewer.nav.find.title":"Find a node (/)","viewer.outline.title":"Node index","viewer.rail.show":"Notes \u0026 index","viewer.rail.controls":"Side panel","viewer.rail.collapse":"Collapse side panel","viewer.rail.bottom":"Move panel below the diagram","viewer.rail.right":"Move panel beside the diagram","viewer.nav.guide":"Open diagram guide","viewer.nav.guide.title":"Diagram guide (?)","viewer.nav.zoomOut":"Zoom out","viewer.nav.zoomOut.title":"Zoom out (-)","viewer.nav.reset":"Reset diagram view","viewer.nav.reset.title":"Reset view (0)","viewer.nav.read":"READ","viewer.nav.zoomIn":"Zoom in","viewer.nav.zoomIn.title":"Zoom in (+)","viewer.nav.camera":"{hint}. Reset diagram view","viewer.nav.camera.title":"{semantic}{hint} · reset view (0)","viewer.nav.camera.semantic":"Semantic camera active · ","viewer.nav.level.map":"MAP","viewer.nav.level.read":"READ","viewer.nav.level.full":"FULL","viewer.nav.level.auto":"AUTO","viewer.nav.detail.map":"Zoom in to reveal relationship labels and node context","viewer.nav.detail.read":"Zoom in again to reveal tags and annotations","viewer.nav.detail.full":"Full diagram detail","viewer.intent.summary":"{label}. {out} outgoing, {in} incoming{loops}. {total} connections. Press Enter for details.","viewer.intent.loops":", {count} self loop","viewer.common.copied":"Copied","viewer.common.copyFailed":"Copy failed","viewer.common.copyLink":"Copy link","viewer.common.clear":"Clear","viewer.common.close":"Close"}}</script>
     <!-- Main Diagram -->
     <div class="diagram-container" data-detail-level="read"
          data-preset-badge-editorial-plate="ARCHIFY / PLATE 04">
-      <svg viewBox="0 0 1179 662" role="img" lang="en" aria-labelledby="archify-diagram-title archify-diagram-description" data-animation="trace" data-preset="classic" data-quality-profile="showcase" data-node-ui="" data-reader-fit="intrinsic-height" data-reader-min-text="7.5" data-reader-primary-text="14">
-        <title id="archify-diagram-title">PeakGuard AI — arquitetura implementada</title>
-        <desc id="archify-diagram-description">Simulação, governança e experimento Kubernetes local independente</desc>
+      <svg viewBox="0 0 1270 492" role="img" lang="en" aria-labelledby="archify-diagram-title archify-diagram-description" data-animation="trace" data-preset="classic" data-quality-profile="showcase" data-node-ui="" data-reader-fit="intrinsic-height" data-reader-min-text="7.5" data-reader-primary-text="14">
+        <title id="archify-diagram-title">PeakGuard AI: arquitetura atual (P0–P19)</title>
+        <desc id="archify-diagram-description">An architecture diagram generated by Archify.</desc>
         <!-- Definitions -->
         <defs>
           <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
@@ -5207,267 +5250,261 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <rect width="100%" height="100%" fill="url(#grid)" />
 
         <!-- Boundaries (behind everything) -->
-        <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="0" data-composition-frame-label="Simulação e decisão locais (sem execução de infraestrutura)" x="231" y="76" width="908" height="273" rx="12" class="c-region" stroke-width="1"/>
-
-        <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="1" data-composition-frame-label="Experimento Kind isolado" x="23" y="486" width="1004" height="108" rx="12" class="c-region" stroke-width="1"/>
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="security-group" data-composition-frame-id="0" data-composition-frame-label="Decisão determinística" x="270" y="170" width="470" height="114" rx="8" class="c-security-group" stroke-width="1"/>
 
         <!-- Connection paths (before components for correct z-order) -->
         <g data-graph-role="automatic-crossover" style="--step:0">
-          <path data-graph-role="automatic-crossover-underlay" d="M 170 132 L 250 132" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="browser" data-edge-to="next" data-edge-label="HTTP local" data-edge-key="0" data-edge-id="u-next" data-composition-points="170,132;250,132" data-composition-crossover="halo" data-composition-independent="true" d="M 170 132 L 250 132" class="a-default" data-animate="edge" style="--step:0" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 190 72 L 300 72" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="operator" data-edge-to="dash" data-edge-label="HTTP" data-edge-key="0" data-edge-id="op-dash" data-composition-points="190,72;300,72" data-composition-crossover="halo" data-composition-independent="true" d="M 190 72 L 300 72" class="a-default" data-animate="edge" style="--step:0" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:1">
-          <path data-graph-role="automatic-crossover-underlay" d="M 392 132 L 475 132" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="next" data-edge-to="auth" data-edge-label="HTTP interno" data-edge-key="1" data-edge-id="next-auth" data-composition-points="392,132;475,132" data-composition-crossover="halo" data-composition-independent="true" d="M 392 132 L 475 132" class="a-security" data-animate="edge" style="--step:1" stroke-width="1.5" marker-end="url(#arrowhead-security)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 450 72 L 560 72" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="dash" data-edge-to="api" data-edge-label="/api/*" data-edge-key="1" data-edge-id="dash-api" data-composition-points="450,72;560,72" data-composition-crossover="halo" data-composition-independent="true" d="M 450 72 L 560 72" class="a-default" data-animate="edge" style="--step:1" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:2">
-          <path data-graph-role="automatic-crossover-underlay" d="M 554 164 L 554 180 Q 554 188 562 188 L 759 188 Q 767 188 767 180 L 767 164" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="auth" data-edge-to="api" data-edge-label="verifica acesso" data-edge-key="2" data-edge-id="auth-api" data-composition-points="554,164;554,188;767,188;767,164" data-composition-crossover="halo" data-composition-independent="true" d="M 554 164 L 554 180 Q 554 188 562 188 L 759 188 Q 767 188 767 180 L 767 164" class="a-security" data-animate="edge" style="--step:2" stroke-width="1.5" marker-end="url(#arrowhead-security)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 710 72 L 820 72" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="api" data-edge-to="sim" data-edge-label="simula" data-edge-key="2" data-edge-id="api-sim" data-composition-points="710,72;820,72" data-composition-crossover="halo" data-composition-independent="true" d="M 710 72 L 820 72" class="a-default" data-animate="edge" style="--step:2" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:3">
-          <path data-graph-role="automatic-crossover-underlay" d="M 852 132 L 945 132" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="api" data-edge-to="engine" data-edge-label="simula" data-edge-key="3" data-edge-id="api-engine" data-composition-points="852,132;945,132" data-composition-crossover="halo" data-composition-independent="true" d="M 852 132 L 945 132" class="a-default" data-animate="edge" style="--step:3" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 970 72 L 1080 72" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="sim" data-edge-to="bench" data-edge-label="benchmarks" data-edge-key="3" data-edge-id="sim-bench" data-composition-points="970,72;1080,72" data-composition-crossover="halo" data-composition-independent="true" d="M 970 72 L 1080 72" class="a-dashed" data-animate="edge" style="--step:3" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:4">
-          <path data-graph-role="automatic-crossover-underlay" d="M 1032.5 265 L 1032.5 164" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="fixtures" data-edge-to="engine" data-edge-label="séries de demanda" data-edge-key="4" data-edge-id="fixtures-engine" data-composition-points="1032.5,265;1032.5,164" data-composition-crossover="halo" data-composition-independent="true" d="M 1032.5 265 L 1032.5 164" class="a-default" data-animate="edge" style="--step:4" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 635 104 L 635 200" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="api" data-edge-to="explain" data-edge-label="/explanations" data-edge-key="4" data-edge-id="api-explain" data-composition-points="635,104;635,200" data-composition-crossover="halo" data-composition-independent="true" d="M 635 104 L 635 200" class="a-default" data-animate="edge" style="--step:4" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:5">
-          <path data-graph-role="automatic-crossover-underlay" d="M 781 164 L 781 265" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="api" data-edge-to="validator" data-edge-label="explica resultado" data-edge-key="5" data-edge-id="api-validation" data-composition-points="781,164;781,265" data-composition-crossover="halo" data-composition-independent="true" d="M 781 164 L 781 265" class="a-default" data-animate="edge" style="--step:5" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 560 232 L 450 232" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="explain" data-edge-to="rules" data-edge-label="valida" data-edge-key="5" data-edge-id="explain-rules" data-composition-points="560,232;450,232" data-composition-crossover="halo" data-composition-independent="true" d="M 560 232 L 450 232" class="a-security" data-animate="edge" style="--step:5" stroke-width="1.5" marker-end="url(#arrowhead-security)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:6">
-          <path data-graph-role="automatic-crossover-underlay" d="M 767 265 L 767 249 Q 767 241 759 241 L 562 241 Q 554 241 554 249 L 554 265" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="validator" data-edge-to="llm" data-edge-label="consulta opcional" data-edge-key="6" data-edge-id="validator-llm" data-composition-points="767,265;767,241;554,241;554,265" data-composition-crossover="halo" data-composition-independent="true" d="M 767 265 L 767 249 Q 767 241 759 241 L 562 241 Q 554 241 554 249 L 554 265" class="a-dashed" data-animate="edge" style="--step:6" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 635 264 L 635 360" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="explain" data-edge-to="llm" data-edge-label="opcional" data-edge-key="6" data-edge-id="explain-llm" data-composition-points="635,264;635,360" data-composition-crossover="halo" data-composition-independent="true" d="M 635 264 L 635 360" class="a-dashed" data-animate="edge" style="--step:6" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:7">
-          <path data-graph-role="automatic-crossover-underlay" d="M 310 535 L 200 535" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="keda" data-edge-to="kind" data-edge-label="escala pods" data-edge-key="7" data-edge-id="keda-kind" data-composition-points="310,535;200,535" data-composition-crossover="halo" data-composition-independent="true" d="M 310 535 L 200 535" class="a-default" data-animate="edge" style="--step:7" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 710 232 L 820 232" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="explain" data-edge-to="manifest" data-edge-label="aprovada" data-edge-key="7" data-edge-id="explain-manifest" data-composition-points="710,232;820,232" data-composition-crossover="halo" data-composition-independent="true" d="M 710 232 L 820 232" class="a-default" data-animate="edge" style="--step:7" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:8">
-          <path data-graph-role="automatic-crossover-underlay" d="M 580 542 L 564 542 Q 556 542 556 550 L 556 569 Q 556 577 548 577 L 232 577 Q 224 577 224 569 L 224 557 Q 224 549 216 549 L 200 549" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="prom" data-edge-to="kind" data-edge-label="coleta métricas" data-edge-key="8" data-edge-id="prom-kind" data-composition-points="580,542;556,542;556,577;224,577;224,549;200,549" data-composition-crossover="halo" data-composition-independent="true" d="M 580 542 L 564 542 Q 556 542 556 550 L 556 569 Q 556 577 548 577 L 232 577 Q 224 577 224 569 L 224 557 Q 224 549 216 549 L 200 549" class="a-default" data-animate="edge" style="--step:8" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 970 232 L 1080 232" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="manifest" data-edge-to="exp" data-edge-label="manifesto" data-edge-key="8" data-edge-id="manifest-exp" data-composition-points="970,232;1080,232" data-composition-crossover="halo" data-composition-independent="true" d="M 970 232 L 1080 232" class="a-default" data-animate="edge" style="--step:8" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:9">
-          <path data-graph-role="automatic-crossover-underlay" d="M 850 542 L 740 542" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="opencost" data-edge-to="prom" data-edge-label="consulta custos" data-edge-key="9" data-edge-id="opencost-prom" data-composition-points="850,542;740,542" data-composition-crossover="halo" data-composition-independent="true" d="M 850 542 L 740 542" class="a-default" data-animate="edge" style="--step:9" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 1155 264 L 1155 360" fill="none" stroke="var(--mask)" stroke-width="5.8" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="exp" data-edge-to="kind" data-edge-label="kubectl apply" data-edge-key="9" data-edge-id="exp-kind" data-composition-points="1155,264;1155,360" data-composition-crossover="halo" data-composition-independent="true" d="M 1155 264 L 1155 360" class="a-emphasis" data-animate="edge" style="--step:9" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        </g>
+        <g data-graph-role="automatic-crossover" style="--step:10">
+          <path data-graph-role="automatic-crossover-underlay" d="M 1155 200 L 1155 104" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="exp" data-edge-to="bench" data-edge-label="evidence/p17" data-edge-key="10" data-edge-id="exp-bench" data-composition-points="1155,200;1155,104" data-composition-crossover="halo" data-composition-independent="true" d="M 1155 200 L 1155 104" class="a-dashed" data-animate="edge" style="--step:10" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
         </g>
 
         <!-- Components -->
-        <g id="node-browser" data-node-id="browser" data-node-label="Usuário" tabindex="0" role="button" aria-label="Focus Usuário, Dashboard local, Architecture component" aria-pressed="false" data-node-kind="external" data-node-sublabel="Dashboard local" data-node-context="Architecture component">
-          <title>Usuário · Dashboard local · Architecture component</title>
-          <rect x="40" y="100" width="130" height="64" rx="8" class="c-mask"/>
-          <rect x="40" y="100" width="130" height="64" rx="8" class="c-external" data-animate="node" style="--step:0" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(46 106) scale(0.6875)">
+        <g id="node-operator" data-node-id="operator" data-node-label="Operador" tabindex="0" role="button" aria-label="Focus Operador, navegador local, Architecture component" aria-pressed="false" data-node-kind="external" data-node-sublabel="navegador local" data-node-context="Architecture component">
+          <title>Operador · navegador local · Architecture component</title>
+          <rect x="40" y="40" width="150" height="64" rx="8" class="c-mask"/>
+          <rect x="40" y="40" width="150" height="64" rx="8" class="c-external" data-animate="node" style="--step:0" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(46 46) scale(0.6875)">
             <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
             <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="105" y="130" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Usuário</text>
-        <text data-detail="context" x="105" y="146" class="t-muted" font-size="9" text-anchor="middle">Dashboard local</text>
+          <text data-node-label="" data-detail-anchor="" x="115" y="70" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Operador</text>
+        <text data-detail="context" x="115" y="86" class="t-muted" font-size="9" text-anchor="middle">navegador local</text>
         </g>
 
-        <g id="node-next" data-node-id="next" data-node-label="Next.js" tabindex="0" role="button" aria-label="Focus Next.js, Proxy server-side, Simulação e decisão locais (sem execução de infraestrutura)" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="Proxy server-side" data-node-context="Simulação e decisão locais (sem execução de infraestrutura)">
-          <title>Next.js · Proxy server-side · Simulação e decisão locais (sem execução de infraestrutura)</title>
-          <rect x="250" y="100" width="142" height="64" rx="8" class="c-mask"/>
-          <rect x="250" y="100" width="142" height="64" rx="8" class="c-frontend" data-animate="node" style="--step:1" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(256 106) scale(0.6875)">
+        <g id="node-dash" data-node-id="dash" data-node-label="Dashboard" tabindex="0" role="button" aria-label="Focus Dashboard, Next.js 16 · React 19, Architecture component" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="Next.js 16 · React 19" data-node-context="Architecture component">
+          <title>Dashboard · Next.js 16 · React 19 · Architecture component</title>
+          <rect x="300" y="40" width="150" height="64" rx="8" class="c-mask"/>
+          <rect x="300" y="40" width="150" height="64" rx="8" class="c-frontend" data-animate="node" style="--step:1" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(306 46) scale(0.6875)">
             <rect x="2" y="3" width="12" height="10" rx="2"/>
             <path d="M2 6.5h12"/>
             <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
             <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="321" y="130" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Next.js</text>
-        <text data-detail="context" x="321" y="146" class="t-muted" font-size="9" text-anchor="middle">Proxy server-side</text>
+          <text data-node-label="" data-detail-anchor="" x="375" y="70" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Dashboard</text>
+        <text data-detail="context" x="375" y="86" class="t-muted" font-size="9" text-anchor="middle">Next.js 16 · React 19</text>
         </g>
 
-        <g id="node-auth" data-node-id="auth" data-node-label="Controle de acesso" tabindex="0" role="button" aria-label="Focus Controle de acesso, Loopback ou Bearer, Simulação e decisão locais (sem execução de infraestrutura)" aria-pressed="false" data-node-kind="security" data-node-sublabel="Loopback ou Bearer" data-node-context="Simulação e decisão locais (sem execução de infraestrutura)">
-          <title>Controle de acesso · Loopback ou Bearer · Simulação e decisão locais (sem execução de infraestrutura)</title>
-          <rect x="475" y="100" width="158" height="64" rx="8" class="c-mask"/>
-          <rect x="475" y="100" width="158" height="64" rx="8" class="c-security" data-animate="node" style="--step:2" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="security" class="semantic-sigil s-security" transform="translate(481 106) scale(0.6875)">
+        <g id="node-api" data-node-id="api" data-node-label="API FastAPI" tabindex="0" role="button" aria-label="Focus API FastAPI, peakguard/api.py, Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="peakguard/api.py" data-node-context="Architecture component">
+          <title>API FastAPI · peakguard/api.py · Architecture component</title>
+          <rect x="560" y="40" width="150" height="64" rx="8" class="c-mask"/>
+          <rect x="560" y="40" width="150" height="64" rx="8" class="c-backend" data-animate="node" style="--step:2" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(566 46) scale(0.6875)">
+            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="635" y="70" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">API FastAPI</text>
+        <text data-detail="context" x="635" y="86" class="t-muted" font-size="9" text-anchor="middle">peakguard/api.py</text>
+        </g>
+
+        <g id="node-sim" data-node-id="sim" data-node-label="Simulador" tabindex="0" role="button" aria-label="Focus Simulador, determinístico · ticks, Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="determinístico · ticks" data-node-context="Architecture component">
+          <title>Simulador · determinístico · ticks · Architecture component</title>
+          <rect x="820" y="40" width="150" height="64" rx="8" class="c-mask"/>
+          <rect x="820" y="40" width="150" height="64" rx="8" class="c-backend" data-animate="node" style="--step:3" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(826 46) scale(0.6875)">
+            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="895" y="70" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Simulador</text>
+        <text data-detail="context" x="895" y="86" class="t-muted" font-size="9" text-anchor="middle">determinístico · ticks</text>
+        </g>
+
+        <g id="node-bench" data-node-id="bench" data-node-label="Benchmarks" tabindex="0" role="button" aria-label="Focus Benchmarks, benchmarks/ · evidence/, Architecture component" aria-pressed="false" data-node-kind="database" data-node-sublabel="benchmarks/ · evidence/" data-node-context="Architecture component">
+          <title>Benchmarks · benchmarks/ · evidence/ · Architecture component</title>
+          <rect x="1080" y="40" width="150" height="64" rx="8" class="c-mask"/>
+          <rect x="1080" y="40" width="150" height="64" rx="8" class="c-database" data-animate="node" style="--step:4" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(1086 46) scale(0.6875)">
+            <ellipse cx="8" cy="4" rx="5" ry="2"/>
+            <path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="1155" y="70" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Benchmarks</text>
+        <text data-detail="context" x="1155" y="86" class="t-muted" font-size="9" text-anchor="middle">benchmarks/ · evidence/</text>
+        </g>
+
+        <g id="node-rules" data-node-id="rules" data-node-label="Validador" tabindex="0" role="button" aria-label="Focus Validador, rules.yaml · SLO/budget, Decisão determinística" aria-pressed="false" data-node-kind="security" data-node-sublabel="rules.yaml · SLO/budget" data-node-context="Decisão determinística">
+          <title>Validador · rules.yaml · SLO/budget · Decisão determinística</title>
+          <rect x="300" y="200" width="150" height="64" rx="8" class="c-mask"/>
+          <rect x="300" y="200" width="150" height="64" rx="8" class="c-security" data-animate="node" style="--step:6" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="security" class="semantic-sigil s-security" transform="translate(306 206) scale(0.6875)">
             <path d="M8 2.2 13 4v3.5c0 3.1-1.8 5.4-5 6.5-3.2-1.1-5-3.4-5-6.5V4Z"/>
             <path d="m5.8 8 1.5 1.5 3-3"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="554" y="130" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Controle de acesso</text>
-        <text data-detail="context" x="554" y="146" class="t-muted" font-size="9" text-anchor="middle">Loopback ou Bearer</text>
+          <text data-node-label="" data-detail-anchor="" x="375" y="230" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Validador</text>
+        <text data-detail="context" x="375" y="246" class="t-muted" font-size="9" text-anchor="middle">rules.yaml · SLO/budget</text>
         </g>
 
-        <g id="node-api" data-node-id="api" data-node-label="FastAPI" tabindex="0" role="button" aria-label="Focus FastAPI, Endpoints + Pydantic, Simulação e decisão locais (sem execução de infraestrutura)" aria-pressed="false" data-node-kind="backend" data-node-sublabel="Endpoints + Pydantic" data-node-context="Simulação e decisão locais (sem execução de infraestrutura)">
-          <title>FastAPI · Endpoints + Pydantic · Simulação e decisão locais (sem execução de infraestrutura)</title>
-          <rect x="710" y="100" width="142" height="64" rx="8" class="c-mask"/>
-          <rect x="710" y="100" width="142" height="64" rx="8" class="c-backend" data-animate="node" style="--step:3" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(716 106) scale(0.6875)">
+        <g id="node-explain" data-node-id="explain" data-node-label="Explicações" tabindex="0" role="button" aria-label="Focus Explicações, checker de fidelidade, Decisão determinística" aria-pressed="false" data-node-kind="backend" data-node-sublabel="checker de fidelidade" data-node-context="Decisão determinística">
+          <title>Explicações · checker de fidelidade · Decisão determinística</title>
+          <rect x="560" y="200" width="150" height="64" rx="8" class="c-mask"/>
+          <rect x="560" y="200" width="150" height="64" rx="8" class="c-backend" data-animate="node" style="--step:5" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(566 206) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="781" y="130" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">FastAPI</text>
-        <text data-detail="context" x="781" y="146" class="t-muted" font-size="9" text-anchor="middle">Endpoints + Pydantic</text>
+          <text data-node-label="" data-detail-anchor="" x="635" y="230" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Explicações</text>
+        <text data-detail="context" x="635" y="246" class="t-muted" font-size="9" text-anchor="middle">checker de fidelidade</text>
         </g>
 
-        <g id="node-engine" data-node-id="engine" data-node-label="Motor de simulação" tabindex="0" role="button" aria-label="Focus Motor de simulação, FIFO, custo e SLO, Simulação e decisão locais (sem execução de infraestrutura)" aria-pressed="false" data-node-kind="backend" data-node-sublabel="FIFO, custo e SLO" data-node-context="Simulação e decisão locais (sem execução de infraestrutura)">
-          <title>Motor de simulação · FIFO, custo e SLO · Simulação e decisão locais (sem execução de infraestrutura)</title>
-          <rect x="945" y="100" width="175" height="64" rx="8" class="c-mask"/>
-          <rect x="945" y="100" width="175" height="64" rx="8" class="c-backend" data-animate="node" style="--step:4" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(951 106) scale(0.6875)">
+        <g id="node-manifest" data-node-id="manifest" data-node-label="manifest_diff" tabindex="0" role="button" aria-label="Focus manifest_diff, HPA · ScaledObject cron, Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="HPA · ScaledObject cron" data-node-context="Architecture component">
+          <title>manifest_diff · HPA · ScaledObject cron · Architecture component</title>
+          <rect x="820" y="200" width="150" height="64" rx="8" class="c-mask"/>
+          <rect x="820" y="200" width="150" height="64" rx="8" class="c-backend" data-animate="node" style="--step:8" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(826 206) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="1032.5" y="130" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Motor de simulação</text>
-        <text data-detail="context" x="1032.5" y="146" class="t-muted" font-size="9" text-anchor="middle">FIFO, custo e SLO</text>
+          <text data-node-label="" data-detail-anchor="" x="895" y="230" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">manifest_diff</text>
+        <text data-detail="context" x="895" y="246" class="t-muted" font-size="9" text-anchor="middle">HPA · ScaledObject cron</text>
         </g>
 
-        <g id="node-fixtures" data-node-id="fixtures" data-node-label="Cenários sintéticos" tabindex="0" role="button" aria-label="Focus Cenários sintéticos, JSON e RNG por seed, Simulação e decisão locais (sem execução de infraestrutura)" aria-pressed="false" data-node-kind="backend" data-node-sublabel="JSON e RNG por seed" data-node-context="Simulação e decisão locais (sem execução de infraestrutura)">
-          <title>Cenários sintéticos · JSON e RNG por seed · Simulação e decisão locais (sem execução de infraestrutura)</title>
-          <rect x="945" y="265" width="175" height="64" rx="8" class="c-mask"/>
-          <rect x="945" y="265" width="175" height="64" rx="8" class="c-backend" data-animate="node" style="--step:4" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(951 271) scale(0.6875)">
+        <g id="node-exp" data-node-id="exp" data-node-label="Experimento P17" tabindex="0" role="button" aria-label="Focus Experimento P17, local/p17 · kubectl, Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="local/p17 · kubectl" data-node-context="Architecture component">
+          <title>Experimento P17 · local/p17 · kubectl · Architecture component</title>
+          <rect x="1080" y="200" width="150" height="64" rx="8" class="c-mask"/>
+          <rect x="1080" y="200" width="150" height="64" rx="8" class="c-backend" data-animate="node" style="--step:9" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(1086 206) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="1032.5" y="295" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Cenários sintéticos</text>
-        <text data-detail="context" x="1032.5" y="311" class="t-muted" font-size="9" text-anchor="middle">JSON e RNG por seed</text>
+          <text data-node-label="" data-detail-anchor="" x="1155" y="230" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Experimento P17</text>
+        <text data-detail="context" x="1155" y="246" class="t-muted" font-size="9" text-anchor="middle">local/p17 · kubectl</text>
         </g>
 
-        <g id="node-validator" data-node-id="validator" data-node-label="Validador" tabindex="0" role="button" aria-label="Focus Validador, SLO, orçamento, fallback, Simulação e decisão locais (sem execução de infraestrutura)" aria-pressed="false" data-node-kind="security" data-node-sublabel="SLO, orçamento, fallback" data-node-context="Simulação e decisão locais (sem execução de infraestrutura)">
-          <title>Validador · SLO, orçamento, fallback · Simulação e decisão locais (sem execução de infraestrutura)</title>
-          <rect x="710" y="265" width="142" height="64" rx="8" class="c-mask"/>
-          <rect x="710" y="265" width="142" height="64" rx="8" class="c-security" data-animate="node" style="--step:6" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="security" class="semantic-sigil s-security" transform="translate(716 271) scale(0.6875)">
-            <path d="M8 2.2 13 4v3.5c0 3.1-1.8 5.4-5 6.5-3.2-1.1-5-3.4-5-6.5V4Z"/>
-            <path d="m5.8 8 1.5 1.5 3-3"/>
-          </g>
-          <text data-node-label="" data-detail-anchor="" x="781" y="295" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Validador</text>
-        <text data-detail="context" x="781" y="311" class="t-muted" font-size="9" text-anchor="middle">SLO, orçamento, fallback</text>
-        </g>
-
-        <g id="node-llm" data-node-id="llm" data-node-label="OpenAI opcional" tabindex="0" role="button" aria-label="Focus OpenAI opcional, Somente saída estruturada, Simulação e decisão locais (sem execução de infraestrutura)" aria-pressed="false" data-node-kind="external" data-node-sublabel="Somente saída estruturada" data-node-context="Simulação e decisão locais (sem execução de infraestrutura)">
-          <title>OpenAI opcional · Somente saída estruturada · Simulação e decisão locais (sem execução de infraestrutura)</title>
-          <rect x="475" y="265" width="158" height="64" rx="8" class="c-mask"/>
-          <rect x="475" y="265" width="158" height="64" rx="8" class="c-external" data-animate="node" style="--step:7" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(481 271) scale(0.6875)">
+        <g id="node-llm" data-node-id="llm" data-node-label="LLM (opcional)" tabindex="0" role="button" aria-label="Focus LLM (opcional), API compatível OpenAI, Architecture component" aria-pressed="false" data-node-kind="external" data-node-sublabel="API compatível OpenAI" data-node-context="Architecture component">
+          <title>LLM (opcional) · API compatível OpenAI · Architecture component</title>
+          <rect x="560" y="360" width="150" height="64" rx="8" class="c-mask"/>
+          <rect x="560" y="360" width="150" height="64" rx="8" class="c-external" data-animate="node" style="--step:7" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(566 366) scale(0.6875)">
             <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
             <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="554" y="295" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">OpenAI opcional</text>
-        <text data-detail="context" x="554" y="311" class="t-muted" font-size="9" text-anchor="middle">Somente saída estruturada</text>
+          <text data-node-label="" data-detail-anchor="" x="635" y="390" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">LLM (opcional)</text>
+        <text data-detail="context" x="635" y="406" class="t-muted" font-size="9" text-anchor="middle">API compatível OpenAI</text>
         </g>
 
-        <g id="node-kind" data-node-id="kind" data-node-label="Kind local" tabindex="0" role="button" aria-label="Focus Kind local, Kubernetes dedicado, Experimento Kind isolado" aria-pressed="false" data-node-kind="cloud" data-node-sublabel="Kubernetes dedicado" data-node-context="Experimento Kind isolado">
-          <title>Kind local · Kubernetes dedicado · Experimento Kind isolado</title>
-          <rect x="40" y="510" width="160" height="64" rx="8" class="c-mask"/>
-          <rect x="40" y="510" width="160" height="64" rx="8" class="c-cloud" data-animate="node" style="--step:8" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="cloud" class="semantic-sigil s-cloud" transform="translate(46 516) scale(0.6875)">
+        <g id="node-kind" data-node-id="kind" data-node-label="Kind local" tabindex="0" role="button" aria-label="Focus Kind local, HPA · KEDA · Prometheus, Architecture component" aria-pressed="false" data-node-kind="cloud" data-node-sublabel="HPA · KEDA · Prometheus" data-node-context="Architecture component">
+          <title>Kind local · HPA · KEDA · Prometheus · Architecture component</title>
+          <rect x="1080" y="360" width="150" height="64" rx="8" class="c-mask"/>
+          <rect x="1080" y="360" width="150" height="64" rx="8" class="c-cloud" data-animate="node" style="--step:10" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="cloud" class="semantic-sigil s-cloud" transform="translate(1086 366) scale(0.6875)">
             <path d="M4.3 12.5h7.3a2.4 2.4 0 0 0 .2-4.8 4 4 0 0 0-7.5-1.3A3.1 3.1 0 0 0 4.3 12.5Z"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="120" y="540" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Kind local</text>
-        <text data-detail="context" x="120" y="556" class="t-muted" font-size="9" text-anchor="middle">Kubernetes dedicado</text>
-        </g>
-
-        <g id="node-keda" data-node-id="keda" data-node-label="KEDA" tabindex="0" role="button" aria-label="Focus KEDA, ScaledObject + HPA CPU, Experimento Kind isolado" aria-pressed="false" data-node-kind="backend" data-node-sublabel="ScaledObject + HPA CPU" data-node-context="Experimento Kind isolado">
-          <title>KEDA · ScaledObject + HPA CPU · Experimento Kind isolado</title>
-          <rect x="310" y="510" width="160" height="64" rx="8" class="c-mask"/>
-          <rect x="310" y="510" width="160" height="64" rx="8" class="c-backend" data-animate="node" style="--step:7" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(316 516) scale(0.6875)">
-            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
-          </g>
-          <text data-node-label="" data-detail-anchor="" x="390" y="540" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">KEDA</text>
-        <text data-detail="context" x="390" y="556" class="t-muted" font-size="9" text-anchor="middle">ScaledObject + HPA CPU</text>
-        </g>
-
-        <g id="node-prom" data-node-id="prom" data-node-label="Prometheus" tabindex="0" role="button" aria-label="Focus Prometheus, Métricas de workloads, Experimento Kind isolado" aria-pressed="false" data-node-kind="backend" data-node-sublabel="Métricas de workloads" data-node-context="Experimento Kind isolado">
-          <title>Prometheus · Métricas de workloads · Experimento Kind isolado</title>
-          <rect x="580" y="510" width="160" height="64" rx="8" class="c-mask"/>
-          <rect x="580" y="510" width="160" height="64" rx="8" class="c-backend" data-animate="node" style="--step:8" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(586 516) scale(0.6875)">
-            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
-          </g>
-          <text data-node-label="" data-detail-anchor="" x="660" y="540" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Prometheus</text>
-        <text data-detail="context" x="660" y="556" class="t-muted" font-size="9" text-anchor="middle">Métricas de workloads</text>
-        </g>
-
-        <g id="node-opencost" data-node-id="opencost" data-node-label="OpenCost" tabindex="0" role="button" aria-label="Focus OpenCost, Custos estimados, Experimento Kind isolado" aria-pressed="false" data-node-kind="backend" data-node-sublabel="Custos estimados" data-node-context="Experimento Kind isolado">
-          <title>OpenCost · Custos estimados · Experimento Kind isolado</title>
-          <rect x="850" y="510" width="160" height="64" rx="8" class="c-mask"/>
-          <rect x="850" y="510" width="160" height="64" rx="8" class="c-backend" data-animate="node" style="--step:9" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(856 516) scale(0.6875)">
-            <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
-          </g>
-          <text data-node-label="" data-detail-anchor="" x="930" y="540" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">OpenCost</text>
-        <text data-detail="context" x="930" y="556" class="t-muted" font-size="9" text-anchor="middle">Custos estimados</text>
+          <text data-node-label="" data-detail-anchor="" x="1155" y="390" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Kind local</text>
+        <text data-detail="context" x="1155" y="406" class="t-muted" font-size="9" text-anchor="middle">HPA · KEDA · Prometheus</text>
         </g>
 
         <!-- Connection labels -->
-        <g data-detail="context" data-edge-from="browser" data-edge-to="next" data-edge-label="HTTP local" data-edge-key="0" data-edge-id="u-next">
-          <rect x="181" y="112" width="58" height="14" rx="3" class="c-mask"/>
-          <text x="210" y="122" class="t-edge-default" font-size="8" text-anchor="middle">HTTP local</text>
+        <g data-detail="context" data-edge-from="operator" data-edge-to="dash" data-edge-label="HTTP" data-edge-key="0" data-edge-id="op-dash">
+          <rect x="230" y="52" width="30" height="14" rx="3" class="c-mask"/>
+          <text x="245" y="62" class="t-edge-default" font-size="8" text-anchor="middle">HTTP</text>
         </g>
-        <g data-detail="context" data-edge-from="next" data-edge-to="auth" data-edge-label="HTTP interno" data-edge-key="1" data-edge-id="next-auth">
-          <rect x="399.7" y="112" width="67.6" height="14" rx="3" class="c-mask"/>
-          <text x="433.5" y="122" class="t-edge-security" font-size="8" text-anchor="middle">HTTP interno</text>
+        <g data-detail="context" data-edge-from="dash" data-edge-to="api" data-edge-label="/api/*" data-edge-key="1" data-edge-id="dash-api">
+          <rect x="485.6" y="52" width="38.8" height="14" rx="3" class="c-mask"/>
+          <text x="505" y="62" class="t-edge-default" font-size="8" text-anchor="middle">/api/*</text>
         </g>
-        <g data-detail="context" data-edge-from="auth" data-edge-to="api" data-edge-label="verifica acesso" data-edge-key="2" data-edge-id="auth-api">
-          <rect x="619.5" y="168" width="82" height="14" rx="3" class="c-mask"/>
-          <text x="660.5" y="178" class="t-edge-security" font-size="8" text-anchor="middle">verifica acesso</text>
+        <g data-detail="context" data-edge-from="api" data-edge-to="sim" data-edge-label="simula" data-edge-key="2" data-edge-id="api-sim">
+          <rect x="745.6" y="52" width="38.8" height="14" rx="3" class="c-mask"/>
+          <text x="765" y="62" class="t-edge-default" font-size="8" text-anchor="middle">simula</text>
         </g>
-        <g data-detail="context" data-edge-from="api" data-edge-to="engine" data-edge-label="simula" data-edge-key="3" data-edge-id="api-engine">
-          <rect x="879.1" y="112" width="38.8" height="14" rx="3" class="c-mask"/>
-          <text x="898.5" y="122" class="t-edge-default" font-size="8" text-anchor="middle">simula</text>
+        <g data-detail="context" data-edge-from="sim" data-edge-to="bench" data-edge-label="benchmarks" data-edge-key="3" data-edge-id="sim-bench">
+          <rect x="996" y="52" width="58" height="14" rx="3" class="c-mask"/>
+          <text x="1025" y="62" class="t-edge-dashed" font-size="8" text-anchor="middle">benchmarks</text>
         </g>
-        <g data-detail="context" data-edge-from="fixtures" data-edge-to="engine" data-edge-label="séries de demanda" data-edge-key="4" data-edge-id="fixtures-engine">
-          <rect x="986.7" y="245" width="91.6" height="14" rx="3" class="c-mask"/>
-          <text x="1032.5" y="255" class="t-edge-default" font-size="8" text-anchor="middle">séries de demanda</text>
+        <g data-detail="context" data-edge-from="api" data-edge-to="explain" data-edge-label="/explanations" data-edge-key="4" data-edge-id="api-explain">
+          <rect x="556.5999999999999" y="145" width="72.4" height="14" rx="3" class="c-mask"/>
+          <text x="592.8" y="155" class="t-edge-default" font-size="8" text-anchor="middle">/explanations</text>
         </g>
-        <g data-detail="context" data-edge-from="api" data-edge-to="validator" data-edge-label="explica resultado" data-edge-key="5" data-edge-id="api-validation">
-          <rect x="787" y="207.5" width="91.6" height="14" rx="3" class="c-mask"/>
-          <text x="832.8" y="217.5" class="t-edge-default" font-size="8" text-anchor="middle">explica resultado</text>
+        <g data-detail="context" data-edge-from="explain" data-edge-to="rules" data-edge-label="valida" data-edge-key="5" data-edge-id="explain-rules">
+          <rect x="485.6" y="212" width="38.8" height="14" rx="3" class="c-mask"/>
+          <text x="505" y="222" class="t-edge-security" font-size="8" text-anchor="middle">valida</text>
         </g>
-        <g data-detail="context" data-edge-from="validator" data-edge-to="llm" data-edge-label="consulta opcional" data-edge-key="6" data-edge-id="validator-llm">
-          <rect x="614.7" y="221" width="91.6" height="14" rx="3" class="c-mask"/>
-          <text x="660.5" y="231" class="t-edge-dashed" font-size="8" text-anchor="middle">consulta opcional</text>
+        <g data-detail="context" data-edge-from="explain" data-edge-to="llm" data-edge-label="opcional" data-edge-key="6" data-edge-id="explain-llm">
+          <rect x="580.5999999999999" y="305" width="48.4" height="14" rx="3" class="c-mask"/>
+          <text x="604.8" y="315" class="t-edge-dashed" font-size="8" text-anchor="middle">opcional</text>
         </g>
-        <g data-detail="context" data-edge-from="keda" data-edge-to="kind" data-edge-label="escala pods" data-edge-key="7" data-edge-id="keda-kind">
-          <rect x="223.6" y="515" width="62.8" height="14" rx="3" class="c-mask"/>
-          <text x="255" y="525" class="t-edge-default" font-size="8" text-anchor="middle">escala pods</text>
+        <g data-detail="context" data-edge-from="explain" data-edge-to="manifest" data-edge-label="aprovada" data-edge-key="7" data-edge-id="explain-manifest">
+          <rect x="740.8" y="212" width="48.4" height="14" rx="3" class="c-mask"/>
+          <text x="765" y="222" class="t-edge-default" font-size="8" text-anchor="middle">aprovada</text>
         </g>
-        <g data-detail="context" data-edge-from="prom" data-edge-to="kind" data-edge-label="coleta métricas" data-edge-key="8" data-edge-id="prom-kind">
-          <rect x="349" y="587" width="82" height="14" rx="3" class="c-mask"/>
-          <text x="390" y="597" class="t-edge-default" font-size="8" text-anchor="middle">coleta métricas</text>
+        <g data-detail="context" data-edge-from="manifest" data-edge-to="exp" data-edge-label="manifesto" data-edge-key="8" data-edge-id="manifest-exp">
+          <rect x="998.4" y="212" width="53.199999999999996" height="14" rx="3" class="c-mask"/>
+          <text x="1025" y="222" class="t-edge-default" font-size="8" text-anchor="middle">manifesto</text>
         </g>
-        <g data-detail="context" data-edge-from="opencost" data-edge-to="prom" data-edge-label="consulta custos" data-edge-key="9" data-edge-id="opencost-prom">
-          <rect x="754" y="522" width="82" height="14" rx="3" class="c-mask"/>
-          <text x="795" y="532" class="t-edge-default" font-size="8" text-anchor="middle">consulta custos</text>
+        <g data-detail="context" data-edge-from="exp" data-edge-to="kind" data-edge-label="kubectl apply" data-edge-key="9" data-edge-id="exp-kind">
+          <rect x="1076.6" y="305" width="72.4" height="14" rx="3" class="c-mask"/>
+          <text x="1112.8" y="315" class="t-edge-emphasis" font-size="8" text-anchor="middle">kubectl apply</text>
+        </g>
+        <g data-detail="context" data-edge-from="exp" data-edge-to="bench" data-edge-label="evidence/p17" data-edge-key="10" data-edge-id="exp-bench">
+          <rect x="1121.2" y="180" width="67.6" height="14" rx="3" class="c-mask"/>
+          <text x="1155" y="190" class="t-edge-dashed" font-size="8" text-anchor="middle">evidence/p17</text>
         </g>
 
         <!-- Boundary labels (foreground masks keep routes out of titles) -->
-        <g data-graph-role="structural-frame-label" data-composition-frame-id="0" data-composition-frame-kind="region" data-composition-frame-label="Simulação e decisão locais (sem execução de infraestrutura)">
-          <rect data-graph-role="structural-frame-label-mask" x="235" y="80" width="328.59999999999997" height="16" rx="3" class="c-mask"/>
-          <text data-boundary-label="" x="239" y="93" class="t-cloud" font-size="9" font-weight="600">Simulação e decisão locais (sem execução de infraestrutura)</text>
-        </g>
-
-        <g data-graph-role="structural-frame-label" data-composition-frame-id="1" data-composition-frame-kind="region" data-composition-frame-label="Experimento Kind isolado">
-          <rect data-graph-role="structural-frame-label-mask" x="27" y="490" width="139.6" height="16" rx="3" class="c-mask"/>
-          <text data-boundary-label="" x="31" y="503" class="t-cloud" font-size="9" font-weight="600">Experimento Kind isolado</text>
+        <g data-graph-role="structural-frame-label" data-composition-frame-id="0" data-composition-frame-kind="security-group" data-composition-frame-label="Decisão determinística">
+          <rect data-graph-role="structural-frame-label-mask" x="274" y="180" width="128.8" height="16" rx="3" class="c-mask"/>
+          <text data-boundary-label="" x="278" y="193" class="t-security" font-size="9" font-weight="600">Decisão determinística</text>
         </g>
 
         <!-- Legend -->
         <g data-legend="" data-legend-bridge="">
-          <text x="40" y="626" class="t-primary" font-size="12" font-weight="650">Legend</text>
-          <g data-legend-semantic-kind="frontend" data-legend-kind="frontend" data-legend-label="Frontend" data-legend-x="40" data-legend-baseline="646" data-legend-width="93">
-            <rect x="40" y="637" width="16" height="10" rx="2.5" class="c-frontend" stroke-width="1"/>
-            <text x="62" y="646" class="t-muted" font-size="10" font-weight="500">Frontend</text>
+          <text x="40" y="456" class="t-primary" font-size="12" font-weight="650">Legend</text>
+          <g data-legend-semantic-kind="frontend" data-legend-kind="frontend" data-legend-label="Frontend" data-legend-x="40" data-legend-baseline="476" data-legend-width="93">
+            <rect x="40" y="467" width="16" height="10" rx="2.5" class="c-frontend" stroke-width="1"/>
+            <text x="62" y="476" class="t-muted" font-size="10" font-weight="500">Frontend</text>
           </g>
-          <g data-legend-semantic-kind="backend" data-legend-kind="backend" data-legend-label="Backend" data-legend-x="155" data-legend-baseline="646" data-legend-width="87">
-            <rect x="155" y="637" width="16" height="10" rx="2.5" class="c-backend" stroke-width="1"/>
-            <text x="177" y="646" class="t-muted" font-size="10" font-weight="500">Backend</text>
+          <g data-legend-semantic-kind="backend" data-legend-kind="backend" data-legend-label="Backend" data-legend-x="155" data-legend-baseline="476" data-legend-width="87">
+            <rect x="155" y="467" width="16" height="10" rx="2.5" class="c-backend" stroke-width="1"/>
+            <text x="177" y="476" class="t-muted" font-size="10" font-weight="500">Backend</text>
           </g>
-          <g data-legend-semantic-kind="cloud" data-legend-kind="cloud" data-legend-label="Cloud" data-legend-x="264" data-legend-baseline="646" data-legend-width="74">
-            <rect x="264" y="637" width="16" height="10" rx="2.5" class="c-cloud" stroke-width="1"/>
-            <text x="286" y="646" class="t-muted" font-size="10" font-weight="500">Cloud</text>
+          <g data-legend-semantic-kind="database" data-legend-kind="database" data-legend-label="Database" data-legend-x="264" data-legend-baseline="476" data-legend-width="93">
+            <rect x="264" y="467" width="16" height="10" rx="2.5" class="c-database" stroke-width="1"/>
+            <text x="286" y="476" class="t-muted" font-size="10" font-weight="500">Database</text>
           </g>
-          <g data-legend-semantic-kind="security" data-legend-kind="security" data-legend-label="Security" data-legend-x="360" data-legend-baseline="646" data-legend-width="93">
-            <rect x="360" y="637" width="16" height="10" rx="2.5" class="c-security" stroke-width="1"/>
-            <text x="382" y="646" class="t-muted" font-size="10" font-weight="500">Security</text>
+          <g data-legend-semantic-kind="cloud" data-legend-kind="cloud" data-legend-label="Cloud" data-legend-x="379" data-legend-baseline="476" data-legend-width="74">
+            <rect x="379" y="467" width="16" height="10" rx="2.5" class="c-cloud" stroke-width="1"/>
+            <text x="401" y="476" class="t-muted" font-size="10" font-weight="500">Cloud</text>
           </g>
-          <g data-legend-semantic-kind="external" data-legend-kind="external" data-legend-label="External" data-legend-x="475" data-legend-baseline="646" data-legend-width="93">
-            <rect x="475" y="637" width="16" height="10" rx="2.5" class="c-external" stroke-width="1"/>
-            <text x="497" y="646" class="t-muted" font-size="10" font-weight="500">External</text>
+          <g data-legend-semantic-kind="security" data-legend-kind="security" data-legend-label="Security" data-legend-x="475" data-legend-baseline="476" data-legend-width="93">
+            <rect x="475" y="467" width="16" height="10" rx="2.5" class="c-security" stroke-width="1"/>
+            <text x="497" y="476" class="t-muted" font-size="10" font-weight="500">Security</text>
+          </g>
+          <g data-legend-semantic-kind="external" data-legend-kind="external" data-legend-label="External" data-legend-x="590" data-legend-baseline="476" data-legend-width="93">
+            <rect x="590" y="467" width="16" height="10" rx="2.5" class="c-external" stroke-width="1"/>
+            <text x="612" y="476" class="t-muted" font-size="10" font-weight="500">External</text>
           </g>
         </g>
       </svg>
@@ -5650,36 +5687,33 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       <div class="card">
         <div class="card-header">
           <div class="card-dot cyan"></div>
-          <h3>Execução padrão</h3>
+          <h3>Fluxo principal</h3>
         </div>
         <ul>
-          <li>Demandas e previsões são sintéticas</li>
-          <li>O motor é determinístico por seed</li>
-          <li>O dashboard usa API e validação separada</li>
+          <li>O dashboard chama /api/* e a API FastAPI roda o simulador (reativa × antecipativa)</li>
+          <li>Resultados e benchmarks são JSON versionado, reproduzível pelo CI</li>
         </ul>
       </div>
 
       <div class="card">
         <div class="card-header">
           <div class="card-dot rose"></div>
-          <h3>Segurança</h3>
+          <h3>IA sem autoridade</h3>
         </div>
         <ul>
-          <li>Bearer obrigatório no modo token</li>
-          <li>LLM não possui ferramentas de escrita</li>
-          <li>Abstenção quando nenhuma política é segura</li>
+          <li>A LLM é opcional e só explica; o validador e o checker de fidelidade decidem</li>
+          <li>Rejeição aciona o fallback determinístico; nada é aplicado pela API</li>
         </ul>
       </div>
 
       <div class="card">
         <div class="card-header">
-          <div class="card-dot amber"></div>
+          <div class="card-dot emerald"></div>
           <h3>Kubernetes local</h3>
         </div>
         <ul>
-          <li>HPA original e ScaledObject em pods distintos</li>
-          <li>KEDA 2.21 e OpenCost 1.121.3 instalados</li>
-          <li>Custos OpenCost locais não são fatura cloud</li>
+          <li>O manifesto (HPA ou ScaledObject KEDA cron) é gerado, não aplicado pela API</li>
+          <li>O experimento P17 aplica no Kind e grava as medições em evidence/</li>
         </ul>
       </div>
     </div>
@@ -5860,6 +5894,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         else open(false);
       });
       btn.addEventListener('keydown', function (e) {
+        if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
           e.preventDefault();
           if (!isOpen()) open(e.key === 'ArrowUp');
@@ -5876,6 +5911,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       menu.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') { e.preventDefault(); close(true); return; }
         if (e.key === 'Tab') { close(false); return; }
+        if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         var available = options();
         var active = available.indexOf(document.activeElement);
         switch (e.key) {
@@ -6378,6 +6414,13 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         var autoTheme = requestedTheme === 'auto';
         var svg = document.querySelector('.diagram-container svg');
         var clone = svg.cloneNode(true);
+        var softwareNotices = document.getElementById('archify-software-notices');
+        if (softwareNotices) {
+          var softwareMetadata = document.createElementNS('http://www.w3.org/2000/svg', 'metadata');
+          softwareMetadata.setAttribute('id', 'archify-software-notices');
+          softwareMetadata.textContent = JSON.parse(softwareNotices.textContent);
+          clone.insertBefore(softwareMetadata, clone.firstChild);
+        }
 
         var canonicalStateClean = cleanExportClone(clone);
 
@@ -7299,6 +7342,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       });
       // APG menu-button pattern: ArrowDown/ArrowUp on the trigger opens the menu.
       btn.addEventListener('keydown', function (e) {
+        if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
         if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
           e.preventDefault();
           if (!isOpen()) open(e.key === 'ArrowUp');
@@ -7314,6 +7358,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       menu.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') { e.preventDefault(); close(true); return; }
         if (e.key === 'Tab')    { close(false); return; }
+        if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
 
         var available = items().filter(function (i) { return !i.hidden && !i.disabled; });
         var current = available.indexOf(document.activeElement);
@@ -9941,6 +9986,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         syncRelationshipPreview();
       });
       relationshipList.addEventListener('keydown', function (event) {
+        if (event.ctrlKey || event.altKey || event.metaKey || event.shiftKey) return;
         if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp' && event.key !== 'Home' && event.key !== 'End') return;
         var buttons = Array.prototype.slice.call(relationshipList.querySelectorAll('[data-relationship-target]'));
         if (!buttons.length) return;
@@ -12729,6 +12775,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       closeBtn.addEventListener('click', function () { close(); });
       input.addEventListener('input', function () { render(input.value); });
       input.addEventListener('keydown', function (event) {
+        if (event.ctrlKey || event.altKey || event.metaKey || event.shiftKey) return;
         var buttons = resultButtons();
         if (event.key === 'ArrowDown' && buttons.length) {
           event.preventDefault();
@@ -12739,6 +12786,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         }
       });
       results.addEventListener('keydown', function (event) {
+        if (event.ctrlKey || event.altKey || event.metaKey || event.shiftKey) return;
         var buttons = resultButtons();
         var index = buttons.indexOf(document.activeElement);
         if (index < 0 || !buttons.length) return;
@@ -12773,6 +12821,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         count: items.length
       };
     })();
+
 
     /* ============================================================
        Node Outline — a rail index of the semantic nodes, grouped by their
@@ -13878,6 +13927,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         if (journeyPlaying && event.target.closest('[data-route-journey-index]')) pauseJourney({ preserveElapsed: true });
       });
       path.addEventListener('keydown', function (event) {
+        if (event.ctrlKey || event.altKey || event.metaKey || event.shiftKey) return;
         var button = event.target.closest('[data-route-journey-index]');
         if (!button) return;
         var index = Number(button.getAttribute('data-route-journey-index'));
@@ -14553,6 +14603,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         select(button.getAttribute('data-kind'));
       });
       kindsRoot.addEventListener('keydown', function (event) {
+        if (event.ctrlKey || event.altKey || event.metaKey || event.shiftKey) return;
         var buttons = Array.prototype.slice.call(kindsRoot.querySelectorAll('button:not(:disabled)'));
         var index = buttons.indexOf(document.activeElement);
         var next = null;
@@ -14790,6 +14841,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
        ============================================================ */
     document.addEventListener('keydown', function (e) {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.shiftKey && (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Home' || e.key === 'End')) return;
       if (e.defaultPrevented) return;
       var t = e.target;
       if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
