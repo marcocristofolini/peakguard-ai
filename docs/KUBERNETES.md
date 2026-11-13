@@ -147,3 +147,18 @@ Refação da P17 com 5 repetições por estratégia, alternando reativa e anteci
 Sem as repetições marcadas (reativa 0, `loadavg` 2,66; antecipativa 3, `loadavg` 3,14): reativa 188,3 doc, 51,8 s e 10,46 réplicas-minuto; antecipativa 2,75 doc, −42,8 s e 13,6 réplicas-minuto. Os demais `loadavg` de 1 min antes da carga ficaram entre 0,76 e 1,77. No pico, o nó do Kind usou 244–268% de CPU na reativa e 166–200% na antecipativa, com ~1 GiB de memória.
 
 **A conclusão não mudou.** A antecipativa continua eliminando o backlog (≈185 → ≈3 doc, mais de 60× menor nos dois conjuntos de dados) ao custo de mais réplicas-minuto (+37% contra +32% na P17). Os intervalos não se sobrepõem: o pior caso da antecipativa (5 doc) é muito menor que o melhor da reativa (143 doc). Excluir as repetições carregadas muda as médias em menos de 4%. O que mudou foi o tamanho absoluto: a reativa ficou pior (166 → 185 doc; 1ª escala de +30,7 → +49,2 s), ainda dentro da faixa da P17B (143–267 doc); os valores absolutos descrevem esta máquina, não um cluster dedicado. Limites herdados: calendário declarado igual à carga (previsão perfeita) e uma única curva.
+
+### Previsão errada no Kind (P20B)
+
+Mesma coleta intercalada da P17B (5 repetições por estratégia, R, A, R, A…, Kind v1.36.4 + KEDA 2.21), mas com a carga deslocada: pico real de 12 doc/s nos ticks 6–14 de 16 (`local/p17/load-shifted.yaml`), enquanto o calendário declarado, e portanto a janela `cron` do ScaledObject, continua nos ticks 2–10 (janela de 3 min, de 19:04 a 19:07 UTC nessa coleta, 4 réplicas). Evidências: `evidence/p20b/`. Métricas observadas no Kind local; carga sintética; custo hipotético. Nenhuma repetição passou do limite de `loadavg` (máx. 0,8 antes da carga).
+
+| Métrica (média; mín–máx) | P17B reativa (previsão certa) | P20B reativa (errada) | P17B antecipativa (certa) | P20B antecipativa (errada) |
+| --- | --- | --- | --- | --- |
+| Backlog máximo (doc) | 185,4 (143–267) | 65,4 (55–82) | 2,8 (1–5) | 3,4 (2–5) |
+| 1ª escala vs. início da carga (s) | +49,2 | +40,6 (+30 a +48) | −44,4 | −36,4 (−44 a −29) |
+| Réplicas-minuto | 10,07 | 10,23 (8,8–10,9) | 13,77 | 14,75 (14,3–15,4) |
+
+**A antecipativa não foi derrotada pela previsão errada nesta amostra.** O backlog máximo continuou em 3,4 doc (2–5), contra 65,4 doc da reativa (55–82), ao custo de +44% de réplicas-minuto (14,75 contra 10,23; era +37% com a previsão certa). A razão provável, que não testei isolando fatores: a janela `cron` tem granularidade de minuto e 3 min de duração, então ainda cobria 4 réplicas de −40 s a +140 s após o início da carga, e o pico deslocado ia de +60 s a +150 s; além disso o gatilho de CPU fica como piso. Um deslocamento de 4 ticks não basta para o calendário errar o pico. Falta testar um deslocamento maior (pico depois do fim da janela).
+
+Pontos sem explicação: (1) o backlog da reativa foi 65 doc, bem abaixo dos 185 doc da P17B, e a 1ª escala ocorreu em +40,6 s, antes de o pico deslocado começar (+60 s); não investiguei a causa. (2) O simulador (carga observada, calendário declarado como previsão) estimou 142 doc para a reativa e 0 para a antecipativa: superestima a reativa nesta curva (65 observados) e a subestimava na P17B (185 observados), então não há viés único. Limites: uma curva deslocada, 5 repetições, máquina compartilhada.
+

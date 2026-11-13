@@ -173,7 +173,7 @@ Leitura: a antecipativa trocou custo por fila, mas com previsão perfeita (o cal
 
 - **LLM real (P18):** varredura de 8 cenários com Command A+ (2026-11-13): 6/8 respostas aceitas pelo checker; `unexpected_peak` (viola SLO) e `wrong_forecast` (evidência não sustentada) caíram no fallback determinístico, como projetado. Um modelo, uma execução por cenário; ver `docs/VERIFICATION.md` e `evidence/p18/`.
 - **Filas por pod (P20):** testada sem cluster sobre as medições da P13: uma fila por pod com chegadas iguais reduz o MAE de backlog de 41,3 para 24,1 doc; no pico observado 93–97% do backlog fica num só pod, então o cluster está entre esse modelo e o pior caso. Não adotada no motor (mudaria os benchmarks). Ver `docs/CALIBRATION.md`.
-- **Previsão errada no Kubernetes:** a P17B mediu a antecipativa só com o calendário correto. O código para o caso `wrong_forecast` está pronto (`experiment.py collect --curve shifted`: pico real nos ticks 6–14 contra o calendário declarado 2–10), mas a coleta no Kind ainda não foi feita.
+- **Previsão errada no Kubernetes (P20B):** com o pico real deslocado em 4 ticks em relação ao calendário, a antecipativa manteve o backlog máximo em 3,4 doc (reativa: 65,4 doc) ao custo de +44% de réplicas-minuto; a janela `cron` ainda cobria o pico. Falta um deslocamento maior, em que o pico caia fora da janela. Ver `docs/KUBERNETES.md` e `evidence/p20b/`.
 - **Cenários e previsão:** previsões são calendários declarados, não um modelo treinado.
 - **OpenCost:** não reinstalado no cluster v1.36.4 (a P17 instalou só o KEDA 2.21).
 - **Produção:** revisão independente, autenticação de usuários no dashboard e durabilidade de filas.
