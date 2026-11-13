@@ -2,6 +2,9 @@
 
 Entregas por fase. O histórico Git não é reescrito; os commits desta rodada (P8–P14) seguem Conventional Commits. Dados são sintéticos e valores estimados, salvo indicação de métricas observadas no Kind local.
 
+## P18 — Chamada real à LLM
+- `PEAKGUARD_LLM_BASE_URL` opcional (provedor compatível com a API OpenAI; `json_object` com schema no prompt). `local/p12/llm_sweep.py` e `local/p12/llm_chart.py`; `evidence/p18/` e `docs/p18-llm.svg`. Command A+ em 8 cenários: 6/8 aceitas pelo checker, 2 no fallback; detalhes em `docs/VERIFICATION.md`.
+
 ## P17B — Coleta intercalada da antecipativa
 - `local/p17/experiment.py collect --order interleaved --output evidence/p17b`, com `loadavg` e `docker stats` por repetição e análise com/sem repetições carregadas. Conclusão da P17 mantida (backlog máx. 185 → 2,8 doc, +37% de réplicas-minuto); tabela em `docs/KUBERNETES.md`.
 

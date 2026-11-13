@@ -1,7 +1,7 @@
 # PeakGuard AI — roadmap executável
 
 ## Objetivo e limites
-Criar um demonstrador local de capacidade preditiva e FinOps para serviços de processamento de documentos. Comparar políticas de escalonamento sob cargas idênticas, estimar custo e risco de SLO e permitir explicações assistidas por IA. Nenhum acesso presumido à infraestrutura de terceiros; usar dados sintéticos e identificar estimativas.
+Criar um demonstrador local de capacidade preditiva e FinOps para serviços de processamento de documentos. Comparar políticas de escalonamento sob cargas idênticas, estimar custo e risco de SLO e permitir explicações assistidas por IA. Nenhum acesso presumido a infraestrutura real; usar dados sintéticos e identificar estimativas.
 
 ## Princípios
 - O mecanismo de previsão não tem autoridade para alterar infraestrutura; toda proposta passa por políticas determinísticas e aprovação humana.

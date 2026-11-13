@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 500" font-family="Ubuntu, sans-serif">
+<rect width="100%" height="100%" rx="10" fill="#14101f"/>
+<text x="24" y="34" fill="#ece8f6" font-size="18" font-weight="700">Execução com LLM: cohere/command-a-plus</text>
+<text x="24" y="56" fill="#9a93b0" font-size="13">6/8 respostas aceitas pelo checker de fidelidade; as demais caíram no fallback determinístico</text>
+<text x="24" y="82" fill="#9a93b0" font-size="12">cenário (sintético)</text>
+<text x="250" y="82" fill="#9a93b0" font-size="12">resultado</text>
+<text x="520" y="82" fill="#9a93b0" font-size="12">latência (s)</text>
+<text x="740" y="82" fill="#9a93b0" font-size="12">tokens ent./saí.</text>
+<text x="24" y="112" fill="#ece8f6" font-size="14">stable</text>
+<rect x="250" y="96" width="14" height="14" rx="3" fill="#4ade80"/>
+<text x="272" y="108" fill="#ece8f6" font-size="13">aceita</text>
+<rect x="520" y="98" width="47" height="12" rx="3" fill="#8b5cf6"/>
+<text x="575" y="109" fill="#9a93b0" font-size="12">3.6</text>
+<text x="740" y="109" fill="#ece8f6" font-size="12">4.233 / 592</text>
+<text x="24" y="156" fill="#ece8f6" font-size="14">predictable_peak</text>
+<rect x="250" y="140" width="14" height="14" rx="3" fill="#4ade80"/>
+<text x="272" y="152" fill="#ece8f6" font-size="13">aceita</text>
+<rect x="520" y="142" width="101" height="12" rx="3" fill="#8b5cf6"/>
+<text x="629" y="153" fill="#9a93b0" font-size="12">7.8</text>
+<text x="740" y="153" fill="#ece8f6" font-size="12">4.235 / 1.186</text>
+<text x="24" y="200" fill="#ece8f6" font-size="14">unexpected_peak</text>
+<rect x="250" y="184" width="14" height="14" rx="3" fill="#fbbf24"/>
+<text x="272" y="196" fill="#ece8f6" font-size="13">fallback · slo</text>
+<rect x="520" y="186" width="150" height="12" rx="3" fill="#8b5cf6"/>
+<text x="678" y="197" fill="#9a93b0" font-size="12">11.6</text>
+<text x="740" y="197" fill="#ece8f6" font-size="12">4.232 / 1.383</text>
+<text x="24" y="244" fill="#ece8f6" font-size="14">wrong_forecast</text>
+<rect x="250" y="228" width="14" height="14" rx="3" fill="#fbbf24"/>
+<text x="272" y="240" fill="#ece8f6" font-size="13">fallback · unsupported_evidence</text>
+<rect x="520" y="230" width="137" height="12" rx="3" fill="#8b5cf6"/>
+<text x="665" y="241" fill="#9a93b0" font-size="12">10.6</text>
+<text x="740" y="241" fill="#ece8f6" font-size="12">4.226 / 1.257</text>
+<text x="24" y="288" fill="#ece8f6" font-size="14">fiscal_month_close</text>
+<rect x="250" y="272" width="14" height="14" rx="3" fill="#4ade80"/>
+<text x="272" y="284" fill="#ece8f6" font-size="13">aceita</text>
+<rect x="520" y="274" width="95" height="12" rx="3" fill="#8b5cf6"/>
+<text x="623" y="285" fill="#9a93b0" font-size="12">7.4</text>
+<text x="740" y="285" fill="#ece8f6" font-size="12">4.235 / 1.043</text>
+<text x="24" y="332" fill="#ece8f6" font-size="14">fiscal_das_day20</text>
+<rect x="250" y="316" width="14" height="14" rx="3" fill="#4ade80"/>
+<text x="272" y="328" fill="#ece8f6" font-size="13">aceita</text>
+<rect x="520" y="318" width="90" height="12" rx="3" fill="#8b5cf6"/>
+<text x="618" y="329" fill="#9a93b0" font-size="12">7.0</text>
+<text x="740" y="329" fill="#ece8f6" font-size="12">4.225 / 875</text>
+<text x="24" y="376" fill="#ece8f6" font-size="14">fiscal_ancillary_obligations</text>
+<rect x="250" y="360" width="14" height="14" rx="3" fill="#4ade80"/>
+<text x="272" y="372" fill="#ece8f6" font-size="13">aceita</text>
+<rect x="520" y="362" width="132" height="12" rx="3" fill="#8b5cf6"/>
+<text x="660" y="373" fill="#9a93b0" font-size="12">10.3</text>
+<text x="740" y="373" fill="#ece8f6" font-size="12">4.219 / 1.256</text>
+<text x="24" y="420" fill="#ece8f6" font-size="14">fiscal_irpf_april</text>
+<rect x="250" y="404" width="14" height="14" rx="3" fill="#4ade80"/>
+<text x="272" y="416" fill="#ece8f6" font-size="13">aceita</text>
+<rect x="520" y="406" width="64" height="12" rx="3" fill="#8b5cf6"/>
+<text x="592" y="417" fill="#9a93b0" font-size="12">4.9</text>
+<text x="740" y="417" fill="#ece8f6" font-size="12">4.235 / 990</text>
+<text x="24" y="474" fill="#9a93b0" font-size="12">observed · cenários synthetic, seed 42 · custo estimado US$ 0 (plano gratuito) · evidence/p18</text></svg>

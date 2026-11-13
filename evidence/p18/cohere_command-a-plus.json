@@ -1,0 +1,284 @@
+{
+ "labels": {
+  "metrics": "observed",
+  "load": "synthetic"
+ },
+ "model": "cohere/command-a-plus",
+ "base_url": "https://api.xkiro.com/v1",
+ "accepted": 6,
+ "calls": 8,
+ "rows": [
+  {
+   "scenario": "stable",
+   "mode": "llm",
+   "audit": {
+    "source": "llm",
+    "status": "accepted",
+    "accepted": true,
+    "reasons": []
+   },
+   "proposal": {
+    "policy": "reactive",
+    "claims": [
+     {
+      "id": "reactive.cost_brl",
+      "value": 0.48000000000000015
+     },
+     {
+      "id": "reactive.processed_docs",
+      "value": 939.0
+     }
+    ],
+    "hypotheses": [
+     "forecast_may_be_wrong"
+    ],
+    "rationale": null
+   },
+   "latency_s": 3.63,
+   "prompt_tokens": 4233,
+   "completion_tokens": 592
+  },
+  {
+   "scenario": "predictable_peak",
+   "mode": "llm",
+   "audit": {
+    "source": "llm",
+    "status": "accepted",
+    "accepted": true,
+    "reasons": []
+   },
+   "proposal": {
+    "policy": "anticipatory",
+    "claims": [
+     {
+      "id": "anticipatory.slo_violation_minutes",
+      "value": 0.0
+     },
+     {
+      "id": "anticipatory.cost_brl",
+      "value": 1.0799999999999998
+     },
+     {
+      "id": "anticipatory.max_backlog_docs",
+      "value": 0.0
+     }
+    ],
+    "hypotheses": [
+     "forecast_may_be_wrong"
+    ],
+    "rationale": null
+   },
+   "latency_s": 7.81,
+   "prompt_tokens": 4235,
+   "completion_tokens": 1186
+  },
+  {
+   "scenario": "unexpected_peak",
+   "mode": "fallback",
+   "audit": {
+    "source": "llm",
+    "status": "rejected",
+    "accepted": false,
+    "reasons": [
+     "slo"
+    ]
+   },
+   "proposal": {
+    "policy": "anticipatory",
+    "claims": [
+     {
+      "id": "anticipatory.cost_brl",
+      "value": 1.1600000000000001
+     },
+     {
+      "id": "anticipatory.cost_brl_per_1000_docs",
+      "value": 0.400137978613315
+     },
+     {
+      "id": "anticipatory.max_backlog_docs",
+      "value": 661.0
+     },
+     {
+      "id": "anticipatory.slo_violation_minutes",
+      "value": 2.0
+     }
+    ],
+    "hypotheses": [
+     "forecast_may_be_wrong"
+    ],
+    "rationale": null
+   },
+   "latency_s": 11.62,
+   "prompt_tokens": 4232,
+   "completion_tokens": 1383
+  },
+  {
+   "scenario": "wrong_forecast",
+   "mode": "fallback",
+   "audit": {
+    "source": "llm",
+    "status": "rejected",
+    "accepted": false,
+    "reasons": [
+     "unsupported_evidence"
+    ]
+   },
+   "proposal": {
+    "policy": "reactive",
+    "claims": [
+     {
+      "id": "reactive.cost_brl",
+      "value": 0.48000000000000015
+     },
+     {
+      "id": "reactive.slo_violation_minutes",
+      "value": 0.0
+     },
+     {
+      "id": "reactive.budget_brl",
+      "value": 10.0
+     }
+    ],
+    "hypotheses": [
+     "forecast_may_be_wrong"
+    ],
+    "rationale": "0 0.48000000000000015 10"
+   },
+   "latency_s": 10.62,
+   "prompt_tokens": 4226,
+   "completion_tokens": 1257
+  },
+  {
+   "scenario": "fiscal_month_close",
+   "mode": "llm",
+   "audit": {
+    "source": "llm",
+    "status": "accepted",
+    "accepted": true,
+    "reasons": []
+   },
+   "proposal": {
+    "policy": "anticipatory",
+    "claims": [
+     {
+      "id": "anticipatory.cost_brl",
+      "value": 0.9600000000000002
+     },
+     {
+      "id": "anticipatory.max_backlog_docs",
+      "value": 0.0
+     },
+     {
+      "id": "anticipatory.slo_violation_minutes",
+      "value": 0.0
+     }
+    ],
+    "hypotheses": [
+     "forecast_may_be_wrong"
+    ],
+    "rationale": "Custo 0.9600000000000002 BRL, backlog máximo 0.0 documentos, violações de SLO 0"
+   },
+   "latency_s": 7.39,
+   "prompt_tokens": 4235,
+   "completion_tokens": 1043
+  },
+  {
+   "scenario": "fiscal_das_day20",
+   "mode": "llm",
+   "audit": {
+    "source": "llm",
+    "status": "accepted",
+    "accepted": true,
+    "reasons": []
+   },
+   "proposal": {
+    "policy": "anticipatory",
+    "claims": [
+     {
+      "id": "anticipatory.cost_brl",
+      "value": 1.1
+     },
+     {
+      "id": "anticipatory.max_backlog_docs",
+      "value": 2.0
+     },
+     {
+      "id": "anticipatory.slo_violation_minutes",
+      "value": 0.0
+     }
+    ],
+    "hypotheses": [
+     "forecast_may_be_wrong"
+    ],
+    "rationale": null
+   },
+   "latency_s": 6.99,
+   "prompt_tokens": 4225,
+   "completion_tokens": 875
+  },
+  {
+   "scenario": "fiscal_ancillary_obligations",
+   "mode": "llm",
+   "audit": {
+    "source": "llm",
+    "status": "accepted",
+    "accepted": true,
+    "reasons": []
+   },
+   "proposal": {
+    "policy": "anticipatory",
+    "claims": [
+     {
+      "id": "anticipatory.cost_brl",
+      "value": 0.9800000000000004
+     },
+     {
+      "id": "anticipatory.max_backlog_docs",
+      "value": 111.0
+     },
+     {
+      "id": "anticipatory.slo_violation_minutes",
+      "value": 0.0
+     }
+    ],
+    "hypotheses": [
+     "forecast_may_be_wrong"
+    ],
+    "rationale": null
+   },
+   "latency_s": 10.26,
+   "prompt_tokens": 4219,
+   "completion_tokens": 1256
+  },
+  {
+   "scenario": "fiscal_irpf_april",
+   "mode": "llm",
+   "audit": {
+    "source": "llm",
+    "status": "accepted",
+    "accepted": true,
+    "reasons": []
+   },
+   "proposal": {
+    "policy": "anticipatory",
+    "claims": [
+     {
+      "id": "anticipatory.cost_brl",
+      "value": 1.6400000000000003
+     },
+     {
+      "id": "anticipatory.slo_violation_minutes",
+      "value": 0.0
+     }
+    ],
+    "hypotheses": [
+     "forecast_may_be_wrong"
+    ],
+    "rationale": null
+   },
+   "latency_s": 4.92,
+   "prompt_tokens": 4235,
+   "completion_tokens": 990
+  }
+ ]
+}

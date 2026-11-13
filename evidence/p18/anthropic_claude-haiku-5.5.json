@@ -1,0 +1,26 @@
+{
+ "labels": {
+  "metrics": "observed",
+  "load": "synthetic"
+ },
+ "model": "anthropic/claude-haiku-5.5",
+ "base_url": "https://api.xkiro.com/v1",
+ "accepted": 0,
+ "calls": 1,
+ "rows": [
+  {
+   "scenario": "stable",
+   "mode": "fallback",
+   "audit": {
+    "source": "llm",
+    "status": "rejected",
+    "accepted": false,
+    "reasons": [
+     "provider_unavailable"
+    ]
+   },
+   "error": "PermissionDeniedError 403",
+   "latency_s": 1.12
+  }
+ ]
+}

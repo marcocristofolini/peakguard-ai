@@ -11,7 +11,7 @@
 
 Demonstrador local de capacidade, confiabilidade e FinOps para processamento de documentos. Compara escalonamento reativo e antecipativo sob a mesma carga, expõe risco de SLO e custo estimado e permite uma seleção assistida por LLM sujeita a validação determinística.
 
-Projeto independente: . Dados de demanda são **sintéticos**; simulações e custos são **estimados**. Há métricas **observadas** de um ensaio Kind local, sem alegação de economia em produção.
+Projeto pessoal, criado para uso próprio. Dados de demanda são **sintéticos**; simulações e custos são **estimados**. Há métricas **observadas** de um ensaio Kind local, sem alegação de economia em produção.
 
 ![Dashboard com seleção aprovada pelo validador (Pico previsível, seed 42)](docs/p7-dashboard.png)
 
@@ -103,6 +103,14 @@ A IA recebe contexto selecionado da simulação, sem ferramentas, arquivos ou cr
 
 A resposta retorna `mode`, evidências, hash e `audit`, sem persistência automática. `execution_allowed=false` e `human_approval_required=true`: nenhuma ação de infraestrutura está implementada. A API é local, sem autenticação/rate limiting de produção; não publicar como serviço seguro por padrão.
 
+### Execução real com LLM (P18)
+
+O adaptador também aceita provedores compatíveis com a API OpenAI: defina `PEAKGUARD_LLM_BASE_URL` (padrão: OpenAI). Fora da OpenAI ele usa `json_object` com o schema no prompt, e o resultado passa pelo mesmo validador e pelo checker de fidelidade. `local/p12/llm_sweep.py` faz uma chamada real por cenário e `local/p12/llm_chart.py` gera a figura abaixo a partir de `evidence/p18/`.
+
+![Execução com LLM em 8 cenários sintéticos: 6 respostas aceitas e 2 caídas no fallback determinístico](docs/p18-llm.svg)
+
+Com `cohere/command-a-plus` (2026-11-13, seed 42), 6 de 8 respostas passaram no checker. `unexpected_peak` (a política escolhida viola o SLO) e `wrong_forecast` (valores sem suporte nas evidências) caíram no fallback, como projetado. São 8 chamadas, um modelo e uma execução por cenário: não é medida de qualidade do texto. Detalhes em [`docs/VERIFICATION.md`](docs/VERIFICATION.md).
+
 ## Benchmark reproduzível
 
 ```bash
@@ -144,7 +152,7 @@ Leitura: a antecipativa trocou custo por fila, mas com previsão perfeita (o cal
 
 ## Próximos passos
 
-- **LLM real (P18):** uma chamada medida em 2026-11-13 (20,8 s, 5.339/169 tokens); o checker de fidelidade rejeitou a resposta (`unsupported_evidence`) e o fallback determinístico assumiu. Amostra única, um modelo; ver `docs/VERIFICATION.md`.
+- **LLM real (P18):** varredura de 8 cenários com Command A+ (2026-11-13): 6/8 respostas aceitas pelo checker; `unexpected_peak` (viola SLO) e `wrong_forecast` (evidência não sustentada) caíram no fallback determinístico, como projetado. Um modelo, uma execução por cenário; ver `docs/VERIFICATION.md` e `evidence/p18/`.
 - **Filas por pod:** é a hipótese pendente da calibração. O atraso de decisão derivado das medições é 0 ticks (P15), então o erro restante vem do FIFO central e das taxas fluidas do motor, contra filas independentes por pod no cluster. Não testada.
 - **Previsão errada no Kubernetes:** a P17 mediu a antecipativa só com o calendário correto; falta o caso `wrong_forecast` no cluster e com mais de uma curva de carga.
 - **Cenários e previsão:** previsões são calendários declarados, não um modelo treinado.

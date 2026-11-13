@@ -105,3 +105,15 @@ Histórico da fase (o que aconteceu antes desse resultado):
 - DeepSeek (`deepseek-flash`): a chave autenticou, mas a geração retornou HTTP 402 Insufficient Balance (conta sem saldo), sem tokens cobrados.
 - Provedor atual, 1ª tentativa: timeout em 91 s (limite de 90 s do adaptador); nada recebido. O limite subiu para 180 s e houve uma única nova tentativa (transitório), que gerou a linha acima.
 - Uma chamada extra de diagnóstico, só para ler o 402 da DeepSeek. Chaves passadas por variável de ambiente; nunca gravadas.
+
+### P18 — varredura com Command A+ (2026-11-13)
+
+`local/p12/llm_sweep.py`: uma chamada por cenário (os 8 de `ALL_SCENARIOS`, seed 42, `Config()` padrão), modelo `cohere/command-a-plus` via gateway compatível (`https://api.xkiro.com/v1`, plano gratuito: preço listado US$ 0/1M tokens, estimado pela listagem do provedor). Dados em `evidence/p18/cohere_command-a-plus.json` (proposta devolvida, auditoria, tokens, latência por cenário; sem a chave).
+
+| Resultado | Cenários |
+| --- | --- |
+| Aceita pelo checker (`mode=llm`) | `stable`, `predictable_peak`, `fiscal_month_close`, `fiscal_das_day20`, `fiscal_ancillary_obligations`, `fiscal_irpf_april` (6/8) |
+| Rejeitada → fallback | `unexpected_peak` (`slo`: escolheu `anticipatory`, que viola o SLO nesse cenário); `wrong_forecast` (`unsupported_evidence`: escolheu `reactive` com valores que não batem com as evidências) |
+
+Totais observados: 33.840 tokens de entrada e 8.582 de saída em 8 chamadas; latência média 7,9 s (máx. 11,6 s). Nenhuma falha de API. As duas rejeições são o validador determinístico e o checker de fidelidade fazendo o trabalho: o fallback assumiu com `execution_allowed=false`. Limites: um modelo, uma execução por cenário, sem repetição por seed (o contexto é determinístico), sem avaliar a qualidade do texto aceito. As tentativas anteriores com outros modelos (Haiku 5.5 e demais "premium": 403, plano sem saldo) estão no registro acima.
+
