@@ -29,3 +29,7 @@ CLAUDE.md
 CLAUDE.local.md
 .claude/
 .mcp.json
+
+# Hooks locais de ferramentas de IA (caminhos da máquina)
+.codex/
+.github/hooks/
