@@ -210,4 +210,4 @@ Previsões são calendários declarados, não um modelo treinado. O motor usa fi
 
 ## Roadmap, contribuição e licença
 
-As fases P0–P14 estão concluídas (P12 sem a chamada real à LLM); o histórico por fase está no [CHANGELOG](CHANGELOG.md) e a próxima rodada (P15–P19) no [ROADMAP](ROADMAP.md). Para contribuir, veja o [guia de contribuição](CONTRIBUTING.md) e o [código de conduta](CODE_OF_CONDUCT.md). Vulnerabilidades devem ser relatadas pela [política de segurança](.github/SECURITY.md). Código sob [licença MIT](LICENSE).
+Todas as fases do roadmap (P0–P20D) estão concluídas, inclusive a chamada real à LLM (P18); o histórico por fase está no [CHANGELOG](CHANGELOG.md) e o plano completo no [ROADMAP](ROADMAP.md). Para contribuir, veja o [guia de contribuição](CONTRIBUTING.md) e o [código de conduta](CODE_OF_CONDUCT.md). Vulnerabilidades devem ser relatadas pela [política de segurança](.github/SECURITY.md). Código sob [licença MIT](LICENSE).
