@@ -105,7 +105,7 @@ P0–P7 estão concluídas. A segunda rodada aprofunda o rigor técnico; a espec
 - P13 (concluída) — Calibração do simulador contra medições do Kind local.
 - P14 (concluída) — Apresentação v2 com os novos resultados.
 
-## Fases v3 (P15–P19)
+## Fases v3 (P15–P20D)
 Derivadas dos "Próximos passos" do README, em ordem de valor: primeiro explicar o resultado negativo da calibração, depois levar a antecipativa ao cluster. Especificação em `docs/prompts/`.
 
 - P15 (concluída) — Atraso de decisão do controlador separado do startup; recalibrar com `evidence/p13/observed.json`, sem subir cluster.

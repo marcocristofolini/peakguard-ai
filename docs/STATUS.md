@@ -1,5 +1,5 @@
 # STATUS — handoff
-- Fases P0–P14 concluídas especificadas em `docs/prompts/` (ver ROADMAP).
+- Fases P0–P20D concluídas; as de P8 a P19 estão especificadas em `docs/prompts/` (ver ROADMAP).
 - WSL Ubuntu 24.04; FastAPI, Next.js 16.4.3, simulador sintético, LLM opcional e benchmarks.
 - 2026-11-03: dependências atualizadas pelo Dependabot (FastAPI 0.162, Pydantic 2.14, openai 3.42, React 19.3, TypeScript 7); 108 testes Python, 7 do frontend, build e `npm audit` (0 vulnerabilidades) aprovados; benchmarks idênticos.
 - GitHub: repositório público, MIT, CI (`ci-python`, `ci-frontend`), CodeQL, dependency-review, Dependabot mensal, ruleset na `main` exigindo `test` e `build`.
